@@ -29,13 +29,15 @@ type ResourceEntry struct {
 
 func create(w http.ResponseWriter, r *http.Request) {
 	var err error
+	remote := r.Header.Get("x-forwarded-for")
 	if r.Method == "GET" {
+		log.Printf("[INFO][%s] Issued a GET request\n", remote)
 		return
 	}
-	log.Printf("[INFO][%s]\tReceiving data.", r.Host)
+	log.Printf("[INFO][%s]\tReceiving data.", remote)
 	u, err := uuid.NewV4()
 	if err != nil {
-		log.Printf("[ERROR][%s] During creation of uuid : %s\n", r.Host, err)
+		log.Printf("[ERROR][%s] During creation of uuid : %s\n", remote, err)
 		http.Error(w, http.StatusText(503), 503)
 		return
 	}
@@ -43,14 +45,14 @@ func create(w http.ResponseWriter, r *http.Request) {
 	path := conf.C.UploadDir + u.String()
 	file, err := os.Create(path)
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", r.Host, err)
+		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", remote, err)
 		http.Error(w, http.StatusText(503), 503)
 		return
 	}
 	defer file.Close()
 	_, err = io.Copy(file, br)
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", r.Host, err)
+		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", remote, err)
 		http.Error(w, http.StatusText(503), 503)
 		return
 	}
@@ -66,7 +68,7 @@ func view(w http.ResponseWriter, r *http.Request) {
 	re := ResourceEntry{}
 	db.Where(&ResourceEntry{Key: id}).First(&re)
 	if re.Key == "" {
-		log.Printf("[INFO][%s]\tNot found : %s", r.Host, id)
+		log.Printf("[INFO][%s]\tNot found : %s", r.Header.Get("x-forwarded-for"), id)
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}

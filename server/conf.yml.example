@@ -1,0 +1,4 @@
+name_server: "your.server.name.com"
+upload_dir: "up/"
+db: "my.db"
+port: 8080
