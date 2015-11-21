@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -31,18 +32,19 @@ func create(w http.ResponseWriter, r *http.Request) {
 	var err error
 	remote := r.Header.Get("x-forwarded-for")
 	if r.Method == "GET" {
-		log.Printf("[INFO][%s] Issued a GET request\n", remote)
+		log.Printf("[INFO][%s]\tIssued a GET request\n", remote)
+		http.ServeFile(w, r, "client_linux_x86-64")
 		return
 	}
-	log.Printf("[INFO][%s]\tReceiving data.", remote)
+	log.Printf("[INFO][%s]\tReceiving data\n", remote)
 	u, err := uuid.NewV4()
 	if err != nil {
-		log.Printf("[ERROR][%s] During creation of uuid : %s\n", remote, err)
+		log.Printf("[ERROR][%s]\tDuring creation of uuid : %s\n", remote, err)
 		http.Error(w, http.StatusText(503), 503)
 		return
 	}
 	br := bufio.NewReaderSize(r.Body, 512)
-	path := conf.C.UploadDir + u.String()
+	path := path.Join(conf.C.UploadDir, u.String())
 	file, err := os.Create(path)
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", remote, err)
@@ -59,6 +61,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 	e := ResourceEntry{}
 	e.Key = u.String()
 	db.Create(&e)
+	log.Printf("[INFO][%s]\tCreated %s file and entry\n", remote, u.String())
 	fmt.Fprint(w, "http://"+conf.C.NameServer+"/view/"+u.String()+"\n")
 	return
 }
@@ -85,9 +88,9 @@ func monit() {
 			log.Printf("[INFO][System]\tFlushing %d DB entries and files.\n", len(res))
 		}
 		for _, re := range res {
-			err := os.Remove(conf.C.UploadDir + re.Key)
+			err := os.Remove(path.Join(conf.C.UploadDir, re.Key))
 			if err != nil {
-				log.Printf("[ERROR][System]\tWhil deleting : %v", err)
+				log.Printf("[ERROR][System]\tWhile deleting : %v", err)
 			}
 		}
 		<-tc.C
@@ -113,9 +116,9 @@ func main() {
 		log.Fatal(err)
 	}
 	db.AutoMigrate(&ResourceEntry{})
-	log.Printf("[INFO][System]\tStarted goploader server on port %d.\n", conf.C.Port)
+	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
 	go monit()
-	log.Println("[INFO][System]\tStarted monitoring of files and db entries.")
+	log.Println("[INFO][System]\tStarted monitoring of files and db entries")
 
 	http.HandleFunc("/", create)
 	http.HandleFunc("/view/", view)
