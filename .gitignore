@@ -1,0 +1,6 @@
+client/conf.yml
+client/client
+server/conf.yml
+server/my.db
+server/up/
+server/server
