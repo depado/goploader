@@ -20,7 +20,7 @@ import (
 )
 
 var db gorm.DB
-var timeLimit = 30 * time.Minute
+var timeLimit = 2 * time.Hour
 
 // ResourceEntry represents the data stored in the database
 type ResourceEntry struct {
@@ -52,7 +52,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-	_, err = io.Copy(file, br)
+	wr, err := io.Copy(file, br)
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", remote, err)
 		http.Error(w, http.StatusText(503), 503)
@@ -61,7 +61,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 	e := ResourceEntry{}
 	e.Key = u.String()
 	db.Create(&e)
-	log.Printf("[INFO][%s]\tCreated %s file and entry\n", remote, u.String())
+	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u.String(), wr)
 	fmt.Fprint(w, "http://"+conf.C.NameServer+"/view/"+u.String()+"\n")
 	return
 }
