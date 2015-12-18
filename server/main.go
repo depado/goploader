@@ -62,13 +62,15 @@ func create(w http.ResponseWriter, r *http.Request) {
 	e.Key = u.String()
 	db.Create(&e)
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u.String(), wr)
-	fmt.Fprint(w, "http://"+conf.C.NameServer+"/view/"+u.String()+"\n")
+	fmt.Fprint(w, "https://"+conf.C.NameServer+"/view/"+u.String()+"\n")
 	return
 }
 
 func view(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/view/"):]
 	re := ResourceEntry{}
+	remote := r.Header.Get("x-forwarded-for")
+	log.Printf("[INFO][%s]\tIssued a GET request\n", remote)
 	db.Where(&ResourceEntry{Key: id}).First(&re)
 	if re.Key == "" {
 		log.Printf("[INFO][%s]\tNot found : %s", r.Header.Get("x-forwarded-for"), id)

@@ -1,15 +1,12 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/Depado/goploader/client/conf"
 )
 
 func main() {
@@ -18,31 +15,17 @@ func main() {
 	var scheme string
 	var datasource io.Reader
 
-	if err = conf.Load("conf.yml"); err != nil {
-		conf.C = conf.Configuration{Host: "up.depado.eu", TLS: true}
-	}
-	if conf.C.TLS {
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		client = &http.Client{Transport: tr}
-		scheme = "https"
-	} else {
-		client = &http.Client{}
-		scheme = "http"
-	}
-
 	args := os.Args[1:]
+	datasource = io.TeeReader(os.Stdin, os.Stdout)
 	if len(args) > 0 {
 		datasource, err = os.Open(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}
-	} else {
-		datasource = os.Stdin
 	}
 
-	req, err := http.NewRequest("POST", scheme+"://"+conf.C.Host, datasource)
+	client = &http.Client{}
+	req, err := http.NewRequest("POST", scheme+"https://up.depado.eu", datasource)
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatal(err)
