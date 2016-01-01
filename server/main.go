@@ -31,6 +31,9 @@ type ResourceEntry struct {
 func create(w http.ResponseWriter, r *http.Request) {
 	var err error
 	remote := r.Header.Get("x-forwarded-for")
+	if remote == "" {
+		remote = r.Host
+	}
 	if r.Method == "GET" {
 		log.Printf("[INFO][%s]\tIssued a GET request\n", remote)
 		http.ServeFile(w, r, "client_linux_x86-64")
@@ -70,13 +73,13 @@ func view(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/view/"):]
 	re := ResourceEntry{}
 	remote := r.Header.Get("x-forwarded-for")
-	log.Printf("[INFO][%s]\tIssued a GET request\n", remote)
 	db.Where(&ResourceEntry{Key: id}).First(&re)
 	if re.Key == "" {
 		log.Printf("[INFO][%s]\tNot found : %s", r.Header.Get("x-forwarded-for"), id)
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
+	log.Printf("[INFO][%s]\tFetched %s file and entry\n", remote, id)
 	http.ServeFile(w, r, conf.C.UploadDir+re.Key)
 }
 
