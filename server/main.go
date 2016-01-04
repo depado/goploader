@@ -46,12 +46,17 @@ func create(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 	defer file.Close()
-	wr, err := io.Copy(file, bufio.NewReaderSize(c.Request.Body, 512))
+	fd, h, err := c.Request.FormFile("file")
+	if err != nil {
+		log.Printf("[ERROR][%s]\tDuring reading file : %s", remote, err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	wr, err := io.Copy(file, bufio.NewReaderSize(fd, 512))
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", remote, err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-	db.Create(&models.ResourceEntry{Key: u.String()})
+	db.Create(&models.ResourceEntry{Key: u.String(), Name: h.Filename})
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u.String(), wr)
 	c.String(http.StatusCreated, "https://"+conf.C.NameServer+"/v/"+u.String()+"\n")
 }
@@ -71,6 +76,7 @@ func view(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
+	c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
 	http.ServeContent(c.Writer, c.Request, re.Key, re.CreatedAt, f)
 }
 
@@ -93,6 +99,7 @@ func main() {
 	go monitoring.Monit(&db)
 
 	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/static", "./assets")

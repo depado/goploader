@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"time"
@@ -15,26 +17,30 @@ import (
 )
 
 const (
-	service = "https://up.depado.eu"
+	service = "https://up.depado.eu/"
 	method  = "POST"
 )
 
 func main() {
 	var err error
-	var client *http.Client
 	var datasource io.Reader
 
 	var tee bool
-	var noprogress bool
+	var progress bool
 	var clip bool
+	var name string
 
 	flag.BoolVarP(&tee, "tee", "t", false, "Displays stdin to stdout")
-	flag.BoolVarP(&noprogress, "noprogress", "n", false, "Never display a progress bar")
+	flag.BoolVarP(&progress, "progress", "p", false, "Displays a progress bar")
 	flag.BoolVarP(&clip, "clipboard", "c", false, "Copy the returned URL directly to the clipboard (needs xclip or xsel)")
+	flag.StringVarP(&name, "name", "n", "", "Specify the filename you want")
 	flag.Parse()
 	args := flag.Args()
 
 	if len(args) > 0 {
+		if name == "" {
+			name = args[0]
+		}
 		var f *os.File
 		var fi os.FileInfo
 
@@ -42,9 +48,7 @@ func main() {
 			fmt.Println("Could not open", args[0])
 			os.Exit(1)
 		}
-		if noprogress {
-			datasource = f
-		} else {
+		if progress {
 			if fi, err = f.Stat(); err != nil {
 				fmt.Println("Could not stat", args[0])
 				os.Exit(1)
@@ -58,16 +62,33 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
+		} else {
+			datasource = f
 		}
 	} else {
+		if name == "" {
+			name = "stdin"
+		}
 		datasource = os.Stdin
 	}
 	if tee {
 		datasource = io.TeeReader(datasource, os.Stdout)
 	}
-	client = &http.Client{}
-	req, err := http.NewRequest(method, service, datasource)
-	resp, err := client.Do(req)
+
+	bodyBuf := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuf)
+	fileWriter, err := bodyWriter.CreateFormFile("file", name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err = io.Copy(fileWriter, datasource); err != nil {
+		log.Fatal(err)
+	}
+	contentType := bodyWriter.FormDataContentType()
+	bodyWriter.Close()
+
+	resp, err := http.Post(service, contentType, bodyBuf)
 	if err != nil {
 		log.Fatal(err)
 	}
