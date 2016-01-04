@@ -9,97 +9,69 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nu7hatch/gouuid"
 
 	"github.com/Depado/goploader/server/conf"
+	"github.com/Depado/goploader/server/models"
+	"github.com/Depado/goploader/server/monitoring"
 	"github.com/Depado/goploader/server/utils"
 )
 
 var db gorm.DB
-var timeLimit = 2 * time.Hour
 
-// ResourceEntry represents the data stored in the database
-type ResourceEntry struct {
-	gorm.Model
-	Key string
+func index(c *gin.Context) {
+	remote := c.ClientIP()
+	log.Printf("[INFO][%s]\tIssued a GET request\n", remote)
+	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
-func create(w http.ResponseWriter, r *http.Request) {
+func create(c *gin.Context) {
 	var err error
-	remote := r.Header.Get("x-forwarded-for")
-	if remote == "" {
-		remote = r.Host
-	}
-	if r.Method == "GET" {
-		log.Printf("[INFO][%s]\tIssued a GET request\n", remote)
-		http.ServeFile(w, r, "client_linux_x86-64")
-		return
-	}
+	var u *uuid.UUID
+	remote := c.ClientIP()
+
 	log.Printf("[INFO][%s]\tReceiving data\n", remote)
-	u, err := uuid.NewV4()
-	if err != nil {
+	if u, err = uuid.NewV4(); err != nil {
 		log.Printf("[ERROR][%s]\tDuring creation of uuid : %s\n", remote, err)
-		http.Error(w, http.StatusText(503), 503)
-		return
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-	br := bufio.NewReaderSize(r.Body, 512)
 	path := path.Join(conf.C.UploadDir, u.String())
 	file, err := os.Create(path)
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", remote, err)
-		http.Error(w, http.StatusText(503), 503)
-		return
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 	defer file.Close()
-	wr, err := io.Copy(file, br)
+	wr, err := io.Copy(file, bufio.NewReaderSize(c.Request.Body, 512))
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", remote, err)
-		http.Error(w, http.StatusText(503), 503)
-		return
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-	e := ResourceEntry{}
-	e.Key = u.String()
-	db.Create(&e)
+	db.Create(&models.ResourceEntry{Key: u.String()})
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u.String(), wr)
-	fmt.Fprint(w, "https://"+conf.C.NameServer+"/view/"+u.String()+"\n")
-	return
+	c.String(http.StatusCreated, "https://"+conf.C.NameServer+"/v/"+u.String()+"\n")
 }
 
-func view(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/view/"):]
-	re := ResourceEntry{}
-	remote := r.Header.Get("x-forwarded-for")
-	db.Where(&ResourceEntry{Key: id}).First(&re)
+func view(c *gin.Context) {
+	id := c.Param("uuid")
+	re := models.ResourceEntry{}
+	remote := c.ClientIP()
+
+	db.Where(&models.ResourceEntry{Key: id}).First(&re)
 	if re.Key == "" {
-		log.Printf("[INFO][%s]\tNot found : %s", r.Header.Get("x-forwarded-for"), id)
-		http.Error(w, http.StatusText(404), 404)
-		return
+		log.Printf("[INFO][%s]\tNot found : %s", remote, id)
+		c.AbortWithStatus(http.StatusNotFound)
 	}
 	log.Printf("[INFO][%s]\tFetched %s file and entry\n", remote, id)
-	http.ServeFile(w, r, conf.C.UploadDir+re.Key)
-}
-
-func monit() {
-	tc := time.NewTicker(1 * time.Minute)
-	for {
-		res := []ResourceEntry{}
-		db.Find(&res, "created_at < ?", time.Now().Add(-timeLimit))
-		db.Unscoped().Where("created_at < ?", time.Now().Add(-timeLimit)).Delete(&ResourceEntry{})
-		if len(res) > 0 {
-			log.Printf("[INFO][System]\tFlushing %d DB entries and files.\n", len(res))
-		}
-		for _, re := range res {
-			err := os.Remove(path.Join(conf.C.UploadDir, re.Key))
-			if err != nil {
-				log.Printf("[ERROR][System]\tWhile deleting : %v", err)
-			}
-		}
-		<-tc.C
+	f, err := os.Open(conf.C.UploadDir + re.Key)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
+	http.ServeContent(c.Writer, c.Request, re.Key, re.CreatedAt, f)
 }
 
 func main() {
@@ -111,21 +83,21 @@ func main() {
 	if err = conf.Load(*confPath); err != nil {
 		log.Fatal(err)
 	}
-
 	if err = utils.EnsureDir(conf.C.UploadDir); err != nil {
 		log.Fatal(err)
 	}
-
-	db, err = gorm.Open("sqlite3", conf.C.DB)
-	if err != nil {
+	if db, err = gorm.Open("sqlite3", conf.C.DB); err != nil {
 		log.Fatal(err)
 	}
-	db.AutoMigrate(&ResourceEntry{})
-	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
-	go monit()
-	log.Println("[INFO][System]\tStarted monitoring of files and db entries")
+	db.AutoMigrate(&models.ResourceEntry{})
+	go monitoring.Monit(&db)
 
-	http.HandleFunc("/", create)
-	http.HandleFunc("/view/", view)
-	http.ListenAndServe(fmt.Sprintf(":%d", conf.C.Port), nil)
+	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
+	r := gin.Default()
+	r.LoadHTMLGlob("templates/*")
+	r.Static("/static", "./assets")
+	r.GET("/", index)
+	r.POST("/", create)
+	r.GET("/v/:uuid", view)
+	r.Run(fmt.Sprintf(":%d", conf.C.Port))
 }

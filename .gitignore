@@ -1,6 +1,5 @@
-client/conf.yml
 client/client
-server/conf.yml
+client/client*
 server/my.db
 server/up/
 server/server
