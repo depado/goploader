@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,6 +23,7 @@ const (
 func main() {
 	var err error
 	var datasource io.Reader
+	var bar *pb.ProgressBar
 
 	var tee bool
 	var progress bool
@@ -48,22 +48,21 @@ func main() {
 			fmt.Println("Could not open", args[0])
 			os.Exit(1)
 		}
+		defer f.Close()
+		datasource = f
 		if progress {
 			if fi, err = f.Stat(); err != nil {
 				fmt.Println("Could not stat", args[0])
 				os.Exit(1)
 			}
-			bar := pb.New64(fi.Size()).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
+			bar = pb.New64(fi.Size()).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
 			bar.ShowPercent = true
 			bar.ShowSpeed = true
 			bar.ShowTimeLeft = true
 			bar.Start()
-			datasource = io.TeeReader(f, bar)
 			if err != nil {
 				log.Fatal(err)
 			}
-		} else {
-			datasource = f
 		}
 	} else {
 		if name == "" {
@@ -75,20 +74,28 @@ func main() {
 		datasource = io.TeeReader(datasource, os.Stdout)
 	}
 
-	bodyBuf := &bytes.Buffer{}
-	bodyWriter := multipart.NewWriter(bodyBuf)
-	fileWriter, err := bodyWriter.CreateFormFile("file", name)
-	if err != nil {
-		log.Fatal(err)
-	}
+	r, w := io.Pipe()
+	multipartWriter := multipart.NewWriter(w)
+	contentType := multipartWriter.FormDataContentType()
+	go func() {
+		var part io.Writer
+		defer w.Close()
+		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
+			log.Fatal(err)
+		}
+		multiWriter := part
+		if progress {
+			multiWriter = io.MultiWriter(part, bar)
+		}
+		if _, err = io.Copy(multiWriter, datasource); err != nil {
+			log.Fatal(err)
+		}
+		if err = multipartWriter.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
-	if _, err = io.Copy(fileWriter, datasource); err != nil {
-		log.Fatal(err)
-	}
-	contentType := bodyWriter.FormDataContentType()
-	bodyWriter.Close()
-
-	resp, err := http.Post(service, contentType, bodyBuf)
+	resp, err := http.Post(service, contentType, r)
 	if err != nil {
 		log.Fatal(err)
 	}
