@@ -38,9 +38,6 @@ func main() {
 	args := flag.Args()
 
 	if len(args) > 0 {
-		if name == "" {
-			name = args[0]
-		}
 		var f *os.File
 		var fi os.FileInfo
 
@@ -49,12 +46,15 @@ func main() {
 			os.Exit(1)
 		}
 		defer f.Close()
+		if fi, err = f.Stat(); err != nil {
+			fmt.Println("Could not stat", args[0])
+			os.Exit(1)
+		}
+		if name == "" {
+			name = fi.Name()
+		}
 		datasource = f
 		if progress {
-			if fi, err = f.Stat(); err != nil {
-				fmt.Println("Could not stat", args[0])
-				os.Exit(1)
-			}
 			bar = pb.New64(fi.Size()).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
 			bar.ShowPercent = true
 			bar.ShowSpeed = true
