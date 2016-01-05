@@ -47,6 +47,7 @@ func create(c *gin.Context) {
 	}
 	defer file.Close()
 	fd, h, err := c.Request.FormFile("file")
+	defer fd.Close()
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring reading file : %s", remote, err)
 		c.AbortWithStatus(http.StatusInternalServerError)

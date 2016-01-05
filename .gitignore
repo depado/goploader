@@ -5,4 +5,4 @@ server/my.db
 server/up/
 server/server
 server/conf.yml
-server/assets/releases
+server/assets/clients
