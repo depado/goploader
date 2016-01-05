@@ -44,6 +44,14 @@ func initBar(f *os.File) {
 	bar.Start()
 }
 
+func initUnknownBar() {
+	bar = pb.New64(0).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
+	bar.ShowSpeed = true
+	bar.ShowCounters = true
+	bar.ShowBar = false
+	bar.Start()
+}
+
 func main() {
 	var err error
 	var datasource io.Reader
@@ -72,6 +80,9 @@ func main() {
 	} else {
 		name = "stdin"
 		datasource = os.Stdin
+		if progress {
+			initUnknownBar()
+		}
 	}
 	if tee {
 		datasource = io.TeeReader(datasource, os.Stdout)
