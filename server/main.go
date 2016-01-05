@@ -76,7 +76,7 @@ func view(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-	c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	http.ServeContent(c.Writer, c.Request, re.Key, re.CreatedAt, f)
 }
 

@@ -20,74 +20,78 @@ const (
 	method  = "POST"
 )
 
+var (
+	bar  *pb.ProgressBar
+	name string
+)
+
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func initBar(f *os.File) {
+	fi, err := f.Stat()
+	if err != nil {
+		fmt.Println("Could not stat", f.Name())
+		os.Exit(1)
+	}
+	bar = pb.New64(fi.Size()).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
+	bar.ShowPercent = true
+	bar.ShowSpeed = true
+	bar.ShowTimeLeft = true
+	bar.Start()
+}
+
 func main() {
 	var err error
 	var datasource io.Reader
-	var bar *pb.ProgressBar
 
 	var tee bool
 	var progress bool
 	var clip bool
-	var name string
+	var argname string
 
 	flag.BoolVarP(&tee, "tee", "t", false, "Displays stdin to stdout")
 	flag.BoolVarP(&progress, "progress", "p", false, "Displays a progress bar")
 	flag.BoolVarP(&clip, "clipboard", "c", false, "Copy the returned URL directly to the clipboard (needs xclip or xsel)")
-	flag.StringVarP(&name, "name", "n", "", "Specify the filename you want")
+	flag.StringVarP(&argname, "name", "n", "", "Specify the filename you want")
 	flag.Parse()
 	args := flag.Args()
 
 	if len(args) > 0 {
-		var f *os.File
-		var fi os.FileInfo
-
-		if f, err = os.Open(args[0]); err != nil {
-			fmt.Println("Could not open", args[0])
-			os.Exit(1)
-		}
+		f, err := os.Open(args[0])
+		check(err)
 		defer f.Close()
-		if fi, err = f.Stat(); err != nil {
-			fmt.Println("Could not stat", args[0])
-			os.Exit(1)
-		}
-		if name == "" {
-			name = fi.Name()
-		}
+		name = f.Name()
 		datasource = f
 		if progress {
-			bar = pb.New64(fi.Size()).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
-			bar.ShowPercent = true
-			bar.ShowSpeed = true
-			bar.ShowTimeLeft = true
-			bar.Start()
-			if err != nil {
-				log.Fatal(err)
-			}
+			initBar(f)
 		}
 	} else {
-		if name == "" {
-			name = "stdin"
-		}
+		name = "stdin"
 		datasource = os.Stdin
 	}
 	if tee {
 		datasource = io.TeeReader(datasource, os.Stdout)
 	}
+	if argname != "" {
+		name = argname
+	}
 
 	r, w := io.Pipe()
 	multipartWriter := multipart.NewWriter(w)
-	contentType := multipartWriter.FormDataContentType()
 	go func() {
 		var part io.Writer
 		defer w.Close()
 		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
 			log.Fatal(err)
 		}
-		multiWriter := part
 		if progress {
-			multiWriter = io.MultiWriter(part, bar)
+			part = io.MultiWriter(part, bar)
 		}
-		if _, err = io.Copy(multiWriter, datasource); err != nil {
+		if _, err = io.Copy(part, datasource); err != nil {
 			log.Fatal(err)
 		}
 		if err = multipartWriter.Close(); err != nil {
@@ -95,15 +99,11 @@ func main() {
 		}
 	}()
 
-	resp, err := http.Post(service, contentType, r)
-	if err != nil {
-		log.Fatal(err)
-	}
+	resp, err := http.Post(service, multipartWriter.FormDataContentType(), r)
+	check(err)
 	defer resp.Body.Close()
 	ret, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	if clip {
 		clipboard.WriteAll(string(ret))
 		fmt.Print("Copied URL to clipboard\n")
