@@ -24,8 +24,7 @@ import (
 var db gorm.DB
 
 func index(c *gin.Context) {
-	remote := c.ClientIP()
-	log.Printf("[INFO][%s]\tIssued a GET request\n", remote)
+	log.Printf("[INFO][%s]\tIssued a GET request\n", c.ClientIP())
 	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
@@ -34,28 +33,31 @@ func create(c *gin.Context) {
 	var u *uuid.UUID
 	remote := c.ClientIP()
 
-	log.Printf("[INFO][%s]\tReceiving data\n", remote)
+	fd, h, err := c.Request.FormFile("file")
+	if err != nil {
+		log.Printf("[ERROR][%s]\tDuring reading file : %s", remote, err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	defer fd.Close()
 	if u, err = uuid.NewV4(); err != nil {
 		log.Printf("[ERROR][%s]\tDuring creation of uuid : %s\n", remote, err)
 		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 	path := path.Join(conf.C.UploadDir, u.String())
 	file, err := os.Create(path)
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", remote, err)
 		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 	defer file.Close()
-	fd, h, err := c.Request.FormFile("file")
-	defer fd.Close()
-	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring reading file : %s", remote, err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-	}
 	wr, err := io.Copy(file, bufio.NewReaderSize(fd, 512))
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", remote, err)
 		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 	db.Create(&models.ResourceEntry{Key: u.String(), Name: h.Filename})
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u.String(), wr)
@@ -71,11 +73,13 @@ func view(c *gin.Context) {
 	if re.Key == "" {
 		log.Printf("[INFO][%s]\tNot found : %s", remote, id)
 		c.AbortWithStatus(http.StatusNotFound)
+		return
 	}
 	log.Printf("[INFO][%s]\tFetched %s file and entry\n", remote, id)
 	f, err := os.Open(conf.C.UploadDir + re.Key)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	http.ServeContent(c.Writer, c.Request, re.Key, re.CreatedAt, f)

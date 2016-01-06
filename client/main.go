@@ -21,9 +21,16 @@ const (
 )
 
 var (
-	bar  *pb.ProgressBar
-	name string
+	bar   *pb.ProgressBar
+	name  string
+	debug bool
 )
+
+func debugf(a ...interface{}) {
+	if debug {
+		fmt.Println(a...)
+	}
+}
 
 func check(err error) {
 	if err != nil {
@@ -64,36 +71,46 @@ func main() {
 	flag.BoolVarP(&tee, "tee", "t", false, "Displays stdin to stdout")
 	flag.BoolVarP(&progress, "progress", "p", false, "Displays a progress bar")
 	flag.BoolVarP(&clip, "clipboard", "c", false, "Copy the returned URL directly to the clipboard (needs xclip or xsel)")
+	flag.BoolVarP(&debug, "debug", "d", false, "Activates the debug mode")
 	flag.StringVarP(&argname, "name", "n", "", "Specify the filename you want")
 	flag.Parse()
 	args := flag.Args()
+	debugf("Debug mode is activated")
 
 	if len(args) > 0 {
+		debugf("Main datasource is", args[0])
 		f, err := os.Open(args[0])
 		check(err)
 		defer f.Close()
 		name = f.Name()
 		datasource = f
 		if progress {
+			debugf("Initialization of known progress bar")
 			initBar(f)
 		}
 	} else {
+		debugf("Main datasource is stdin")
 		name = "stdin"
 		datasource = os.Stdin
 		if progress {
+			debugf("Initalization of unknown progress bar")
 			initUnknownBar()
 		}
 	}
 	if tee {
+		debugf("Main datasource is now a TeeReader")
 		datasource = io.TeeReader(datasource, os.Stdout)
 	}
 	if argname != "" {
+		debugf("Name was given as argument")
 		name = argname
 	}
 
+	debugf("Initialization pipe")
 	r, w := io.Pipe()
 	multipartWriter := multipart.NewWriter(w)
 	go func() {
+		debugf("Started the goroutine to pipe data")
 		var part io.Writer
 		defer w.Close()
 		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
@@ -110,12 +127,15 @@ func main() {
 		}
 	}()
 
+	debugf("Executing multipart post")
 	resp, err := http.Post(service, multipartWriter.FormDataContentType(), r)
 	check(err)
 	defer resp.Body.Close()
+	debugf("Multipart post is done, reading data")
 	ret, err := ioutil.ReadAll(resp.Body)
 	check(err)
 	if clip {
+		debugf("Copying to clipboard")
 		clipboard.WriteAll(string(ret))
 		fmt.Print("Copied URL to clipboard\n")
 	} else {
