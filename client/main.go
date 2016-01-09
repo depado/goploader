@@ -10,6 +10,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/Depado/goploader/client/screenshot"
 	"github.com/atotto/clipboard"
 	"github.com/cheggaaa/pb"
 	flag "github.com/ogier/pflag"
@@ -21,13 +22,13 @@ const (
 )
 
 var (
-	bar   *pb.ProgressBar
-	name  string
-	debug bool
+	bar     *pb.ProgressBar
+	name    string
+	verbose bool
 )
 
 func debugf(a ...interface{}) {
-	if debug {
+	if verbose {
 		fmt.Println(a...)
 	}
 }
@@ -62,24 +63,54 @@ func initUnknownBar() {
 func main() {
 	var err error
 	var datasource io.Reader
+	var file string
 
 	var tee bool
 	var progress bool
 	var clip bool
 	var argname string
+	var screen bool
+	var delay time.Duration
+	var window bool
 
 	flag.BoolVarP(&tee, "tee", "t", false, "Displays stdin to stdout")
 	flag.BoolVarP(&progress, "progress", "p", false, "Displays a progress bar")
 	flag.BoolVarP(&clip, "clipboard", "c", false, "Copy the returned URL directly to the clipboard (needs xclip or xsel)")
-	flag.BoolVarP(&debug, "debug", "d", false, "Activates the debug mode")
+	flag.BoolVarP(&verbose, "verbose", "v", false, "Activates the debug mode")
 	flag.StringVarP(&argname, "name", "n", "", "Specify the filename you want")
+	flag.BoolVarP(&screen, "screenshot", "s", false, "Screenshot and uploads your current screen (Need the `import` command)")
+	flag.DurationVarP(&delay, "delay", "d", 0, "Define a delay before the program executes (including taking the screenshot)")
+	flag.BoolVarP(&window, "window", "w", false, "Click on the window you want to screenshot (only works with -s/--screenshot option)")
+
 	flag.Parse()
 	args := flag.Args()
 	debugf("Debug mode is activated")
 
+	if delay != 0 {
+		debugf("Waiting", delay)
+		time.Sleep(delay)
+	}
 	if len(args) > 0 {
-		debugf("Main datasource is", args[0])
-		f, err := os.Open(args[0])
+		file = args[0]
+	}
+	if screen {
+		debugf("Executing screenshot")
+		file = "/tmp/tmp-goploader-screen.png"
+		if err = screenshot.Do(file, window); err != nil {
+			log.Fatal(err)
+		}
+		defer func() {
+			debugf("Removing temporary screenshot", file)
+			err = os.Remove(file)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
+	}
+
+	if file != "" {
+		debugf("Main datasource is", file)
+		f, err := os.Open(file)
 		check(err)
 		defer f.Close()
 		name = f.Name()
@@ -113,6 +144,7 @@ func main() {
 		debugf("Started the goroutine to pipe data")
 		var part io.Writer
 		defer w.Close()
+		defer multipartWriter.Close()
 		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
 			log.Fatal(err)
 		}
@@ -120,9 +152,6 @@ func main() {
 			part = io.MultiWriter(part, bar)
 		}
 		if _, err = io.Copy(part, datasource); err != nil {
-			log.Fatal(err)
-		}
-		if err = multipartWriter.Close(); err != nil {
 			log.Fatal(err)
 		}
 	}()
