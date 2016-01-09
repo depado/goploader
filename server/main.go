@@ -32,6 +32,7 @@ func create(c *gin.Context) {
 	var err error
 	var u *uuid.UUID
 	remote := c.ClientIP()
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 20000000)
 
 	fd, h, err := c.Request.FormFile("file")
 	if err != nil {
