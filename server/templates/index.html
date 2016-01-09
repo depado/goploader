@@ -2,264 +2,267 @@
 <html>
 
 <head>
-    <!-- Standard Meta -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link rel="shortcut icon" type="image/png" href="static/favicon.ico" />
-
-    <!-- Site Properties -->
     <title>Goploader</title>
-    <link rel="stylesheet" type="text/css" href="static/semantic/semantic.min.css">
-
-    <style type="text/css">
-        .hidden.menu {
-            display: none;
-        }
-
-        .masthead.segment {
-            min-height: 700px;
-            padding: 1em 0em;
-        }
-
-        .masthead .logo.item img {
-            margin-right: 1em;
-        }
-
-        .masthead .ui.menu .ui.button {
-            margin-left: 0.5em;
-        }
-
-        .masthead h1.ui.header {
-            margin-top: 3em;
-            margin-bottom: 0em;
-            font-size: 4em;
-            font-weight: normal;
-        }
-
-        .masthead h2 {
-            font-size: 1.7em;
-            font-weight: normal;
-        }
-
-        .ui.vertical.stripe {
-            padding: 8em 0em;
-        }
-
-        .ui.vertical.stripe h3 {
-            font-size: 2em;
-        }
-
-        .ui.vertical.stripe .button + h3,
-        .ui.vertical.stripe p + h3 {
-            margin-top: 3em;
-        }
-
-        .ui.vertical.stripe .floated.image {
-            clear: both;
-        }
-
-        .ui.vertical.stripe p {
-            font-size: 1.33em;
-        }
-
-        .ui.vertical.stripe .horizontal.divider {
-            margin: 3em 0em;
-        }
-
-        .quote.stripe.segment {
-            padding: 0em;
-        }
-
-        .quote.stripe.segment .grid .column {
-            padding-top: 5em;
-            padding-bottom: 5em;
-        }
-
-        .footer.segment {
-            padding: 5em 0em;
-        }
-
-        .secondary.pointing.menu .toc.item {
-            display: none;
-        }
-
-        @media only screen and (max-width: 700px) {
-            .ui.fixed.menu {
-                display: none !important;
-            }
-            .secondary.pointing.menu .item,
-            .secondary.pointing.menu .menu {
-                display: none;
-            }
-            .secondary.pointing.menu .toc.item {
-                display: block;
-            }
-            .masthead.segment {
-                min-height: 350px;
-            }
-            .masthead h1.ui.header {
-                font-size: 2em;
-                margin-top: 1.5em;
-            }
-            .masthead h2 {
-                margin-top: 0.5em;
-                font-size: 1.5em;
-            }
-        }
-    </style>
-
-    <script src="static/js/jquery.min.js"></script>
-    <script src="static/semantic/semantic.min.js"></script>
-    <script>
-        $(document)
-            .ready(function() {
-                // fix menu when passed
-                $('.masthead')
-                    .visibility({
-                        once: false,
-                        onBottomPassed: function() {
-                            $('.fixed.menu').transition('fade in');
-                        },
-                        onBottomPassedReverse: function() {
-                            $('.fixed.menu').transition('fade out');
-                        }
-                    });
-                // create sidebar and attach to menu open
-                $('.ui.sidebar').sidebar('attach events', '.toc.item');
-            });
-    </script>
+    <!-- Google Fonts -->
+    <link rel="stylesheet" target="blank" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <!-- CSS Reset -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
 </head>
 
 <body>
-
-    <!-- Following Menu -->
-    <div class="ui large top fixed hidden menu">
-        <div class="ui container">
-            <a class="item" href="https://github.com/Depado/goploader" target="_blank">
-                <i class="github icon"></i> Github
-            </a>
-        </div>
-    </div>
-    <!-- Page Contents -->
-    <div class="pusher">
-        <div class="ui inverted vertical masthead center aligned segment">
-            <div class="ui container">
-                <div class="ui large secondary inverted pointing menu">
-                    <a class="item" href="https://github.com/Depado/goploader" target="_blank">
-                        <i class="github icon"></i> Github
-                    </a>
+    <main class="wrapper">
+        <nav class="navigation">
+            <section class="container">
+                <a class="navigation-title">
+                    <h1 class="title">Goploader</h1>
+                </a>
+                <ul class="navigation-list float-right">
+                    <li class="navigation-item">
+                        <a class="navigation-link" href="#introduction">Introduction</a>
+                    </li>
+                    <li class="navigation-item">
+                        <a class="navigation-link" href="#usage">Usage</a>
+                    </li>
+                    <li class="navigation-item">
+                        <a class="navigation-link" href="#curl">Curl</a>
+                    </li>
+                    <li class="navigation-item">
+                        <a class="navigation-link" href="#downloads">Downloads</a>
+                    </li>
+                    <li class="navigation-item">
+                        <a class="navigation-link" href="https://github.com/Depado/goploader" target="_blank">Github</a>
+                    </li>
+                </ul>
+            </section>
+            </section>
+        </nav>
+        <section id="introduction" class="container">
+            <h5 class="title">Introduction</h5>
+            <p>
+                This is a page about the
+                <code>goploader</code> project. The philosophy of goploader is that it should be easy to share files from your terminal. If you want to share a file with a few of your friends for example.
+            </p>
+            <p>
+                This project is composed of a client and a server. Both are free (as in speech and as in beer) and you can install, tweak or do whatever you want with the server. Note that if you want to make the client compatible with the URL where your installed the
+                server, you'll need to recompile it and change a constant in the code.
+            </p>
+            <p><b>Current Limitations</b></p>
+            <ul>
+                <li>File size is limited to 20 Mo (20 MB)</li>
+                <li>Files live for two hours only (afterward, files are deleted both on the DB end and on disk)</li>
+                <li>Files are stored in clear-text (working on the crypto part)</li>
+            </ul>
+        </section>
+        <section id="usage" class="container">
+            <h5 class="title">Usage</h5>
+            <p>Here are some small examples of how to use the command line application
+                <code>goploader</code>. Here is a list of the accepted arguments of the client :
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Short</th>
+                        <th>Long</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>-c</code>
+                        </td>
+                        <td>
+                            <code>--clipboard</code>
+                        </td>
+                        <td>false</td>
+                        <td>Copies the returned URL directly to the clipboard (needs
+                            <code>xclip</code> or
+                            <code>xsel</code>)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>-d</code>
+                        </td>
+                        <td>
+                            <code>--delay</code>
+                        </td>
+                        <td>0</td>
+                        <td>Defines a delay before the program executes. In the form of
+                            <code>10s</code>/
+                            <code>2m</code>/etc…</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>-n</code>
+                        </td>
+                        <td>
+                            <code>--name</code>
+                        </td>
+                        <td>
+                            <code>""</code>
+                        </td>
+                        <td>Specify the filename you want. This will be the filename of the file when downloading it or viewing it. When uploading a file, defaults to the name of the file. When uploading from stdin, defaults to
+                            <code>stdin</code>.</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>-p</code>
+                        </td>
+                        <td>
+                            <code>--progress</code>
+                        </td>
+                        <td>false</td>
+                        <td>Displays a progress bar while uploading the file. Shows ETA, current network speed, percentage and size uploaded.</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>-s</code>
+                        </td>
+                        <td>
+                            <code>--screenshot</code>
+                        </td>
+                        <td>false</td>
+                        <td>Takes a screenshot and directly uploads it. Works nicely with the
+                            <code>delay</code> option. <i>Note : The <code>import</code> command must be available.</i></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>-t</code>
+                        </td>
+                        <td>
+                            <code>--tee</code>
+                        </td>
+                        <td>false</td>
+                        <td>Displays the content on
+                            <code>stdout</code> whever you read from
+                            <code>stdin</code> or a file.</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>-v</code>
+                        </td>
+                        <td>
+                            <code>--verbose</code>
+                        </td>
+                        <td>false</td>
+                        <td>Activates the debug logs. Useful for troubleshooting.</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>-w</code>
+                        </td>
+                        <td>
+                            <code>--window</code>
+                        </td>
+                        <td>false</td>
+                        <td>When using the
+                            <code>screenshot</code>, this option allows you to select a window or a zone to screenshot before uploading it.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>These options can be activated separately. For example
+                <code>goploader --progress --delay="5s" myfile.txt</code> can be written
+                <code>goploader -pd 5s myfile.txt</code>. All the short arguments can be concatenated on the condition that they are all boolean except the last one that can be a boolean or take a value.</p>
+            <p>Here are some examples.</p>
+            <p>Take a screenshot of the whole screen after 5 seconds, upload it with a progress bar and copy the returned URL to the clipboard :
+                <br />
+                <code>$ goploader --progress --screenshot --delay="5s" --clipboard</code>
+                <span class="float-right">Long Options</span>
+                <br />
+                <code>$ goploader -pscd 5s</code>
+                <span class="float-right">Short Options</span>
+            </p>
+            <p>Select a windows or zone, screenshot that and upload it :
+                <br />
+                <code>$ goploader --screenshot --window</code>
+                <span class="float-right">Long Options</span>
+                <br />
+                <code>$ goploader -sw</code>
+                <span class="float-right">Short Options</span>
+            </p>
+            <p>Upload a file with a progress bar :
+                <br />
+                <code>$ goploader -p myfile</code>
+                <span class="float-right">Argument</span>
+                <br />
+                <code>$ goploader -p
+                    < myfile</code>
+                        <span class="float-right">Stdin</span>
+                        <br />
+                        <code>$ cat myfile | goploader -p</code>
+                        <span class="float-right">Stdin</span>
+                        <br />
+                        <i>Note : When the datasource is stdin, the total size of the file (or the total ammount of text a command yields) can't be calculated
+            that's why the progress bar will only display the upload speed.</i>
+            </p>
+        </section>
+        <section id="curl" class="container">
+            <h5 class="title">Curl</h5>
+            <p>One of the main goal of goploader is the ease of use. That's also why the goploader server doesn't use a JSON API, to guarantee that any user can upload files painlessly.</p>
+            <p>
+                For that reason, you can also don't use a client at all and simply upload your files with curl.
+                <br />
+                <br />
+                <code>$ curl -F file=@myfile.txt https://up.depado.eu/</code>
+                <br />
+                <i>Your file will be named <code>myfile.txt</code></i>
+                <br />
+                <br />
+                <code>$ curl -F name="myamazingfile!" -F file=@myfile.txt</code>
+                <br />
+                <i>Your file will be named <code>myamazingfile!</code></i>
+                <br />
+                <br />
+                <code>$ cat myfile.txt | curl -F name="stdin" -F file=@_</code>
+                <br />
+                <i>Reads data from <code>stdin</code></i>
+            </p>
+        </section>
+        <section id="downloads" class="container">
+            <h5 class="title">Downloads</h5>
+            <p>Here are the download links for the client. For a more up to date version, consider installing
+                <code>Go</code> on your computer and compile the client from the Github source code.</p>
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_linux_amd64"><i class="fa fa-download"></i> Linux 64-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_freebsd_amd64"><i class="fa fa-download"></i> FreeBSD 64-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_darwin_amd64"><i class="fa fa-download"></i> Mac OS 64-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_windows_amd64.exe"><i class="fa fa-download"></i> Windows 64-Bit</a>
                 </div>
             </div>
-            <div class="ui text container">
-                <h1 class="ui inverted header">
-                    Goploader
-                </h1>
-                <h2>Because sharing is meant to be easy.</h2>
-                <div class="ui three column grid">
-                    <div class="row">
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_linux_amd64">
-                                <div class="ui primary button">
-                                    <i class="linux icon"></i> Linux
-                                </div>
-                                <div class="ui left pointing label">
-                                    64-Bit
-                                </div>
-                            </a>
-                        </div>
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_linux_386">
-                                <div class="ui primary button">
-                                    <i class="linux icon"></i> Linux
-                                </div>
-                                <div class="ui left pointing label">
-                                    32-Bit
-                                </div>
-                            </a>
-                        </div>
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_linux_arm">
-                                <div class="ui primary button">
-                                    <i class="linux icon"></i> Linux
-                                </div>
-                                <div class="ui left pointing label">
-                                    ARMv7
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_windows_amd64.exe">
-                                <div class="ui primary button">
-                                    <i class="windows icon"></i> Windows
-                                </div>
-                                <div class="ui left pointing label">
-                                    64-Bit
-                                </div>
-                            </a>
-                        </div>
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_windows_386.exe">
-                                <div class="ui primary button">
-                                    <i class="windows icon"></i> Windows
-                                </div>
-                                <div class="ui left pointing label">
-                                    32-Bit
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_darwin_amd64">
-                                <div class="ui primary button">
-                                    <i class="apple icon"></i> Mac OSX
-                                </div>
-                                <div class="ui left pointing label">
-                                    64-Bit
-                                </div>
-                            </a>
-                        </div>
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_darwin_386">
-                                <div class="ui primary button">
-                                    <i class="apple icon"></i> Mac OSX
-                                </div>
-                                <div class="ui left pointing label">
-                                    32-Bit
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="static/clients/client_freebsd_amd64">
-                                <div class="ui primary button">
-                                    FreeBSD
-                                </div>
-                                <div class="ui left pointing label">
-                                    64-Bit
-                                </div>
-                            </a>
-                        </div>
-                        <div class="column">
-                            <a class="ui labeled button" tabindex="0" href="#" href="static/clients/client_freebsd_386">
-                                <div class="ui primary button">
-                                    FreeBSD
-                                </div>
-                                <div class="ui left pointing label">
-                                    32-Bit
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_linux_386"><i class="fa fa-download"></i> Linux 32-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_freebsd_386"><i class="fa fa-download"></i> FreeBSD 32-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_darwin_386"><i class="fa fa-download"></i> Mac OS 32-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_windows_386.exe"><i class="fa fa-download"></i> Windows 32-Bit</a>
                 </div>
             </div>
-        </div>
-    </div>
-
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="static/clients/client_linux_arm"><i class="fa fa-download"></i> Linux ARMv7</a>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
-
-</html>
