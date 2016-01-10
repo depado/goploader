@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
@@ -62,7 +63,8 @@ func create(c *gin.Context) {
 	}
 	db.Create(&models.ResourceEntry{Key: u.String(), Name: h.Filename})
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u.String(), wr)
-	c.String(http.StatusCreated, "https://"+conf.C.NameServer+"/v/"+u.String()+"\n")
+	c.Writer.WriteHeader(201)
+	c.Writer.Write([]byte("https://" + conf.C.NameServer + "/v/" + u.String() + "\n"))
 }
 
 func view(c *gin.Context) {
@@ -107,7 +109,7 @@ func main() {
 	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	// r.Use(gzip.Gzip(gzip.DefaultCompression))
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/static", "./assets")
 	r.Static("/favicon.ico", "./assets/favicon.ico")
