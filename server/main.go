@@ -10,7 +10,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
@@ -108,7 +107,7 @@ func main() {
 	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	r.Use(gzip.Gzip(gzip.DefaultCompression))
+	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/static", "./assets")
 	r.Static("/favicon.ico", "./assets/favicon.ico")
