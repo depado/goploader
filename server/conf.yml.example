@@ -1,0 +1,6 @@
+name_server:   "your.domain" # The domain name of your server
+upload_dir:    "up/"         # The directory where the files will be uploaded to
+db:            "my.db"       # Path and name of your database
+port:          8080          # The port on which the server will run
+uniuri_length: 10            # Length of the unique uri identifier
+limit_size:    20            # Limited size of body in MB
