@@ -10,11 +10,11 @@ import (
 	"os"
 	"path"
 
+	"github.com/dchest/uniuri"
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/nu7hatch/gouuid"
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/models"
@@ -31,9 +31,8 @@ func index(c *gin.Context) {
 
 func create(c *gin.Context) {
 	var err error
-	var u *uuid.UUID
 	remote := c.ClientIP()
-	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 20000000)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.LimitSize*1000000)
 
 	fd, h, err := c.Request.FormFile("file")
 	if err != nil {
@@ -42,12 +41,9 @@ func create(c *gin.Context) {
 		return
 	}
 	defer fd.Close()
-	if u, err = uuid.NewV4(); err != nil {
-		log.Printf("[ERROR][%s]\tDuring creation of uuid : %s\n", remote, err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	path := path.Join(conf.C.UploadDir, u.String())
+
+	u := uniuri.NewLen(conf.C.UniURILength)
+	path := path.Join(conf.C.UploadDir, u)
 	file, err := os.Create(path)
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", remote, err)
@@ -61,14 +57,15 @@ func create(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	db.Create(&models.ResourceEntry{Key: u.String(), Name: h.Filename})
-	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u.String(), wr)
+	db.Create(&models.ResourceEntry{Key: u, Name: h.Filename})
+
+	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u, wr)
 	c.Writer.WriteHeader(201)
-	c.Writer.Write([]byte("https://" + conf.C.NameServer + "/v/" + u.String() + "\n"))
+	c.Writer.Write([]byte("https://" + conf.C.NameServer + "/v/" + u + "\n"))
 }
 
 func view(c *gin.Context) {
-	id := c.Param("uuid")
+	id := c.Param("uniuri")
 	re := models.ResourceEntry{}
 	remote := c.ClientIP()
 
@@ -81,6 +78,7 @@ func view(c *gin.Context) {
 	log.Printf("[INFO][%s]\tFetched %s file and entry\n", remote, id)
 	f, err := os.Open(conf.C.UploadDir + re.Key)
 	if err != nil {
+		log.Printf("[ERROR][%s]\tWhile opening %s file\n", remote, id)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -104,17 +102,23 @@ func main() {
 		log.Fatal(err)
 	}
 	db.AutoMigrate(&models.ResourceEntry{})
+
 	go monitoring.Monit(&db)
 
 	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
 	gin.SetMode(gin.ReleaseMode)
+	// Default router
 	r := gin.Default()
+	// Middlewares Initialization
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
+	// Templates and static files
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/static", "./assets")
 	r.Static("/favicon.ico", "./assets/favicon.ico")
+	// Routes
 	r.GET("/", index)
 	r.POST("/", create)
-	r.GET("/v/:uuid", view)
+	r.GET("/v/:uniuri", view)
+	// Run
 	r.Run(fmt.Sprintf(":%d", conf.C.Port))
 }
