@@ -36,6 +36,9 @@
                         <a class="navigation-link" href="#downloads">Downloads</a>
                     </li>
                     <li class="navigation-item">
+                        <a class="navigation-link" href="#server">Server</a>
+                    </li>
+                    <li class="navigation-item">
                         <a class="navigation-link" href="https://github.com/Depado/goploader" target="_blank">Github</a>
                     </li>
                 </ul>
@@ -52,6 +55,12 @@
                 This project is composed of a client and a server. Both are free (as in speech and as in beer) and you can install, tweak or do whatever you want with the server. Note that if you want to make the client compatible with the URL where your installed the
                 server, you'll need to recompile it and change a constant in the code.
             </p>
+            <p><b>Features</b></p>
+            <ul>
+                <li>HTTPS only using <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a> and <a href="https://caddyserver.com/" target="_blank">Caddy Server</a></li>
+                <li>Upload directly from <code>stdin</code></li>
+                <li>Upload a file by giving it as an argument to the client.</li>
+            </ul>
             <p><b>Current Limitations</b></p>
             <ul>
                 <li>File size is limited to 20 Mo (20 MB)</li>
@@ -262,6 +271,24 @@
                     <a class="button button-outline" href="static/clients/client_linux_arm">Linux ARMv7</a>
                 </div>
             </div>
+        </section>
+        <section id="server" class="container">
+            <h5 class="title">Server</h5>
+            <p>
+                If you wish, you can install <code>goploader</code> server. All you have to do is modify the <code>conf.yml</code> to match
+                your own domain name, port on which you want it to run, path where the files should be uploaded to, and path of the sqlite database.
+                Once started, the server will check if the paths exists, if not it will automatically create them. Same applies for the sqlite database,
+                it will be created automatically.
+            </p>
+            <p>
+                As this page is served by the goploader server itself, you might want to modify the code to remove it, and display a page of your choice.
+            </p>
+            <p>
+                The next thing you'll have to do is modify the source code of the client so it points to your own service. Simply modify this line in <code>main.go</code> :<br /><br />
+                <code>service = "https://up.depado.eu/"</code><br /><br />
+                Once you've done that you might want to cross-compile the client. I'm using a tool named <code>gox</code> to do that (it's simply a shortcut for all the architectures and OS available).
+                <a href="https://github.com/laher/goxc" target="_blank">Here it is</a>. Of course you need to have Go installed from source.
+            </p>
         </section>
     </main>
 </body>
