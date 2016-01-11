@@ -1,6 +1,7 @@
 client/client
 client/client*
 client/misc/
+client/testfiles/
 server/my.db
 server/up/
 server/server

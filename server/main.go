@@ -37,7 +37,8 @@ func create(c *gin.Context) {
 	fd, h, err := c.Request.FormFile("file")
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring reading file : %s", remote, err)
-		c.AbortWithStatus(http.StatusInternalServerError)
+		c.String(http.StatusRequestEntityTooLarge, "Entity is too large (Max : %v MB)\n", conf.C.LimitSize)
+		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
 		return
 	}
 	defer fd.Close()
@@ -47,21 +48,23 @@ func create(c *gin.Context) {
 	file, err := os.Create(path)
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", remote, err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	defer file.Close()
+
 	wr, err := io.Copy(file, bufio.NewReaderSize(fd, 512))
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", remote, err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	db.Create(&models.ResourceEntry{Key: u, Name: h.Filename})
 
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u, wr)
-	c.Writer.WriteHeader(201)
-	c.Writer.Write([]byte("https://" + conf.C.NameServer + "/v/" + u + "\n"))
+	c.String(http.StatusCreated, "https://%s/v/%s\n", conf.C.NameServer, u)
 }
 
 func view(c *gin.Context) {
