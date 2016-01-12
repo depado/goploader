@@ -7,3 +7,4 @@ server/up/
 server/server
 server/conf.yml
 server/assets/clients
+server/assets/servers

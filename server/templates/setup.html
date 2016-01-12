@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="static/favicon.ico" />
+    <title>Goploader</title>
+    <!-- Google Fonts -->
+    <link rel="stylesheet" target="blank" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <!-- CSS Reset -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
+    <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+</head>
+
+<body>
+    <main class="wrapper">
+        <section class="container">
+            <h5 class="title">Configure Goploader</h5>
+            <p>
+                You're seeing this page because your configuration file is either corrupted or it's the first time you start the application. Please fill in the following form to configure goploader. Once you're done, restart the application.
+            </p>
+            <p>All fields are mandatory.</p>
+            {{ if .errors }}
+            <p style="color: #FF4848;"><b>It looks like some of the fields were ommited or have wrong values.</b></p>
+            {{ end }}
+            <form action="/" method="post">
+                <fieldset>
+                    <label for="name_server" class="label-inline"><b>Server Name</b></label>
+                    <span class="float-right"><i>Your domain name or ip</i></span>
+                    <input placeholder="example.tld" id="name_server" name="name_server" type="text">
+
+                    <label for="port" class="label-inline"><b>Port</b></label>
+                    <span class="float-right"><i>Port on which the server should listen</i></span>
+                    <input placeholder="8008" id="port" name="port" type="text">
+
+                    <label for="upload_dir" class="label-inline"><b>Upload Directory</b></label>
+                    <span class="float-right"><i>Absolute or local directory in which files will be uploaded</i></span>
+                    <input placeholder="up/" id="upload_dir" Name="upload_dir" type="text">
+
+                    <label for="db" class="label-inline"><b>Database Path</b></label>
+                    <span class="float-right"><i>Absolute or local path (and file name) to create</i></span>
+                    <input placeholder="my.db" id="db" name="db" type="text">
+
+                    <label for="uniuri_length" class="label-inline"><b>UniURI Length</b></label>
+                    <span class="float-right"><i>The number of chars generated for URIs</i></span>
+                    <input placeholder="10" id="uniuri_length" name="uniuri_length" type="text">
+
+                    <label for="limit_size" class="label-inline"><b>Size Limit</b></label>
+                    <span class="float-right"><i>Maximum size of the uploaded files in MB</i></span>
+                    <input placeholder="20" id="limit_size" name="limit_size" type="text">
+
+                    <input id="fulldoc" type="checkbox" name="fulldoc" value="true">
+                    <label class="label-inline" for="fulldoc"><b>Full Documentation</b></label>
+                    <span class="float-right"><i>The homepage will display the full documentation</i></span>
+                    <br /><br />
+                    <input class="button-primary" value="Send" type="submit">
+                </fieldset>
+            </form>
+        </section>
+    </main>
+</body>
+
+</html>

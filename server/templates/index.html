@@ -39,6 +39,9 @@
                         <a class="navigation-link" href="#server">Server</a>
                     </li>
                     <li class="navigation-item">
+                        <a class="navigation-link" href="#roadmap">Roadmap</a>
+                    </li>
+                    <li class="navigation-item">
                         <a class="navigation-link" href="https://github.com/Depado/goploader" target="_blank">Github</a>
                     </li>
                 </ul>
@@ -58,7 +61,9 @@
             <p><b>Features</b></p>
             <ul>
                 <li>HTTPS only using <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a> and <a href="https://caddyserver.com/" target="_blank">Caddy Server</a></li>
-                <li>Upload directly from <code>stdin</code></li>
+                <li>Upload directly from
+                    <code>stdin</code>
+                </li>
                 <li>Upload a file by giving it as an argument to the client.</li>
             </ul>
             <p><b>Current Limitations</b></p>
@@ -275,20 +280,47 @@
         <section id="server" class="container">
             <h5 class="title">Server</h5>
             <p>
-                If you wish, you can install <code>goploader</code> server. All you have to do is modify the <code>conf.yml</code> to match
-                your own domain name, port on which you want it to run, path where the files should be uploaded to, and path of the sqlite database.
-                Once started, the server will check if the paths exists, if not it will automatically create them. Same applies for the sqlite database,
-                it will be created automatically.
+                If you wish, you can install the
+                <code>goploader</code> server. You can either compile it from the source code if you have a specific architecture or download the Linux 64-Bit Server with the link below.
             </p>
             <p>
-                As this page is served by the goploader server itself, you might want to modify the code to remove it, and display a page of your choice.
+                <div style="text-align: center;">
+                    <a class="button button-outline" href="static/servers/server_linux_adm64">Linux 64-Bit Server</a>
+                </div>
             </p>
             <p>
-                The next thing you'll have to do is modify the source code of the client so it points to your own service. Simply modify this line in <code>main.go</code> :<br /><br />
-                <code>service = "https://up.depado.eu/"</code><br /><br />
-                Once you've done that you might want to cross-compile the client. I'm using a tool named <code>gox</code> to do that (it's simply a shortcut for all the architectures and OS available).
+                You don't need to create a
+                <code>conf.yml</code> file. If you run the server and the said file is absent or have missing fields, the server will enter setup mode in which you will be able to configure your server on a web page. It will then marshal the configuration to
+                the said
+                <code>conf.yml</code> file and you will be able to run the server once again which will work as expected.
+            </p>
+            <p>
+                This very page is served by the goploader server itself. You can disable it by setting the <code>fulldoc</code> option to false (while doing your setup or directly in the configuration file).
+                After that you're free to modify the <code>templates/welcome.html</code> to whatever you want.
+            </p>
+            <p>
+                The next thing you'll have to do is modify the source code of the client so it points to your own service. Simply modify this line in
+                <code>main.go</code> :
+                <br />
+                <br />
+                <code>service = "https://up.depado.eu/"</code>
+                <br />
+                <br /> Once you've done that you might want to cross-compile the client. I'm using a tool named
+                <code>gox</code> to do that (it's simply a shortcut for all the architectures and OS available).
                 <a href="https://github.com/laher/goxc" target="_blank">Here it is</a>. Of course you need to have Go installed from source.
             </p>
+        </section>
+        <section id="roadmap" class="container">
+            <h5 class="title">Roadmap</h5>
+            <ul>
+                <li>
+                    Server
+                    <ul>
+                        <li>SQLite → BoltDB</li>
+                    </ul>
+                </li>
+                <li>Client</li>
+            </ul>
         </section>
     </main>
 </body>

@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -15,10 +14,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
+	flag "github.com/ogier/pflag"
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/monitoring"
+	"github.com/Depado/goploader/server/setup"
 	"github.com/Depado/goploader/server/utils"
 )
 
@@ -26,7 +27,11 @@ var db gorm.DB
 
 func index(c *gin.Context) {
 	log.Printf("[INFO][%s]\tIssued a GET request\n", c.ClientIP())
-	c.HTML(http.StatusOK, "index.html", gin.H{})
+	if conf.C.FullDoc {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	} else {
+		c.HTML(http.StatusOK, "welcome.html", gin.H{})
+	}
 }
 
 func create(c *gin.Context) {
@@ -91,12 +96,17 @@ func view(c *gin.Context) {
 
 func main() {
 	var err error
+	var cp string
+	var initial bool
+	var conferr error
 
-	confPath := flag.String("c", "conf.yml", "Local path to configuration file.")
+	flag.StringVarP(&cp, "conf", "c", "conf.yml", "Local path to configuration file.")
+	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
 	flag.Parse()
 
-	if err = conf.Load(*confPath); err != nil {
-		log.Fatal(err)
+	conferr = conf.Load(cp)
+	if conferr != nil || initial {
+		setup.Run()
 	}
 	if err = utils.EnsureDir(conf.C.UploadDir); err != nil {
 		log.Fatal(err)
