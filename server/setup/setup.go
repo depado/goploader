@@ -7,14 +7,11 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/braintree/manners"
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
 )
-
-var srv *manners.GracefulServer
 
 func index(c *gin.Context) {
 	c.HTML(http.StatusOK, "setup.html", gin.H{})
