@@ -15,6 +15,7 @@ type Conf struct {
 	UniURILength int    `yaml:"uniuri_length" form:"uniuri_length" binding:"required"`
 	LimitSize    int64  `yaml:"limit_size" form:"limit_size" binding:"required"`
 	FullDoc      bool   `yaml:"fulldoc" form:"fulldoc"`
+	Debug        bool   `yaml:"debug" form:"debug" binding:"required"`
 }
 
 // C is the exported global configuration variable

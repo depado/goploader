@@ -14,17 +14,15 @@ import (
 	"github.com/atotto/clipboard"
 	"github.com/cheggaaa/pb"
 	flag "github.com/ogier/pflag"
-)
 
-const (
-	service = "https://up.depado.eu/"
-	method  = "POST"
+	"github.com/Depado/goploader/client/conf"
 )
 
 var (
 	bar     *pb.ProgressBar
 	name    string
 	verbose bool
+	service = "https://up.depado.eu/"
 )
 
 func debugf(a ...interface{}) {
@@ -85,6 +83,8 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 	debugf("Debug mode is activated")
+
+	conf.Load()
 
 	if delay != 0 {
 		debugf("Waiting", delay)
@@ -157,7 +157,7 @@ func main() {
 	}()
 
 	debugf("Executing multipart post")
-	resp, err := http.Post(service, multipartWriter.FormDataContentType(), r)
+	resp, err := http.Post(conf.C.Service, multipartWriter.FormDataContentType(), r)
 	check(err)
 	defer resp.Body.Close()
 	debugf("Multipart post is done, reading data")

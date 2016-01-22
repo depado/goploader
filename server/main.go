@@ -119,7 +119,9 @@ func main() {
 	go monitoring.Monit(&db)
 
 	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
-	gin.SetMode(gin.ReleaseMode)
+	if !conf.C.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	// Default router
 	r := gin.Default()
 	// Middlewares Initialization

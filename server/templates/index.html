@@ -27,7 +27,7 @@
                         <a class="navigation-link" href="#introduction">Introduction</a>
                     </li>
                     <li class="navigation-item">
-                        <a class="navigation-link" href="#usage">Usage</a>
+                        <a class="navigation-link" href="#documentation">Documentation</a>
                     </li>
                     <li class="navigation-item">
                         <a class="navigation-link" href="#curl">Curl</a>
@@ -37,9 +37,6 @@
                     </li>
                     <li class="navigation-item">
                         <a class="navigation-link" href="#server">Server</a>
-                    </li>
-                    <li class="navigation-item">
-                        <a class="navigation-link" href="#roadmap">Roadmap</a>
                     </li>
                     <li class="navigation-item">
                         <a class="navigation-link" href="https://github.com/Depado/goploader" target="_blank">Github</a>
@@ -73,8 +70,14 @@
                 <li>Files are stored in clear-text (working on the crypto part)</li>
             </ul>
         </section>
-        <section id="usage" class="container">
+        <section id="documentation" class="container">
             <h5 class="title">Usage</h5>
+            <p><b>First Run</b></p>
+            <p>On the first run, goploader will try to read from <code>~/.config/goploader.conf.yml</code>. A default configuration will be written in this file if it can't be found. Also, if the <code>~/.config/</code> directory doesn't exist, it will be
+                created. This will be executed only once, you'll get a single line of log the first time you'll use the client.
+                <br /><br />
+                <i>Note : If you want to use another server than mine (a friend of yours installed the server or your own server), you'll have to edit this file to point to your service.</i></p>
+            <p><b>General Documentation</b></p>
             <p>Here are some small examples of how to use the command line application
                 <code>goploader</code>. Here is a list of the accepted arguments of the client :
             </p>
@@ -208,12 +211,12 @@
                 <br />
                 <code>$ goploader -p
                     < myfile</code>
-                        <span class="float-right">Stdin</span>
-                        <br />
-                        <code>$ cat myfile | goploader -p</code>
-                        <span class="float-right">Stdin</span>
-                        <br />
-                        <i>Note : When the datasource is stdin, the total size of the file (or the total ammount of text a command yields) can't be calculated
+                <span class="float-right">Stdin</span>
+                <br />
+                <code>$ cat myfile | goploader -p</code>
+                <span class="float-right">Stdin</span>
+                <br />
+                <i>Note : When the datasource is stdin, the total size of the file (or the total ammount of text a command yields) can't be calculated
             that's why the progress bar will only display the upload speed.</i>
             </p>
         </section>
@@ -229,12 +232,12 @@
                 <i>Your file will be named <code>myfile.txt</code></i>
                 <br />
                 <br />
-                <code>$ curl -F name="myamazingfile!" -F file=@myfile.txt</code>
+                <code>$ curl -F name="myamazingfile!" -F file=@myfile.txt https://up.depado.eu/</code>
                 <br />
                 <i>Your file will be named <code>myamazingfile!</code></i>
                 <br />
                 <br />
-                <code>$ cat myfile.txt | curl -F name="stdin" -F file=@_</code>
+                <code>$ cat myfile.txt | curl -F name="stdin" -F file=@_ https://up.depado.eu/</code>
                 <br />
                 <i>Reads data from <code>stdin</code></i>
             </p>
@@ -243,6 +246,7 @@
             <h5 class="title">Downloads</h5>
             <p>Here are the download links for the client. For a more up to date version, consider installing
                 <code>Go</code> on your computer and compile the client from the Github source code.</p>
+            <p><b>Binary Downloads</b></p>
             <div class="row">
                 <div class="column">
                     <a class="button button-outline" href="static/clients/client_linux_amd64">Linux 64-Bit</a>
@@ -276,6 +280,9 @@
                     <a class="button button-outline" href="static/clients/client_linux_arm">Linux ARMv7</a>
                 </div>
             </div>
+            <br />
+            <p><b>Archlinux</b></p>
+            <p>If you're running Archlinux, there is a <code>goploader-client-git</code> package in AUR. <code>yaourt -S goploader-client-git</code>
         </section>
         <section id="server" class="container">
             <h5 class="title">Server</h5>
@@ -290,37 +297,16 @@
             </p>
             <p>
                 You don't need to create a
-                <code>conf.yml</code> file. If you run the server and the said file is absent or have missing fields, the server will enter setup mode in which you will be able to configure your server on a web page. It will then marshal the configuration to
-                the said
+                <code>conf.yml</code> file. If you run the server and the said file is absent or have missing fields, the server will enter setup mode in which you will be able to configure your server on a web page. It will then marshal the configuration
+                to the said
                 <code>conf.yml</code> file and you will be able to run the server once again which will work as expected.
             </p>
             <p>
-                This very page is served by the goploader server itself. You can disable it by setting the <code>fulldoc</code> option to false (while doing your setup or directly in the configuration file).
-                After that you're free to modify the <code>templates/welcome.html</code> to whatever you want.
+                This very page is served by the goploader server itself. You can disable it by setting the <code>fulldoc</code> option to false (while doing your setup or directly in the configuration file). After that you're free to modify the <code>templates/welcome.html</code>                to whatever you want.
             </p>
             <p>
-                The next thing you'll have to do is modify the source code of the client so it points to your own service. Simply modify this line in
-                <code>main.go</code> :
-                <br />
-                <br />
-                <code>service = "https://up.depado.eu/"</code>
-                <br />
-                <br /> Once you've done that you might want to cross-compile the client. I'm using a tool named
-                <code>gox</code> to do that (it's simply a shortcut for all the architectures and OS available).
-                <a href="https://github.com/laher/goxc" target="_blank">Here it is</a>. Of course you need to have Go installed from source.
+                If people want to use your service, they'll have to modify the configuration file that is created in their configuration directory : <code>~/.config/goploader.conf.yml</code>.
             </p>
-        </section>
-        <section id="roadmap" class="container">
-            <h5 class="title">Roadmap</h5>
-            <ul>
-                <li>
-                    Server
-                    <ul>
-                        <li>SQLite → BoltDB</li>
-                    </ul>
-                </li>
-                <li>Client</li>
-            </ul>
         </section>
     </main>
 </body>
