@@ -7,12 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link rel="shortcut icon" type="image/png" href="static/favicon.ico" />
     <title>Goploader</title>
-    <!-- Google Fonts -->
     <link rel="stylesheet" target="blank" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
-    <!-- CSS Reset -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
     <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script src="static/jquery.min.js"></script>
 </head>
 
 <body>
@@ -43,8 +42,28 @@
                     </li>
                 </ul>
             </section>
-            </section>
         </nav>
+        <section id="upload" class="container" style="text-align: center;">
+            <h5 class="title">Upload</h5>
+            <form id="upload-form">
+                <fieldset>
+                    <input id="upload-file" type="file" name="file">
+                    <a class="button button-outline" href="#" id="upload-btn">Submit</a><br />
+                    <p id="upload-error" style="display: none;"></p>
+                </fieldset>
+            </form>
+            <br />
+            <div id="upload-result" style="display: none; text-align: center;">
+                <p id="upload-url"></p><br />
+                <a class="button button-outline" href="#" id="upload-again">Upload Another File</a>
+            </div>
+            <div class="row" id="upload-loader" style="display: none;">
+                <div class="column column-offset-50">
+                    <div class="circle circle1"></div>
+                    <div class="circle circle2"></div>
+                </div>
+            </div>
+        </section>
         <section id="introduction" class="container">
             <h5 class="title">Introduction</h5>
             <p>
@@ -59,15 +78,16 @@
             <ul>
                 <li>HTTPS only using <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a> and <a href="https://caddyserver.com/" target="_blank">Caddy Server</a></li>
                 <li>Upload directly from
-                    <code>stdin</code>
+                    <code>stdin</code>.
                 </li>
                 <li>Upload a file by giving it as an argument to the client.</li>
+                <li>All files are encrypted upon reception and decrypted when served.</li>
+                <li>The key to decrypt files is not saved on the server.</li>
             </ul>
             <p><b>Current Limitations</b></p>
             <ul>
                 <li>File size is limited to 20 Mo (20 MB)</li>
-                <li>Files live for two hours only (afterward, files are deleted both on the DB end and on disk)</li>
-                <li>Files are stored in clear-text (working on the crypto part)</li>
+                <li>Files live for two hours only.</li>
             </ul>
         </section>
         <section id="documentation" class="container">
@@ -75,7 +95,8 @@
             <p><b>First Run</b></p>
             <p>On the first run, goploader will try to read from <code>~/.config/goploader.conf.yml</code>. A default configuration will be written in this file if it can't be found. Also, if the <code>~/.config/</code> directory doesn't exist, it will be
                 created. This will be executed only once, you'll get a single line of log the first time you'll use the client.
-                <br /><br />
+                <br />
+                <br />
                 <i>Note : If you want to use another server than mine (a friend of yours installed the server or your own server), you'll have to edit this file to point to your service.</i></p>
             <p><b>General Documentation</b></p>
             <p>Here are some small examples of how to use the command line application
@@ -317,9 +338,51 @@
     </main>
     <footer class="footer">
         <section class="container">
-            <p>Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a> for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.</p>
+            <p>Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.</p>
         </section>
     </footer>
+    <script>
+        var loader = $("#upload-loader");
+        var form = $("#upload-form");
+        var result = $("#upload-result");
+        var upurl = $("#upload-url");
+        var uperror = $("#upload-error")
+        $('#upload-btn').click(function($e) {
+            $e.preventDefault();
+            var data = new FormData();
+            data.append('file', $("#upload-file")[0].files[0])
+            form.fadeOut(400, function() {
+                loader.fadeIn();
+                loader.promise().done(function (){
+                    var req = $.ajax({
+                        url: '/',
+                        data: data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        type: 'POST'
+                    });
+                    req.done(function(data) {
+                        upurl.html("Here is your file :<br /><a href='"+ data + "'>" + data + "</a>");
+                        loader.fadeOut(400, function () {
+                            result.fadeIn();
+                        });
+                    });
+                    req.fail(function(jqxhr, statusmsg) {
+                        loader.fadeOut(400, function() {
+                            uperror.text("The file seems too big, or an error occured on the server.").show();
+                            form.fadeIn();
+                        });
+                    });
+                });
+            });
+        });
+        $("#upload-again").click(function($e) {
+            result.fadeOut(400, function () {
+                form.fadeIn();
+            });
+        });
+    </script>
 </body>
 
 </html>
