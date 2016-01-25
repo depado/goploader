@@ -84,7 +84,9 @@ func main() {
 	args := flag.Args()
 	debugf("Debug mode is activated")
 
-	conf.Load()
+	if err = conf.Load(); err != nil {
+		log.Fatal(err)
+	}
 
 	if delay != 0 {
 		debugf("Waiting", delay)

@@ -4,7 +4,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/user"
+
+	"github.com/mitchellh/go-homedir"
 
 	"gopkg.in/yaml.v2"
 )
@@ -20,12 +21,13 @@ var C Configuration
 // Load loads the given fp (file path) to the C global configuration variable.
 func Load() error {
 	var err error
-	var usr *user.User
+	var hd string
 
-	if usr, err = user.Current(); err != nil {
-		log.Fatal(err)
+	if hd, err = homedir.Dir(); err != nil {
+		return err
 	}
-	cdir := usr.HomeDir + "/.config/"
+
+	cdir := hd + "/.config/"
 	cf := cdir + "goploader.conf.yml"
 	if _, err = os.Stat(cdir); os.IsNotExist(err) {
 		log.Printf("Creating %v directory.\n", cdir)

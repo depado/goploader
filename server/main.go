@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"crypto/aes"
+	"crypto/cipher"
 	"fmt"
 	"io"
 	"log"
@@ -10,7 +12,6 @@ import (
 	"path"
 
 	"github.com/dchest/uniuri"
-	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
@@ -49,6 +50,19 @@ func create(c *gin.Context) {
 	defer fd.Close()
 
 	u := uniuri.NewLen(conf.C.UniURILength)
+
+	k := uniuri.NewLen(16)
+	kb := []byte(k)
+	block, err := aes.NewCipher(kb)
+	if err != nil {
+		log.Printf("[ERROR][%s]\tDuring Cipher creation : %s\n", remote, err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	var iv [aes.BlockSize]byte
+	stream := cipher.NewCFBEncrypter(block, iv[:])
+
 	path := path.Join(conf.C.UploadDir, u)
 	file, err := os.Create(path)
 	if err != nil {
@@ -59,21 +73,24 @@ func create(c *gin.Context) {
 	}
 	defer file.Close()
 
-	wr, err := io.Copy(file, bufio.NewReaderSize(fd, 512))
+	writer := &cipher.StreamWriter{S: stream, W: file}
+	// No encryption : wr, err := io.Copy(file, bufio.NewReaderSize(fd, 512))
+	// Copy the input file to the output file, encrypting as we go.
+	wr, err := io.Copy(writer, bufio.NewReaderSize(fd, 512))
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring writing file : %s\n", remote, err)
+		log.Printf("[ERROR][%s]\tDuring writing : %s\n", remote, err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
-		return
 	}
 	db.Create(&models.ResourceEntry{Key: u, Name: h.Filename})
 
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u, wr)
-	c.String(http.StatusCreated, "https://%s/v/%s\n", conf.C.NameServer, u)
+	c.String(http.StatusCreated, "https://%s/v/%s/%s\n", conf.C.NameServer, u, k)
 }
 
 func view(c *gin.Context) {
 	id := c.Param("uniuri")
+	key := c.Param("key")
 	re := models.ResourceEntry{}
 	remote := c.ClientIP()
 
@@ -90,8 +107,19 @@ func view(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+	block, err := aes.NewCipher([]byte(key))
+	if err != nil {
+		log.Printf("[ERROR][%s]\tDuring Cipher creation : %s\n", remote, err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	var iv [aes.BlockSize]byte
+	stream := cipher.NewCFBDecrypter(block, iv[:])
+	reader := &cipher.StreamReader{S: stream, R: f}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
-	http.ServeContent(c.Writer, c.Request, re.Key, re.CreatedAt, f)
+	io.Copy(c.Writer, reader)
+	// http.ServeContent(c.Writer, c.Request, re.Key, re.CreatedAt, reader)
 }
 
 func main() {
@@ -124,8 +152,6 @@ func main() {
 	}
 	// Default router
 	r := gin.Default()
-	// Middlewares Initialization
-	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	// Templates and static files
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/static", "./assets")
@@ -133,7 +159,7 @@ func main() {
 	// Routes
 	r.GET("/", index)
 	r.POST("/", create)
-	r.GET("/v/:uniuri", view)
+	r.GET("/v/:uniuri/:key", view)
 	// Run
 	r.Run(fmt.Sprintf(":%d", conf.C.Port))
 }
