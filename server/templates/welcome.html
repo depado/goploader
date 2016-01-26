@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
     <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script src="static/jquery.min.js"></script>
 </head>
 
 <body>
@@ -20,8 +21,34 @@
         <section class="container shadowed" style="text-align: center;">
             <h1 class="title">Goploader</h1>
             <h2>Because file sharing is meant to be easy</h2>
+            <form id="upload-form">
+                <fieldset>
+                    <input type="file" name="file" id="upload-file" class="inputfile" />
+                    <label for="upload-file">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                            <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
+                        </svg><span>Choose a file…</span>
+                    </label>
+                    <a class="button button-outline" href="#" id="upload-btn">Upload</a>
+                    <br />
+                    <p id="upload-error" style="display: none;"></p>
+                </fieldset>
+            </form>
+            <br />
+            <div id="upload-result" style="display: none; text-align: center;">
+                <p id="upload-url"></p>
+                <br />
+                <a class="button button-outline" href="#" id="upload-again">Upload Another File</a>
+            </div>
+            <div class="row" id="upload-loader" style="display: none;">
+                <div class="column column-offset-50">
+                    <div class="circle circle1"></div>
+                    <div class="circle circle2"></div>
+                </div>
+            </div>
         </section>
     </main>
+    <script src="static/custom.js"></script>
 </body>
 
 </html>
