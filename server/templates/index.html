@@ -324,12 +324,23 @@
                 If you wish, you can install the
                 <code>goploader</code> server. You can either compile it from the source code if you have a specific architecture or download the Linux 64-Bit or ARMv7 version with the link below.
             </p>
-            <p>
-                <div style="text-align: center;">
-                    <a class="button button-outline" href="static/servers/server_linux_amd64">Linux 64-Bit Server</a>
-                    <a class="button button-outline" href="static/servers/server_linux_arm">Linux ARMv7 Server</a>
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="static/servers/server-with-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Clients Included</a>
                 </div>
-            </p>
+                <div class="column">
+                    <a class="button button-outline" href="static/servers/server-with-clients_linux_arm.tar.gz">Linux ARMv7 Server - Clients Included </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="static/servers/server-without-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Standalone </a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="static/servers/server-without-clients_linux_arm.tar.gz">Linux ARMv7 Server - Standalone </a>
+                </div>
+            </div>
+            <br />
             <p>
                 You don't need to create a
                 <code>conf.yml</code> file. If you run the server and the said file is absent or have missing fields, the server will enter setup mode in which you will be able to configure your server on a web page. It will then marshal the configuration
