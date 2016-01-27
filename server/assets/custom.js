@@ -26,7 +26,7 @@ $('#upload-btn').click(function($e) {
             });
             req.fail(function(jqxhr, statusmsg) {
                 loader.fadeOut(400, function() {
-                    uperror.text("The file seems too big, or an error occured on the server.").show();
+                    uperror.html("The file is too big or an error occured on the server.").show();
                     form.fadeIn();
                 });
             });
