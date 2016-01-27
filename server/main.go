@@ -101,7 +101,7 @@ func view(c *gin.Context) {
 		return
 	}
 	log.Printf("[INFO][%s]\tFetched %s file and entry\n", remote, id)
-	f, err := os.Open(conf.C.UploadDir + re.Key)
+	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {
 		log.Printf("[ERROR][%s]\tWhile opening %s file\n", remote, id)
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -119,7 +119,6 @@ func view(c *gin.Context) {
 	reader := &cipher.StreamReader{S: stream, R: f}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	io.Copy(c.Writer, reader)
-	// http.ServeContent(c.Writer, c.Request, re.Key, re.CreatedAt, reader)
 }
 
 func main() {

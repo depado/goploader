@@ -35,10 +35,10 @@ func configure(c *gin.Context) {
 		}
 	} else {
 		fmt.Println("An error occured while reading the form data :", err)
-		c.HTML(400, "setup.html", gin.H{"errors": err})
+		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	c.HTML(201, "setup_ok.html", gin.H{})
+	c.JSON(http.StatusCreated, gin.H{})
 }
 
 // Run runs the setup server which is used to configure the application on the

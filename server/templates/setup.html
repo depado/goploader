@@ -13,20 +13,19 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
     <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script src="static/jquery.min.js"></script>
 </head>
 
 <body>
     <main class="wrapper">
-        <section class="container">
+        <section class="container" id="setup-form-section">
             <h5 class="title">Configure Goploader</h5>
             <p>
                 You're seeing this page because your configuration file is either corrupted or it's the first time you start the application. Please fill in the following form to configure goploader. Once you're done, restart the application.
             </p>
             <p>All fields are mandatory.</p>
-            {{ if .errors }}
-            <p style="color: #FF4848;"><b>It looks like some of the fields were ommited or have wrong values.</b></p>
-            {{ end }}
-            <form action="/" method="post">
+            <p style="color: #FF4848; display: none;" id="setup-errors"><b>It looks like some of the fields were ommited or have wrong values.</b></p>
+            <form action="/" method="post" id="setup-form">
                 <fieldset>
                     <label for="name_server" class="label-inline"><b>Server Name</b></label>
                     <span class="float-right"><i>Your domain name or ip</i></span>
@@ -55,16 +54,64 @@
                     <input id="fulldoc" type="checkbox" name="fulldoc" value="true">
                     <label class="label-inline" for="fulldoc"><b>Full Documentation</b></label>
                     <span class="float-right"><i>The homepage will display the full documentation</i></span>
-                    <br /><br />
+                    <br />
+                    <br />
                     <input id="debug" type="checkbox" name="debug" value="true">
                     <label class="label-inline" for="debug"><b>Debug</b></label>
                     <span class="float-right"><i>Turn on the Gin debug mode.</i></span>
-                    <br /><br />
-                    <input class="button-primary" value="Send" type="submit">
+                    <br />
+                    <br />
+                    <a class="button button-outline" id="submit-form" href="#">Send</a>
                 </fieldset>
             </form>
         </section>
+        <section class="container" id="submit-loader" style="display: none;">
+            <div class="row">
+                <div class="column column-offset-25">
+                    <p>Please wait while Goploader is being configured.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column column-offset-50">
+                    <div class="circle circle1"></div>
+                    <div class="circle circle2"></div>
+                </div>
+            </div>
+        </section>
+        <section class="container" style="text-align: center; display: none;" id="setup-success">
+            <h5 class="title">Goploader is now configured. You can restart the goploader server now.</h5>
+            <p>
+                A <code>conf.yml</code> file has be written containing your configuration. If you want to re-run this setup you can either delete that file or start the server with the -i (--initial) option.
+            </p>
+        </section>
     </main>
+    <script>
+        var formsec = $("#setup-form-section");
+        var form = $("#setup-form");
+        var success = $("#setup-success");
+        var errors = $("#setup-errors");
+        var loader = $("#submit-loader");
+        var submit = $("#submit-form");
+        submit.click(function (e) {
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            formsec.fadeOut(400, function () {
+                loader.fadeIn(400, function () {
+                    var jqxhr = $.post("/", form.serialize());
+                    jqxhr.done(function () {
+                        loader.fadeOut(400, function() {
+                            success.fadeIn();
+                        });
+                    });
+                    jqxhr.fail(function () {
+                        loader.fadeOut(400, function() {
+                            errors.show();
+                            formsec.fadeIn();
+                        });
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
