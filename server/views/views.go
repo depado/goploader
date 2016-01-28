@@ -21,11 +21,11 @@ import (
 // Index handles the main page
 func Index(c *gin.Context) {
 	log.Printf("[INFO][%s]\tIssued a GET request\n", c.ClientIP())
-	if conf.C.FullDoc {
-		c.HTML(http.StatusOK, "index.html", gin.H{"duration": conf.C.TimeLimit.String()})
-	} else {
-		c.HTML(http.StatusOK, "welcome.html", gin.H{"duration": conf.C.TimeLimit.String()})
-	}
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"duration":   conf.C.TimeLimit.String(),
+		"fulldoc":    conf.C.FullDoc,
+		"size_limit": conf.C.SizeLimit,
+	})
 }
 
 // Create handles the multipart form upload

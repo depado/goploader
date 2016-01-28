@@ -3,9 +3,9 @@ client/client*
 client/misc/
 client/testfiles/
 server/my.db
+server/goploader.db
 server/up/
 server/server
 server/conf.yml
-server/assets/clients
-server/assets/servers
-server/goploader.db
+server/*.rice-box.go
+server/releases/*

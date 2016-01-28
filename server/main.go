@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
@@ -28,6 +29,15 @@ func main() {
 	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
 	flag.Parse()
 
+	assetsBox, err := rice.FindBox("assets")
+	if err != nil {
+		log.Fatal(err)
+	}
+	templateBox, err := rice.FindBox("templates")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	conferr = conf.Load(cp)
 	if conferr != nil || initial {
 		setup.Run()
@@ -49,9 +59,11 @@ func main() {
 	// Default router
 	r := gin.Default()
 	// Templates and static files
-	r.LoadHTMLGlob("templates/*")
-	r.Static("/static", "./assets")
-	r.Static("/favicon.ico", "./assets/favicon.ico")
+	if err = utils.InitTemplates(r, templateBox, "index.html"); err != nil {
+		log.Fatal(err)
+	}
+	r.StaticFS("/static", assetsBox.HTTPBox())
+	r.Static("/releases", "releases")
 	// Routes
 	r.GET("/", views.Index)
 	r.POST("/", views.Create)

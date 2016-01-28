@@ -4,18 +4,21 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <link rel="shortcut icon" type="image/png" href="static/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>Goploader</title>
+    <meta name="description" content="Simple file hosting with server-side encryption." />
+    <meta property="og:title" content="Simple file hosting with server-side encryption." />
+    <meta property="og:description" content="Simple file hosting with server-side encryption." />
+    <link rel="shortcut icon" type="image/png" href="static/favicon.ico" />
     <link rel="stylesheet" target="blank" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
     <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
-    <script src="static/jquery.min.js"></script>
 </head>
 
 <body>
     <main class="wrapper">
+        {{ if .fulldoc }}
         <nav class="navigation">
             <section class="container">
                 <a class="navigation-title">
@@ -43,6 +46,7 @@
                 </ul>
             </section>
         </nav>
+        {{ end }}
         <section id="upload" class="container fullheader">
             <h1 class="title">Goploader</h1>
             <h2>Because file sharing is meant to be easy</h2>
@@ -75,6 +79,7 @@
                 </div>
             </div>
         </section>
+        {{ if .fulldoc }}
         <section id="introduction" class="container">
             <h5 class="title">Introduction</h5>
             <p>
@@ -281,35 +286,35 @@
             <p><b>Binary Downloads</b></p>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="static/clients/client_linux_amd64">Linux 64-Bit</a>
+                    <a class="button button-outline" href="releases/clients/client_linux_amd64">Linux 64-Bit</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="static/clients/client_freebsd_amd64">FreeBSD 64-Bit</a>
+                    <a class="button button-outline" href="releases/clients/client_freebsd_amd64">FreeBSD 64-Bit</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="static/clients/client_darwin_amd64">Mac OS 64-Bit</a>
+                    <a class="button button-outline" href="releases/clients/client_darwin_amd64">Mac OS 64-Bit</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="static/clients/client_windows_amd64.exe">Windows 64-Bit</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="column">
-                    <a class="button button-outline" href="static/clients/client_linux_386">Linux 32-Bit</a>
-                </div>
-                <div class="column">
-                    <a class="button button-outline" href="static/clients/client_freebsd_386">FreeBSD 32-Bit</a>
-                </div>
-                <div class="column">
-                    <a class="button button-outline" href="static/clients/client_darwin_386">Mac OS 32-Bit</a>
-                </div>
-                <div class="column">
-                    <a class="button button-outline" href="static/clients/client_windows_386.exe">Windows 32-Bit</a>
+                    <a class="button button-outline" href="releases/clients/client_windows_amd64.exe">Windows 64-Bit</a>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="static/clients/client_linux_arm">Linux ARMv7</a>
+                    <a class="button button-outline" href="releases/clients/client_linux_386">Linux 32-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="releases/clients/client_freebsd_386">FreeBSD 32-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="releases/clients/client_darwin_386">Mac OS 32-Bit</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="releases/clients/client_windows_386.exe">Windows 32-Bit</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="releases/clients/client_linux_arm">Linux ARMv7</a>
                 </div>
             </div>
             <br />
@@ -330,18 +335,24 @@
             </p>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="static/servers/server-with-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Clients Included</a>
+                    <a class="button button-outline" href="releases/servers/server-standalone_amd64">Linux 64-Bit Server Standalone</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="static/servers/server-with-clients_linux_arm.tar.gz">Linux ARMv7 Server - Clients Included </a>
+                    <a class="button button-outline" href="releases/servers/server-standalone_arm">Linux ARMv7 Server Standalone</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Clients Included</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_arm.tar.gz">Linux ARMv7 Server - Clients Included </a>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="static/servers/server-without-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Standalone </a>
+                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Standalone </a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="static/servers/server-without-clients_linux_arm.tar.gz">Linux ARMv7 Server - Standalone </a>
+                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_arm.tar.gz">Linux ARMv7 Server - Standalone </a>
                 </div>
             </div>
             <br />
@@ -358,12 +369,14 @@
                 If people want to use your service, they'll have to modify the configuration file that is created in their configuration directory : <code>~/.config/goploader.conf.yml</code>.
             </p>
         </section>
+        {{ end }}
     </main>
     <footer class="footer">
         <section class="container">
             <p>Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.</p>
         </section>
     </footer>
+    <script src="static/jquery.min.js"></script>
     <script src="static/custom.js"></script>
 </body>
 

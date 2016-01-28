@@ -3,14 +3,17 @@ package setup
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"gopkg.in/yaml.v2"
 
+	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
+	"github.com/Depado/goploader/server/utils"
 )
 
 func index(c *gin.Context) {
@@ -49,13 +52,26 @@ func configure(c *gin.Context) {
 // Run runs the setup server which is used to configure the application on the
 // first run or when the -i/--initial option is used.
 func Run() {
+	var err error
+
+	assetsBox, err := rice.FindBox("assets")
+	if err != nil {
+		log.Fatal(err)
+	}
+	templateBox, err := rice.FindBox("templates")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
-	r.LoadHTMLGlob("templates/*")
-	r.Static("/static", "./assets")
-	r.Static("/favicon.ico", "./assets/favicon.ico")
+	if err = utils.InitTemplates(r, templateBox, "setup.html"); err != nil {
+		log.Fatal(err)
+	}
+	r.StaticFS("/static", assetsBox.HTTPBox())
+	//r.Static("/favicon.ico", "./assets/favicon.ico")
 	r.GET("/", index)
 	r.POST("/", configure)
 	fmt.Println("Please go to http://127.0.0.1:8008 to setup goploader.")
