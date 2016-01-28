@@ -335,27 +335,40 @@
             </p>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-standalone_amd64">Linux 64-Bit Server Standalone</a>
+                    <a class="button button-outline" href="releases/servers/server-standalone_amd64">Linux 64-Bit Binary</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-standalone_arm">Linux ARMv7 Server Standalone</a>
-                </div>
-                <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Clients Included</a>
-                </div>
-                <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_arm.tar.gz">Linux ARMv7 Server - Clients Included </a>
+                    <a class="button button-outline" href="releases/servers/server-standalone_arm">Linux ARMv7 Binary</a>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_amd64.tar.gz">Linux 64-Bit Server - Standalone </a>
+                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_amd64.tar.gz">Linux 64-Bit Clients Included</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_arm.tar.gz">Linux ARMv7 Server - Standalone </a>
+                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_arm.tar.gz">Linux ARMv7 Clients Included</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_amd64.tar.gz">Linux 64-Bit Without Clients</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_arm.tar.gz">Linux ARMv7 Without Clients</a>
                 </div>
             </div>
             <br />
+            <p>
+                <b>Note about the different distributions :</b>
+                <ul>
+                    <li>The binary distribution is a single binary which has all the assets embedded inside it. Simply run it to configure the service, and run it again to start the service. Note that if you use the full documentation option, the links to
+                        download the clients won't work.</li>
+                    <li>The “clients included” distribution is a tar.gz containing the binary, static assets and the cross-compiled clients. As the static assets aren't embedded in the binary, you're free to modify the templates. Keep in mind that the service
+                        should be restarted when you want your modifications to take place.</li>
+                    <li>The “without clients” distribution is quite the same as the previous one, except it doesn't contain the cross-compiled clients. The same rules about templates (or any static resource) applies, if you want your changes to take effect,
+                        the service needs to be restarted.</li>
+                </ul>
+            </p>
             <p>
                 You don't need to create a
                 <code>conf.yml</code> file. If you run the server and the said file is absent or have missing fields, the server will enter setup mode in which you will be able to configure your server on a web page. It will then marshal the configuration
@@ -373,7 +386,7 @@
     </main>
     <footer class="footer">
         <section class="container">
-            <p>Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.</p>
+            <p>Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="_blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.</p>
         </section>
     </footer>
     <script src="static/jquery.min.js"></script>

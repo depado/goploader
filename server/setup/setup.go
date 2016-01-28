@@ -54,11 +54,11 @@ func configure(c *gin.Context) {
 func Run() {
 	var err error
 
-	assetsBox, err := rice.FindBox("assets")
+	assetsBox, err := rice.FindBox("../assets")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	templateBox, err := rice.FindBox("templates")
+	templateBox, err := rice.FindBox("../templates")
 	if err != nil {
 		log.Fatal(err)
 	}

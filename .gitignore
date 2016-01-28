@@ -9,3 +9,6 @@ server/server
 server/conf.yml
 server/*.rice-box.go
 server/releases/*
+goploader-server/
+server-standalone*
+server-with*
