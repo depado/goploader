@@ -18,10 +18,15 @@ func index(c *gin.Context) {
 }
 
 func configure(c *gin.Context) {
-	var form conf.Conf
+	var form conf.UnparsedConf
 	var err error
 
 	if err = c.Bind(&form); err == nil {
+		errors := form.Validate()
+		if len(errors) > 0 {
+			c.JSON(http.StatusBadRequest, errors)
+			return
+		}
 		d, err := yaml.Marshal(&form)
 		if err != nil {
 			fmt.Println("An error occured while marshalling the yaml data :", err)

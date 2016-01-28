@@ -13,6 +13,7 @@ import (
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/models"
+
 	"github.com/dchest/uniuri"
 	"github.com/gin-gonic/gin"
 )
@@ -21,9 +22,9 @@ import (
 func Index(c *gin.Context) {
 	log.Printf("[INFO][%s]\tIssued a GET request\n", c.ClientIP())
 	if conf.C.FullDoc {
-		c.HTML(http.StatusOK, "index.html", gin.H{})
+		c.HTML(http.StatusOK, "index.html", gin.H{"duration": conf.C.TimeLimit.String()})
 	} else {
-		c.HTML(http.StatusOK, "welcome.html", gin.H{})
+		c.HTML(http.StatusOK, "welcome.html", gin.H{"duration": conf.C.TimeLimit.String()})
 	}
 }
 
@@ -31,12 +32,12 @@ func Index(c *gin.Context) {
 func Create(c *gin.Context) {
 	var err error
 	remote := c.ClientIP()
-	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.LimitSize*1000000)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.SizeLimit*1000000)
 
 	fd, h, err := c.Request.FormFile("file")
 	if err != nil {
 		log.Printf("[ERROR][%s]\tDuring reading file : %s", remote, err)
-		c.String(http.StatusRequestEntityTooLarge, "Entity is too large (Max : %v MB)\n", conf.C.LimitSize)
+		c.String(http.StatusRequestEntityTooLarge, "Entity is too large (Max : %v MB)\n", conf.C.SizeLimit)
 		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
 		return
 	}

@@ -23,7 +23,7 @@
             <p>
                 You're seeing this page because your configuration file is either corrupted or it's the first time you start the application. Please fill in the following form to configure goploader. Once you're done, restart the application.
             </p>
-            <p>All fields are mandatory.</p>
+            <p>Fields without default are mandatory.</p>
             <p style="color: #FF4848; display: none;" id="setup-errors"><b>It looks like some of the fields were ommited or have wrong values.</b></p>
             <form action="/" method="post" id="setup-form">
                 <fieldset>
@@ -33,23 +33,27 @@
 
                     <label for="port" class="label-inline"><b>Port</b></label>
                     <span class="float-right"><i>Port on which the server should listen</i></span>
-                    <input placeholder="8008" id="port" name="port" type="text">
+                    <input placeholder="Default : 8080" id="port" name="port" type="text">
 
                     <label for="upload_dir" class="label-inline"><b>Upload Directory</b></label>
                     <span class="float-right"><i>Absolute or local directory in which files will be uploaded</i></span>
-                    <input placeholder="up/" id="upload_dir" Name="upload_dir" type="text">
+                    <input placeholder="Default : up/" id="upload_dir" Name="upload_dir" type="text">
 
                     <label for="db" class="label-inline"><b>Database Path</b></label>
                     <span class="float-right"><i>Absolute or local path (and file name) to create</i></span>
-                    <input placeholder="my.db" id="db" name="db" type="text">
+                    <input placeholder="Default : goploader.db" id="db" name="db" type="text">
 
                     <label for="uniuri_length" class="label-inline"><b>UniURI Length</b></label>
                     <span class="float-right"><i>The number of chars generated for URIs</i></span>
-                    <input placeholder="10" id="uniuri_length" name="uniuri_length" type="text">
+                    <input placeholder="Default : 10" id="uniuri_length" name="uniuri_length" type="text">
 
-                    <label for="limit_size" class="label-inline"><b>Size Limit</b></label>
+                    <label for="size_limit" class="label-inline"><b>Size Limit</b></label>
                     <span class="float-right"><i>Maximum size of the uploaded files in MB</i></span>
-                    <input placeholder="20" id="limit_size" name="limit_size" type="text">
+                    <input placeholder="Default : 20" id="size_limit" name="size_limit" type="text">
+
+                    <label for="time_limit" class="label-inline"><b>Time Limit</b></label>
+                    <span class="float-right"><i>Duration during which the files are available.</i></span>
+                    <input placeholder="Default : 2h" id="time_limit" name="time_limit" type="text">
 
                     <input id="fulldoc" type="checkbox" name="fulldoc" value="true">
                     <label class="label-inline" for="fulldoc"><b>Full Documentation</b></label>
@@ -102,7 +106,13 @@
                             success.fadeIn();
                         });
                     });
-                    jqxhr.fail(function () {
+                    jqxhr.fail(function (req, status, error) {
+                        var error = jQuery.parseJSON(req.responseText);
+                        for (var key in error) {
+                            var label = $("label[for='"+key+"']");
+                            label.append("&nbsp;&nbsp;&nbsp;<span style='color: #FF4848'>"+error[key]+"</span>");
+                            $("#"+key).css("border", "0.1rem solid #FF4848");
+                        }
                         loader.fadeOut(400, function() {
                             errors.show();
                             formsec.fadeIn();
