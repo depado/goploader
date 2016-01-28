@@ -8,7 +8,7 @@ all:
 
 amd64-release:
 	rice embed-go -i=github.com/Depado/goploader/server
-	go build -o server-standalone_amd64 github.com/Depado/goploader
+	go build -o server-standalone_amd64 github.com/Depado/goploader/server
 	-rm server/*.rice-box.go
 	-mkdir -p goploader-server/
 	cp -r server/assets/ goploader-server/
@@ -21,7 +21,7 @@ amd64-release:
 
 arm-release:
 	rice embed-go -i=github.com/Depado/goploader/server
-	go build -o server-standalone_arm github.com/Depado/goploader
+	go build -o server-standalone_arm github.com/Depado/goploader/server
 	-rm server/*.rice-box.go
 	-mkdir -p goploader-server/
 	cp -r server/assets/ goploader-server/
