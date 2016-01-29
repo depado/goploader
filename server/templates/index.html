@@ -274,7 +274,7 @@
                 <i>Your file will be named <code>myamazingfile!</code></i>
                 <br />
                 <br />
-                <code>$ cat myfile.txt | curl -F name="stdin" -F file=@_ https://up.depado.eu/</code>
+                <code>$ cat myfile.txt | curl -F name="stdin" -F file=@- https://up.depado.eu/</code>
                 <br />
                 <i>Reads data from <code>stdin</code></i>
             </p>
@@ -335,39 +335,40 @@
             </p>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-standalone_amd64">Linux 64-Bit Binary</a>
+                    <a class="button button-outline" href="releases/servers/server-standalone_amd64.tar.gz">Linux 64-Bit Standalone</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-standalone_arm">Linux ARMv7 Binary</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_amd64.tar.gz">Linux 64-Bit Clients Included</a>
-                </div>
-                <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-with-clients_linux_arm.tar.gz">Linux ARMv7 Clients Included</a>
+                    <a class="button button-outline" href="releases/servers/server-standalone_arm.tar.gz">Linux ARMv7 Standalone</a>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_amd64.tar.gz">Linux 64-Bit Without Clients</a>
+                    <a class="button button-outline" href="releases/servers/server_amd64.tar.gz">Linux 64-Bit</a>
                 </div>
                 <div class="column">
-                    <a class="button button-outline" href="releases/servers/server-without-clients_linux_arm.tar.gz">Linux ARMv7 Without Clients</a>
+                    <a class="button button-outline" href="releases/servers/server_arm.tar.gz">Linux ARMv7</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <a class="button button-outline" href="releases/servers/clients.tar.gz">All Cross-Compiled Clients</a>
+                </div>
+                <div class="column">
+                    <a class="button button-outline" href="releases/servers/servers.tar.gz">All Servers Releases</a>
                 </div>
             </div>
             <br />
             <p>
                 <b>Note about the different distributions :</b>
                 <ul>
-                    <li>The binary distribution is a single binary which has all the assets embedded inside it. Simply run it to configure the service, and run it again to start the service. Note that if you use the full documentation option, the links to
-                        download the clients won't work.</li>
-                    <li>The “clients included” distribution is a tar.gz containing the binary, static assets and the cross-compiled clients. As the static assets aren't embedded in the binary, you're free to modify the templates. Keep in mind that the service
-                        should be restarted when you want your modifications to take place.</li>
-                    <li>The “without clients” distribution is quite the same as the previous one, except it doesn't contain the cross-compiled clients. The same rules about templates (or any static resource) applies, if you want your changes to take effect,
-                        the service needs to be restarted.</li>
+                    <li>The “Standalone” distribution contains only a binary. All assets and templates (html files) are included directly in the binary. If you don't intend to modify those assets, this distribution is for you.</li>
+                    <li>The other distributions contains a binary for the server and the folders containing the assets so that you can freely modify them to your preferences. Please don't touch the footer though, giving credit to the author of the software helps a lot.</li>
                 </ul>
+                <ul>
+                    <li>“All Cross-Compiled Clients” can be used if you want to serve this very page and distribute the clients. Simply extract this archive so that the binaries are in the <code>goploader-server/releases/clients/</code> directory.</li>
+                    <li>“All Servers Releases” can be used if you want to serve this very page and distribute the server. Simply extract this archive so that the included archives are placed in the <code>goploader-server/releases/servers/</code> directory.</li>
+                </ul>
+                <i>That's kind of meta…</i>
             </p>
             <p>
                 You don't need to create a

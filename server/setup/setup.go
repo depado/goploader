@@ -9,7 +9,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/GeertJohan/go.rice"
-	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
@@ -53,25 +52,15 @@ func configure(c *gin.Context) {
 // first run or when the -i/--initial option is used.
 func Run() {
 	var err error
-
-	assetsBox, err := rice.FindBox("../assets")
-	if err != nil {
-		panic(err)
-	}
-	templateBox, err := rice.FindBox("../templates")
-	if err != nil {
-		log.Fatal(err)
-	}
+	tbox, _ := rice.FindBox("templates")
+	abox, _ := rice.FindBox("assets")
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
-	r.Use(gzip.Gzip(gzip.DefaultCompression))
-	if err = utils.InitTemplates(r, templateBox, "setup.html"); err != nil {
+	if err = utils.InitAssetsTemplates(r, tbox, abox, false, "setup.html"); err != nil {
 		log.Fatal(err)
 	}
-	r.StaticFS("/static", assetsBox.HTTPBox())
-	//r.Static("/favicon.ico", "./assets/favicon.ico")
 	r.GET("/", index)
 	r.POST("/", configure)
 	fmt.Println("Please go to http://127.0.0.1:8008 to setup goploader.")

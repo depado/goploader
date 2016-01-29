@@ -24,19 +24,12 @@ func main() {
 	var cp string
 	var initial bool
 	var conferr error
+	tbox, _ := rice.FindBox("templates")
+	abox, _ := rice.FindBox("assets")
 
 	flag.StringVarP(&cp, "conf", "c", "conf.yml", "Local path to configuration file.")
 	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
 	flag.Parse()
-
-	assetsBox, err := rice.FindBox("assets")
-	if err != nil {
-		log.Fatal(err)
-	}
-	templateBox, err := rice.FindBox("templates")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	conferr = conf.Load(cp)
 	if conferr != nil || initial {
@@ -49,25 +42,20 @@ func main() {
 		log.Fatal(err)
 	}
 	database.DB.AutoMigrate(&models.ResourceEntry{})
-
 	go monitoring.Monit(&database.DB)
 
 	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
 	if !conf.C.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	// Default router
+
 	r := gin.Default()
-	// Templates and static files
-	if err = utils.InitTemplates(r, templateBox, "index.html"); err != nil {
+	if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html"); err != nil {
 		log.Fatal(err)
 	}
-	r.StaticFS("/static", assetsBox.HTTPBox())
 	r.Static("/releases", "releases")
-	// Routes
 	r.GET("/", views.Index)
 	r.POST("/", views.Create)
 	r.GET("/v/:uniuri/:key", views.View)
-	// Run
 	r.Run(fmt.Sprintf(":%d", conf.C.Port))
 }
