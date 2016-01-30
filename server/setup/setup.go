@@ -21,6 +21,7 @@ func index(c *gin.Context) {
 
 func configure(c *gin.Context) {
 	var form conf.UnparsedConf
+	var dat []byte
 	var err error
 
 	if err = c.Bind(&form); err == nil {
@@ -29,15 +30,19 @@ func configure(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, errors)
 			return
 		}
-		d, err := yaml.Marshal(&form)
-		if err != nil {
-			fmt.Println("An error occured while marshalling the yaml data :", err)
-			c.AbortWithError(500, err)
+		if err = form.FillDefaults(); err != nil {
+			fmt.Println("An error occured while filling default values :", err)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		if err = ioutil.WriteFile("conf.yml", d, 0644); err != nil {
+		if dat, err = yaml.Marshal(&form); err != nil {
+			fmt.Println("An error occured while marshalling the yaml data :", err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		if err = ioutil.WriteFile("conf.yml", dat, 0644); err != nil {
 			fmt.Println("An error occured while writing the conf.yml file :", err)
-			c.AbortWithError(500, err)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 	} else {

@@ -31,7 +31,7 @@ func main() {
 	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
 	flag.Parse()
 
-	conferr = conf.Load(cp)
+	conferr = conf.Load(cp, !initial)
 	if conferr != nil || initial {
 		setup.Run()
 	}

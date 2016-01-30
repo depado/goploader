@@ -39,7 +39,7 @@ arm-release:
 
 prod:
 	rice embed-go -i=github.com/Depado/goploader/server
-	go build -o server/server github.com/Depado/goploader
+	go build -o server/server github.com/Depado/goploader/server
 	cp -f server/server ~/goploader/server
 	-mkdir -p ~/goploader/releases/servers
 	-cp server*.tar.gz ~/goploader/releases/servers/

@@ -2,7 +2,10 @@ package conf
 
 import (
 	"io/ioutil"
+	"log"
 	"time"
+
+	"github.com/imdario/mergo"
 
 	"gopkg.in/yaml.v2"
 )
@@ -18,8 +21,10 @@ type Conf struct {
 	TimeLimit    time.Duration
 	FullDoc      bool
 	Debug        bool
-	// TotalSizeLimit int64
 }
+
+// C is the exported global configuration variable
+var C Conf
 
 // UnparsedConf contains an unparsed configuration
 type UnparsedConf struct {
@@ -32,7 +37,20 @@ type UnparsedConf struct {
 	TimeLimit    string `yaml:"time_limit" form:"time_limit"`
 	FullDoc      bool   `yaml:"fulldoc" form:"fulldoc"`
 	Debug        bool   `yaml:"debug" form:"debug"`
-	// TotalSizeLimit int64  `yaml:"total_size_limit" form:"total_size_limit"`
+}
+
+// NewUnparsedConf returns an UnparsedConf instance filled with default values.
+func NewUnparsedConf() UnparsedConf {
+	return UnparsedConf{
+		UploadDir:    "up/",
+		DB:           "goploader.db",
+		Port:         8080,
+		UniURILength: 10,
+		SizeLimit:    20,
+		TimeLimit:    "2h",
+		FullDoc:      false,
+		Debug:        false,
+	}
 }
 
 // Validate validates that an unparsed configuration is valid.
@@ -41,36 +59,22 @@ func (c *UnparsedConf) Validate() map[string]string {
 	if c.NameServer == "" {
 		errors["name_server"] = "This field is required."
 	}
-	if c.UploadDir == "" {
-		c.UploadDir = "up/"
-	}
-	if c.DB == "" {
-		c.DB = "goploader.db"
-	}
-	if c.Port == 0 {
-		c.Port = 8080
-	}
-	if c.UniURILength == 0 {
-		c.UniURILength = 10
-	}
-	if c.SizeLimit == 0 {
-		c.SizeLimit = 20
-	}
-	if c.TimeLimit == "" {
-		c.TimeLimit = "2h"
-	}
-	_, err := time.ParseDuration(c.TimeLimit)
-	if err != nil {
-		errors["time_limit"] = "Bad duration formatting."
+	if c.TimeLimit != "" {
+		_, err := time.ParseDuration(c.TimeLimit)
+		if err != nil {
+			errors["time_limit"] = "Bad duration formatting."
+		}
 	}
 	return errors
 }
 
-// C is the exported global configuration variable
-var C Conf
+// FillDefaults fills the zero value fields in the UnparsedConf with default values
+func (c *UnparsedConf) FillDefaults() error {
+	return mergo.Merge(c, NewUnparsedConf())
+}
 
 // Load loads the given fp (file path) to the C global configuration variable.
-func Load(fp string) error {
+func Load(fp string, verbose bool) error {
 	var err error
 	var uc UnparsedConf
 	conf, err := ioutil.ReadFile(fp)
@@ -94,6 +98,18 @@ func Load(fp string) error {
 		TimeLimit:    tl,
 		FullDoc:      uc.FullDoc,
 		Debug:        uc.Debug,
+	}
+	if verbose {
+		log.Printf("[INFO][System]\tLoaded configuration file %s :\n", fp)
+		log.Printf("[INFO][System]\tName Server : %s\n", C.NameServer)
+		log.Printf("[INFO][System]\tUpload Directory : %s\n", C.UploadDir)
+		log.Printf("[INFO][System]\tDatabase : %s\n", C.DB)
+		log.Printf("[INFO][System]\tPort : %v\n", C.Port)
+		log.Printf("[INFO][System]\tUni URI Length : %v\n", C.UniURILength)
+		log.Printf("[INFO][System]\tSize Limit : %v Mo\n", C.SizeLimit)
+		log.Printf("[INFO][System]\tTime Limit : %s\n", C.TimeLimit.String())
+		log.Printf("[INFO][System]\tFull Documentation : %v\n", C.FullDoc)
+		log.Printf("[INFO][System]\tDebug : %v\n", C.Debug)
 	}
 	return err
 }
