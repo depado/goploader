@@ -4,7 +4,6 @@ build:
     - go get ./...
     - go build -o server/server ./server
     - go build -o client/client ./client 
-    - go test
 
 matrix:
   GO_VERSION:
