@@ -1,4 +1,7 @@
 # goploader
+
+[![Build Status](https://drone.depado.eu/api/badges/Depado/goploader/status.svg)](https://drone.depado.eu/Depado/goploader)
+
 Simple client-server application to upload files/text
 
 ## Principle
