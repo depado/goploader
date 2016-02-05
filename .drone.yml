@@ -2,8 +2,8 @@ build:
   image: armhfbuild/golang:$$GO_VERSION
   commands:
     - go get ./...
-    - go build -o server/server github.com/Depado/goploader/server
-    - go build -o client/client github.com/Depado/goploader/client 
+    - go build -o server/server ./server
+    - go build -o client/client ./client 
     - go test
 
 matrix:
