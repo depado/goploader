@@ -28,6 +28,17 @@ func Index(c *gin.Context) {
 	})
 }
 
+func detectScheme(c *gin.Context) string {
+	scheme := c.Request.Header.Get("X-Forwarded-Proto")
+	if scheme == "http" || scheme == "https" {
+		return scheme
+	}
+	if c.Request.TLS != nil {
+		return "https"
+	}
+	return "http"
+}
+
 // Create handles the multipart form upload
 func Create(c *gin.Context) {
 	var err error
@@ -76,13 +87,8 @@ func Create(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 	database.DB.Create(&models.ResourceEntry{Key: u, Name: h.Filename})
-
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u, wr)
-	scheme := "http"
-	if c.Request.TLS != nil {
-		scheme = "https"
-	}
-	c.String(http.StatusCreated, "%s://%s/v/%s/%s\n", scheme, conf.C.NameServer, u, k)
+	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", detectScheme(c), conf.C.NameServer, u, k)
 }
 
 // View handles the file views

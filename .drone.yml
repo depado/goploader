@@ -1,0 +1,12 @@
+build:
+  image: armhfbuild/golang:$$GO_VERSION
+  commands:
+    - go get
+    - go build github.com/Depado/goploader/server
+    - go build github.com/Depado/goploader/client
+    - go test
+
+matrix:
+  GO_VERSION:
+    - 1.6
+    - 1.5
