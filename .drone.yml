@@ -9,3 +9,12 @@ matrix:
   GO_VERSION:
     - 1.6
     - 1.5
+
+notify:
+  irc:
+    prefix: build
+    nick: drone
+    channel: n0sec
+    server:
+      host: irc.freenode.net
+      port: 6667
