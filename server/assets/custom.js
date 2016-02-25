@@ -1,8 +1,11 @@
+'use strict';
+
 var loader = $("#upload-loader");
 var form = $("#upload-form");
 var result = $("#upload-result");
 var upurl = $("#upload-url");
-var uperror = $("#upload-error")
+var uperror = $("#upload-error");
+
 $('#upload-btn').click(function($e) {
     $e.preventDefault();
     var data = new FormData();
@@ -38,9 +41,17 @@ $("#upload-again").click(function($e) {
         form.fadeIn();
     });
 });
-'use strict';
 
-;
+var active = $("#upload");
+$("a[id^='toggle-']").click(function(evt) {
+    var toggleid = $(this).attr('id').split('-')[1];
+    active.fadeOut(400, function() {
+        $("#" + toggleid).fadeIn();
+    });
+    active = $("#" + toggleid);
+    evt.preventDefault();
+});
+
 (function(document, window, index) {
     var inputs = document.querySelectorAll('.inputfile');
     Array.prototype.forEach.call(inputs, function(input) {

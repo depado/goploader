@@ -3,7 +3,7 @@ build:
   commands:
     - go get ./...
     - go build -o server/server ./server
-    - go build -o client/client ./client 
+    - go build -o client/client ./client
 
 matrix:
   GO_VERSION:
@@ -12,8 +12,8 @@ matrix:
 
 notify:
   irc:
-    prefix: build
-    nick: drone
+    prefix: Goploader Build
+    nick: Depadrone
     channel: n0sec
     server:
       host: irc.freenode.net

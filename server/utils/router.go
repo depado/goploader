@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/GeertJohan/go.rice"
+	"github.com/gin-gonic/contrib/renders/multitemplate"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +15,7 @@ func InitAssetsTemplates(r *gin.Engine, tbox, abox *rice.Box, verbose bool, name
 	var err error
 
 	if tbox != nil {
+		mt := multitemplate.New()
 		var tmpl string
 		var message *template.Template
 		for _, x := range names {
@@ -23,11 +25,12 @@ func InitAssetsTemplates(r *gin.Engine, tbox, abox *rice.Box, verbose bool, name
 			if message, err = template.New(x).Parse(tmpl); err != nil {
 				return err
 			}
-			r.SetHTMLTemplate(message)
+			mt.Add(x, message)
+			if verbose {
+				log.Printf("[INFO][System]\tLoaded template \"%s\" from \"templates\" box.\n", x)
+			}
 		}
-		if verbose {
-			log.Printf("[INFO][System]\tLoaded templates from `templates` box.\n")
-		}
+		r.HTMLRender = mt
 	} else {
 		r.LoadHTMLGlob("templates/*")
 		if verbose {
@@ -38,7 +41,7 @@ func InitAssetsTemplates(r *gin.Engine, tbox, abox *rice.Box, verbose bool, name
 	if abox != nil {
 		r.StaticFS("/static", abox.HTTPBox())
 		if verbose {
-			log.Printf("[INFO][System]\tServing assets from `assets` box\n")
+			log.Printf("[INFO][System]\tServing assets from \"assets\" box\n")
 		}
 	} else {
 		r.Static("/static", "assets")
