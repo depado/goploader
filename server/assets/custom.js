@@ -23,7 +23,7 @@ $('#upload-btn').click(function($e) {
                 type: 'POST'
             });
             req.done(function(data) {
-                upurl.html("Here is your file :<br /><a href='" + data + "'>" + data + "</a>");
+                upurl.html("Here is your file :<br /><a href='" + data + "' target='_blank'>" + data + "</a>");
                 loader.fadeOut(400, function() {
                     result.fadeIn();
                 });

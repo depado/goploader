@@ -70,12 +70,14 @@ func main() {
 	var screen bool
 	var delay time.Duration
 	var window bool
+	var lifetime string
 
 	flag.BoolVarP(&tee, "tee", "t", false, "Displays stdin to stdout")
 	flag.BoolVarP(&progress, "progress", "p", false, "Displays a progress bar")
 	flag.BoolVarP(&clip, "clipboard", "c", false, "Copy the returned URL directly to the clipboard (needs xclip or xsel)")
 	flag.BoolVarP(&verbose, "verbose", "v", false, "Activates the debug mode")
 	flag.StringVarP(&argname, "name", "n", "", "Specify the filename you want")
+	flag.StringVarP(&lifetime, "lifetime", "l", "1d", "Specify the lifetime of your file (30m, 1h, 6h, 1d, 1w)")
 	flag.BoolVarP(&screen, "screenshot", "s", false, "Screenshot and uploads your current screen (Need the `import` command)")
 	flag.DurationVarP(&delay, "delay", "d", 0, "Define a delay before the program executes (including taking the screenshot)")
 	flag.BoolVarP(&window, "window", "w", false, "Click on the window you want to screenshot (only works with -s/--screenshot option)")
@@ -147,6 +149,7 @@ func main() {
 		var part io.Writer
 		defer w.Close()
 		defer multipartWriter.Close()
+		multipartWriter.WriteField("duration", lifetime)
 		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
 			log.Fatal(err)
 		}

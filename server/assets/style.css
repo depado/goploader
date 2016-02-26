@@ -9,8 +9,11 @@ select {
     font-weight: 700;
     text-transform: uppercase;
 }
+footer {
+    text-align: center;
+}
 .wrapper {
-    min-height: 92%;
+    min-height: 88%;
 }
 .wrapper:after {
     content: "";

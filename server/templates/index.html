@@ -278,6 +278,16 @@
                         <td>When using the
                             <code>screenshot</code>, this option allows you to select a window or a zone to screenshot before uploading it.</td>
                     </tr>
+                    <tr>
+                        <td>
+                            <code>-l</code>
+                        </td>
+                        <td>
+                            <code>--lifetime</code>
+                        </td>
+                        <td>1d</td>
+                        <td>Define the lifetime of your file on the server. Basically you need to choose between <code>30m, 1h, 6h, 1d, 1w</code> which are the equivalent for 30 minutes, 1 or 6 hours, 1 day, and 1 week.</td>
+                    </tr>
                 </tbody>
             </table>
             <p>These options can be activated separately. For example
@@ -341,6 +351,11 @@
                 <code>$ curl -F file=@- https://up.depado.eu/ &lt; myfile.txt</code>
                 <br />
                 <i>Another way of uploading a file</i>
+                <br />
+                <br />
+                <code>$ curl -F file=@- -F duration=1w https://up.depado.eu/ &lt; myfile.txt</code>
+                <br />
+                <i>Specify the lifetime of your file (one week in that example, see the client's documentation for all the avaiable options)</i>
             </p>
         </section>
         <section id="server" class="container" style="display: none;">
@@ -348,7 +363,13 @@
             <ul>
                 <li><a href="#server-downloads">Downloads</a></li>
                 <li><a href="#server-downloads-explanations">Types of Downloads</a></li>
-                <li><a href="#server-setup">Setup</a></li>
+                <li>
+                    <a href="#server-setup">Setup</a>
+                    <ul>
+                        <li><a href="#server-setup-web">Web Setup</a></li>
+                        <li><a href="#server-setup-conf">The <code>conf.yml</code> File</a></li>
+                    </ul>
+                </li>
             </ul>
             <p id="server-downloads">&nbsp;</p>
             <p><b>Downloads</b></p>
@@ -408,6 +429,8 @@
             <br />
             <p id="server-setup">&nbsp;</p>
             <p><b>Setup</b></p>
+            <p id="server-setup-web">&nbsp;</p>
+            <p><u>Web Setup</u></p>
             <p>There are currently two ways of configuring a goploader server. You can either run the binary a first time and follow the setup instructions in your browser (it will first run on the 8008 port, so make sure this port is available).</p>
             <pre><code> ./server --initial
  Please go to http://127.0.0.1:8008 to setup goploader.</code></pre>
@@ -415,12 +438,105 @@
                 This step will generate a <code>conf.yml</code> file next to your binary file. This is the configuration file of your service. You can freely modify it, keep in mind that you'll need to restart the service each you modify it so the changes
                 are applied.
             </p>
+            <p id="server-setup-conf">&nbsp;</p>
+            <p><u>The <code>conf.yml</code> File</u></p>
+            <p>
+                The other solution is to directly create a <code>conf.yml</code> file next to the binary (or wherever you want, you can actually specify a configuration file with the <code>-c (--conf)</code> flag.)
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Description</th>
+                        <th>Example Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>name_server</code>
+                        </td>
+                        <td>
+                            The server name to use. This is used to return correct URLs to the clients.
+                        </td>
+                        <td>up.depado.eu</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>upload_dir</code>
+                        </td>
+                        <td>
+                            The local or absolute path where the files should be uploaded to.
+                        </td>
+                        <td>up/</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>db</code>
+                        </td>
+                        <td>
+                            The local or absolute path of the database, along with its name.
+                        </td>
+                        <td>
+                            goploader.db
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>port</code>
+                        </td>
+                        <td>
+                            Port on which the server should listen.
+                        </td>
+                        <td>8003</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>uniuri_length</code>
+                        </td>
+                        <td>
+                            Length of the unique identifier for each uploaded file.
+                        </td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>size_limit</code>
+                        </td>
+                        <td>
+                            The maximum upload size the server should accept in Mo.
+                        </td>
+                        <td>20</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>fulldoc</code>
+                        </td>
+                        <td>
+                            Whether or not to display the full documentation of goploader (what you're reading right now).
+                        </td>
+                        <td>true</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>debug</code>
+                        </td>
+                        <td>
+                            Turn on and off the Gin debug mode. Useful to get more information if something goes wrong.
+                        </td>
+                        <td>false</td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
         {{ end }}
     </main>
     <footer class="footer site-footer">
         <section class="container">
-            <p>Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="_blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.</p>
+            <p>
+                Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="_blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.<br />
+                Did you know ? You can install the server on your own machine ! <a href="https://up.depado.eu/#server" target="_blank">Check it out.</a>
+            </p>
         </section>
     </footer>
     <script src="static/jquery.min.js"></script>

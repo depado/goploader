@@ -3,7 +3,6 @@ package conf
 import (
 	"io/ioutil"
 	"log"
-	"time"
 
 	"github.com/imdario/mergo"
 
@@ -18,7 +17,6 @@ type Conf struct {
 	Port         int
 	UniURILength int
 	SizeLimit    int64
-	TimeLimit    time.Duration
 	FullDoc      bool
 	Debug        bool
 }
@@ -34,7 +32,6 @@ type UnparsedConf struct {
 	Port         int    `yaml:"port" form:"port"`
 	UniURILength int    `yaml:"uniuri_length" form:"uniuri_length"`
 	SizeLimit    int64  `yaml:"size_limit" form:"size_limit"`
-	TimeLimit    string `yaml:"time_limit" form:"time_limit"`
 	FullDoc      bool   `yaml:"fulldoc" form:"fulldoc"`
 	Debug        bool   `yaml:"debug" form:"debug"`
 }
@@ -47,7 +44,6 @@ func NewUnparsedConf() UnparsedConf {
 		Port:         8080,
 		UniURILength: 10,
 		SizeLimit:    20,
-		TimeLimit:    "2h",
 		FullDoc:      false,
 		Debug:        false,
 	}
@@ -58,12 +54,6 @@ func (c *UnparsedConf) Validate() map[string]string {
 	errors := make(map[string]string)
 	if c.NameServer == "" {
 		errors["name_server"] = "This field is required."
-	}
-	if c.TimeLimit != "" {
-		_, err := time.ParseDuration(c.TimeLimit)
-		if err != nil {
-			errors["time_limit"] = "Bad duration formatting."
-		}
 	}
 	return errors
 }
@@ -84,10 +74,6 @@ func Load(fp string, verbose bool) error {
 	if err = yaml.Unmarshal(conf, &uc); err != nil {
 		return err
 	}
-	tl, err := time.ParseDuration(uc.TimeLimit)
-	if err != nil {
-		return err
-	}
 	C = Conf{
 		NameServer:   uc.NameServer,
 		UploadDir:    uc.UploadDir,
@@ -95,7 +81,6 @@ func Load(fp string, verbose bool) error {
 		Port:         uc.Port,
 		UniURILength: uc.UniURILength,
 		SizeLimit:    uc.SizeLimit,
-		TimeLimit:    tl,
 		FullDoc:      uc.FullDoc,
 		Debug:        uc.Debug,
 	}
@@ -107,7 +92,6 @@ func Load(fp string, verbose bool) error {
 		log.Printf("[INFO][System]\tPort : %v\n", C.Port)
 		log.Printf("[INFO][System]\tUni URI Length : %v\n", C.UniURILength)
 		log.Printf("[INFO][System]\tSize Limit : %v Mo\n", C.SizeLimit)
-		log.Printf("[INFO][System]\tTime Limit : %s\n", C.TimeLimit.String())
 		log.Printf("[INFO][System]\tFull Documentation : %v\n", C.FullDoc)
 		log.Printf("[INFO][System]\tDebug : %v\n", C.Debug)
 	}
