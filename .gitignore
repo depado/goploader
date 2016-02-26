@@ -14,3 +14,4 @@ server-*
 clients/
 clients.tar.gz
 goploader-server/
+server/rice-box.go

@@ -23,7 +23,6 @@ import (
 func Index(c *gin.Context) {
 	log.Printf("[INFO][%s]\tIssued a GET request\n", c.ClientIP())
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"duration":   conf.C.TimeLimit.String(),
 		"fulldoc":    conf.C.FullDoc,
 		"size_limit": conf.C.SizeLimit,
 	})
