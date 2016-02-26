@@ -58,11 +58,18 @@
                             <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
                         </svg><span>Choose a file…</span>
                     </label>
+                    <select name="duration" id="duration">
+                        <option value="30m">30 Minutes</option>
+                        <option value="1h">1 Hour</option>
+                        <option value="6h">6 Hours</option>
+                        <option value="1d">1 Day</option>
+                        <option value="1w">1 Week</option>
+                    </select>
                     <a class="button button-outline" href="#" id="upload-btn">Upload</a>
                     <br />
                     <p id="upload-error" style="display: none;"></p>
                     <p>
-                        Your file will live for {{.duration}}, and will be encrypted server-side.
+                        Your file will be encrypted server-side. Maximum size : {{.size_limit}}Mo
                     </p>
                 </fieldset>
             </form>
@@ -108,10 +115,16 @@
         </section>
         <section id="client" class="container" style="display: none;">
             <h5 class="title">Client</h5>
-            <h6 class="title">Downloads</h6>
+            <ul>
+                <li><a href="#client-downloads">Downloads</a></li>
+                <li><a href="#client-archlinux">Archlinux</a></li>
+                <li><a href="#client-documentation">Documentation</a></li>
+                <li><a href="#client-examples">Examples</a></li>
+            </ul>
+            <p id="client-downloads">&nbsp;</p>
+            <p><b>Binary Downloads</b></p>
             <p>Here are the download links for the client. For a more up to date version, consider installing
                 <code>Go</code> on your computer and compile the client from the Github source code.</p>
-            <p><b>Binary Downloads</b></p>
             <div class="row">
                 <div class="column">
                     <a class="button button-outline" href="releases/clients/client_linux_amd64">Linux 64-Bit</a>
@@ -146,6 +159,7 @@
                 </div>
             </div>
             <br />
+            <p id="client-archlinux">&nbsp;</p>
             <p><b>Archlinux</b></p>
             <p>If you're running Archlinux, there is a <code>goploader-client-git</code> package in AUR.</p>
             <div class="row">
@@ -154,16 +168,14 @@
                 </div>
             </div>
             <p><i>Thanks to krion for setting up the AUR package</i></p>
-            <h6 class="title">Documentation</h6>
-            <p><b>First Run</b></p>
+            <p id="client-documentation">&nbsp;</p>
+            <p><b>Documentation</b></p>
             <p>On the first run, goploader will try to read from <code>~/.config/goploader.conf.yml</code>. A default configuration will be written in this file if it can't be found. Also, if the <code>~/.config/</code> directory doesn't exist, it will be
                 created. This will be executed only once, you'll get a single line of log the first time you'll use the client.
                 <br />
                 <br />
                 <i>Note : If you want to use another server than mine (a friend of yours installed the server or your own server), you'll have to edit this file to point to your service.</i></p>
-            <p><b>General Documentation</b></p>
-            <p>Here are some small examples of how to use the command line application
-                <code>goploader</code>. Here is a list of the accepted arguments of the client :
+            <p>Here is a list of the accepted arguments of the client :
             </p>
             <table>
                 <thead>
@@ -271,7 +283,7 @@
             <p>These options can be activated separately. For example
                 <code>goploader --progress --delay="5s" myfile.txt</code> can be written
                 <code>goploader -pd 5s myfile.txt</code>. All the short arguments can be concatenated on the condition that they are all boolean except the last one that can be a boolean or take a value.</p>
-            <p>Here are some examples.</p>
+            <p id="client-examples"><b>Examples</b></p>
             <p>Take a screenshot of the whole screen after 5 seconds, upload it with a progress bar and copy the returned URL to the clipboard :
                 <br />
                 <code>$ goploader --progress --screenshot --delay="5s" --clipboard</code>
@@ -324,10 +336,22 @@
                 <code>$ cat myfile.txt | curl -F name="stdin" -F file=@- https://up.depado.eu/</code>
                 <br />
                 <i>Reads data from <code>stdin</code></i>
+                <br />
+                <br />
+                <code>$ curl -F file=@- https://up.depado.eu/ &lt; myfile.txt</code>
+                <br />
+                <i>Another way of uploading a file</i>
             </p>
         </section>
         <section id="server" class="container" style="display: none;">
             <h5 class="title">Server</h5>
+            <ul>
+                <li><a href="#server-downloads">Downloads</a></li>
+                <li><a href="#server-downloads-explanations">Types of Downloads</a></li>
+                <li><a href="#server-setup">Setup</a></li>
+            </ul>
+            <p id="server-downloads">&nbsp;</p>
+            <p><b>Downloads</b></p>
             <p>
                 If you wish, you can install the
                 <code>goploader</code> server. You can either compile it from the source code if you have a specific architecture or download the Linux 64-Bit or ARMv7 version with the link below.
@@ -357,18 +381,18 @@
                 </div>
             </div>
             <br />
-            <p>
-                <b>Note about the different distributions :</b>
-                <ul>
-                    <li>The “Standalone” distribution contains only a binary. All assets and templates (html files) are included directly in the binary. If you don't intend to modify those assets, this distribution is for you.</li>
-                    <li>The other distributions contains a binary for the server and the folders containing the assets so that you can freely modify them to your preferences. Please don't touch the footer though, giving credit to the author of the software helps a lot.</li>
-                </ul>
-                <ul>
-                    <li>“All Cross-Compiled Clients” can be used if you want to serve this very page and distribute the clients. Simply extract this archive so that the binaries are in the <code>goploader-server/releases/clients/</code> directory.</li>
-                    <li>“All Servers Releases” can be used if you want to serve this very page and distribute the server. Simply extract this archive so that the included archives are placed in the <code>goploader-server/releases/servers/</code> directory.</li>
-                </ul>
-                <i>That's kind of meta…</i>
-            </p>
+            <p id="server-downloads-explanations">&nbsp;</p>
+            <p><b>Types of Downloads</b></p>
+            <ul>
+                <li>The “Standalone” distribution contains only a binary. All assets and templates (html files) are included directly in the binary. If you don't intend to modify those assets, this distribution is for you.</li>
+                <li>The other distributions contains a binary for the server and the folders containing the assets so that you can freely modify them to your preferences. Please don't touch the footer though, giving credit to the author of the software helps
+                    a lot.</li>
+            </ul>
+            <ul>
+                <li>“All Cross-Compiled Clients” can be used if you want to serve this very page and distribute the clients. Simply extract this archive so that the binaries are in the <code>goploader-server/releases/clients/</code> directory.</li>
+                <li>“All Servers Releases” can be used if you want to serve this very page and distribute the server. Simply extract this archive so that the included archives are placed in the <code>goploader-server/releases/servers/</code> directory.</li>
+            </ul>
+            <i>That's kind of meta…</i>
             <p>
                 You don't need to create a
                 <code>conf.yml</code> file. If you run the server and the said file is absent or have missing fields, the server will enter setup mode in which you will be able to configure your server on a web page. It will then marshal the configuration
@@ -381,10 +405,20 @@
             <p>
                 If people want to use your service, they'll have to modify the configuration file that is created in their configuration directory : <code>~/.config/goploader.conf.yml</code>.
             </p>
+            <br />
+            <p id="server-setup">&nbsp;</p>
+            <p><b>Setup</b></p>
+            <p>There are currently two ways of configuring a goploader server. You can either run the binary a first time and follow the setup instructions in your browser (it will first run on the 8008 port, so make sure this port is available).</p>
+            <pre><code> ./server --initial
+ Please go to http://127.0.0.1:8008 to setup goploader.</code></pre>
+            <p>
+                This step will generate a <code>conf.yml</code> file next to your binary file. This is the configuration file of your service. You can freely modify it, keep in mind that you'll need to restart the service each you modify it so the changes
+                are applied.
+            </p>
         </section>
         {{ end }}
     </main>
-    <footer class="footer">
+    <footer class="footer site-footer">
         <section class="container">
             <p>Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="_blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.</p>
         </section>

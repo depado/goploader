@@ -1,8 +1,25 @@
+html, body {
+    height: 100%;
+}
+select {
+    border: 0.1rem solid #9b4dca;
+    color: #9b4dca;
+    width: 25%;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.wrapper {
+    min-height: 92%;
+}
+.wrapper:after {
+    content: "";
+    display: block;
+}
 .fullheader {
     text-align: center;
     margin-top: 7.5rem;
 }
-
 .inputfile {
     width: 0.1px;
     height: 0.1px;

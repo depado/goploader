@@ -18,8 +18,8 @@ func Monit(db *gorm.DB) {
 	tc := time.NewTicker(1 * time.Minute)
 	for {
 		res := []models.ResourceEntry{}
-		db.Find(&res, "created_at < ?", time.Now().Add(-conf.C.TimeLimit))
-		db.Unscoped().Where("created_at < ?", time.Now().Add(-conf.C.TimeLimit)).Delete(&models.ResourceEntry{})
+		db.Find(&res, "delete_at < ?", time.Now())
+		db.Unscoped().Where("delete_at < ?", time.Now()).Delete(&models.ResourceEntry{})
 		if len(res) > 0 {
 			log.Printf("[INFO][System]\tFlushing %d DB entries and files.\n", len(res))
 		}

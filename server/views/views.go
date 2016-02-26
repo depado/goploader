@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
@@ -42,8 +43,20 @@ func detectScheme(c *gin.Context) string {
 // Create handles the multipart form upload
 func Create(c *gin.Context) {
 	var err error
+	var duration time.Duration
+
 	remote := c.ClientIP()
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.SizeLimit*1000000)
+
+	d := c.DefaultPostForm("duration", "24h")
+	if val, ok := models.DurationMap[d]; ok {
+		duration = val
+	} else {
+		log.Printf("[ERROR][%s]\tInvalid duration : %s", remote, d)
+		c.String(http.StatusBadRequest, "Invalid duration\n")
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 
 	fd, h, err := c.Request.FormFile("file")
 	if err != nil {
@@ -86,7 +99,7 @@ func Create(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-	database.DB.Create(&models.ResourceEntry{Key: u, Name: h.Filename})
+	database.DB.Create(&models.ResourceEntry{Key: u, Name: h.Filename, DeleteAt: time.Now().Add(duration)})
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written)\n", remote, u, wr)
 	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", detectScheme(c), conf.C.NameServer, u, k)
 }

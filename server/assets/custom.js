@@ -9,7 +9,8 @@ var uperror = $("#upload-error");
 $('#upload-btn').click(function($e) {
     $e.preventDefault();
     var data = new FormData();
-    data.append('file', $("#upload-file")[0].files[0])
+    data.append('file', $("#upload-file")[0].files[0]);
+    data.append('duration', $("#duration").val());
     form.fadeOut(400, function() {
         loader.fadeIn();
         loader.promise().done(function() {
@@ -43,13 +44,41 @@ $("#upload-again").click(function($e) {
 });
 
 var active = $("#upload");
+var pages = ["introduction", "client", "curl", "server"];
+
 $("a[id^='toggle-']").click(function(evt) {
     var toggleid = $(this).attr('id').split('-')[1];
     active.fadeOut(400, function() {
+        window.scrollTo(0, 0);
         $("#" + toggleid).fadeIn();
     });
+    if (window.location.href.indexOf("#") > -1) {
+        if (toggleid == "upload") {
+            window.location = window.location.href.substring(0, window.location.href.indexOf("#")) + "#";
+        } else {
+            window.location = window.location.href.substring(0, window.location.href.indexOf("#")) + "#" + toggleid;
+        }
+    } else if (toggleid != "upload") {
+        window.location = window.location + "#" + toggleid;
+    }
     active = $("#" + toggleid);
     evt.preventDefault();
+});
+
+$(document).ready(function() {
+    for (var i = 0; i < pages.length; i++) {
+        var page = pages[i];
+        if (window.location.href.indexOf("#"+page) > -1) {
+            var current = window.location.href.substring(window.location.href.indexOf("#"+page))
+            active.fadeOut(400, function() {
+                $("#"+page).fadeIn(400, function () {
+                    $("html, body").animate({scrollTop: $(current).offset().top }, 200);
+                });
+            });
+            active = $("#"+page);
+            return;
+        }
+    }
 });
 
 (function(document, window, index) {
