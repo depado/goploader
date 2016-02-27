@@ -71,6 +71,7 @@ func main() {
 	var delay time.Duration
 	var window bool
 	var lifetime string
+	var once bool
 
 	flag.BoolVarP(&tee, "tee", "t", false, "Displays stdin to stdout")
 	flag.BoolVarP(&progress, "progress", "p", false, "Displays a progress bar")
@@ -81,6 +82,7 @@ func main() {
 	flag.BoolVarP(&screen, "screenshot", "s", false, "Screenshot and uploads your current screen (Need the `import` command)")
 	flag.DurationVarP(&delay, "delay", "d", 0, "Define a delay before the program executes (including taking the screenshot)")
 	flag.BoolVarP(&window, "window", "w", false, "Click on the window you want to screenshot (only works with -s/--screenshot option)")
+	flag.BoolVarP(&once, "once", "o", false, "Your upload will be visible only once and then deleted from the server")
 
 	flag.Parse()
 	args := flag.Args()
@@ -150,6 +152,9 @@ func main() {
 		defer w.Close()
 		defer multipartWriter.Close()
 		multipartWriter.WriteField("duration", lifetime)
+		if once {
+			multipartWriter.WriteField("once", "true")
+		}
 		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
 			log.Fatal(err)
 		}

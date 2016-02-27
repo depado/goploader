@@ -59,17 +59,20 @@
                         </svg><span>Choose a file…</span>
                     </label>
                     <select name="duration" id="duration">
-                        <option value="30m">30 Minutes</option>
-                        <option value="1h">1 Hour</option>
-                        <option value="6h">6 Hours</option>
-                        <option value="1d">1 Day</option>
-                        <option value="1w">1 Week</option>
+                        <option value="30m">30 minutes</option>
+                        <option value="1h">1 hour</option>
+                        <option value="6h">6 hours</option>
+                        <option value="1d">1 day</option>
+                        <option value="1w">1 week</option>
                     </select>
+                    <input id="one-view" type="checkbox" name="once">
+                    <label class="label-inline" for="one-view">No Restriction</label>
                     <a class="button button-outline" href="#" id="upload-btn">Upload</a>
                     <br />
                     <p id="upload-error" style="display: none;"></p>
+                    <p id="upload-summary" style="display: none;"></p>
                     <p>
-                        Your file will be encrypted server-side. Maximum size : {{.size_limit}}Mo
+                        Maximum size : {{.size_limit}}Mo
                     </p>
                 </fieldset>
             </form>
@@ -91,6 +94,7 @@
             <h5 class="title">Introduction</h5>
             <ul>
                 <li><a href="#introduction-presentation">Presentation</a></li>
+                <li><a href="#introduction-features">Features</a></li>
                 <li><a href="#introduction-motivation">Motivation</a></li>
                 <li><a href="#introduction-how">How it works</a></li>
                 <li><a href="#introduction-disclaimer">Disclaimer and License</a></li>
@@ -349,6 +353,16 @@
                         <td>1d</td>
                         <td>Define the lifetime of your file on the server. Basically you need to choose between <code>30m, 1h, 6h, 1d, 1w</code> which are the equivalent for 30 minutes, 1 or 6 hours, 1 day, and 1 week.</td>
                     </tr>
+                    <tr>
+                        <td>
+                            <code>-o</code>
+                        </td>
+                        <td>
+                            <code>--once</code>
+                        </td>
+                        <td>false</td>
+                        <td>Your upload will be visible only once and then deleted from the server</td>
+                    </tr>
                 </tbody>
             </table>
             <p>These options can be activated separately. For example
@@ -417,6 +431,9 @@
                 <code>$ curl -F file=@- -F duration=1w https://up.depado.eu/ &lt; myfile.txt</code>
                 <br />
                 <i>Specify the lifetime of your file (one week in that example, see the client's documentation for all the avaiable options)</i>
+                <code>$ curl -F file=@- -F once="true" https://up.depado.eu/ &lt; myfile.txt</code>
+                <br />
+                <i>Specify that the file should only be visible once and then deleted from the server.</i>
             </p>
         </section>
         <section id="server" class="container" style="display: none;">

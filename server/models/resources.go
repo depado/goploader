@@ -20,5 +20,6 @@ type ResourceEntry struct {
 	gorm.Model
 	Key      string
 	Name     string
+	Once     bool
 	DeleteAt time.Time
 }

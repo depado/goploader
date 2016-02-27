@@ -5,12 +5,51 @@ var form = $("#upload-form");
 var result = $("#upload-result");
 var upurl = $("#upload-url");
 var uperror = $("#upload-error");
+var oneviewlabel = $("label[for=one-view]");
+var uploadsum = $("#upload-summary");
+
+var currentfile = "";
+
+function buildsummary() {
+    if (!currentfile == "") {
+        uploadsum.fadeOut(200, function() {
+            var sum = "Your file will live for "+ $("#duration option:selected").text() +" and will be visible ";
+            if ($('#one-view').is(":checked")) {
+                sum += "only once.";
+            } else {
+                sum += "without restrictions.";
+            }
+            uploadsum.text(sum)
+            uploadsum.fadeIn(200);
+        })
+    } else {
+        uploadsum.fadeOut();
+    }
+}
+
+$('#one-view').change(function() {
+    if ($('#one-view').is(":checked")) {
+        oneviewlabel.text("One Download");
+    } else {
+        oneviewlabel.text("No Restriction");
+    }
+    buildsummary();
+});
+
+$("#duration").change(function() {
+    buildsummary();
+});
+
+
 
 $('#upload-btn').click(function($e) {
     $e.preventDefault();
     var data = new FormData();
     data.append('file', $("#upload-file")[0].files[0]);
     data.append('duration', $("#duration").val());
+    if ($('#one-view').is(":checked")) {
+        data.append('once', 'true');
+    }
     form.fadeOut(400, function() {
         loader.fadeIn();
         loader.promise().done(function() {
@@ -79,6 +118,11 @@ $(document).ready(function() {
             return;
         }
     }
+    if ($('#one-view').is(":checked")) {
+        oneviewlabel.text("One Download");
+    } else {
+        oneviewlabel.text("No Restriction");
+    }
 });
 
 (function(document, window, index) {
@@ -94,10 +138,13 @@ $(document).ready(function() {
             else
                 fileName = e.target.value.split('\\').pop();
 
-            if (fileName)
+            if (fileName) {
+                currentfile = fileName;
                 label.querySelector('span').innerHTML = fileName;
-            else
+                buildsummary();
+            } else {
                 label.innerHTML = labelVal;
+            }
         });
 
         // Firefox bug fix

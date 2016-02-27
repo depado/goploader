@@ -43,10 +43,11 @@ func detectScheme(c *gin.Context) string {
 func Create(c *gin.Context) {
 	var err error
 	var duration time.Duration
+	var once bool
 
 	remote := c.ClientIP()
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.SizeLimit*1000000)
-
+	once = c.PostForm("once") != ""
 	d := c.DefaultPostForm("duration", "1d")
 	if val, ok := models.DurationMap[d]; ok {
 		duration = val
@@ -98,7 +99,7 @@ func Create(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-	database.DB.Create(&models.ResourceEntry{Key: u, Name: h.Filename, DeleteAt: time.Now().Add(duration)})
+	database.DB.Create(&models.ResourceEntry{Key: u, Name: h.Filename, Once: once, DeleteAt: time.Now().Add(duration)})
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written) (%s lifetime)\n", remote, u, wr, d)
 	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", detectScheme(c), conf.C.NameServer, u, k)
 }
@@ -135,4 +136,7 @@ func View(c *gin.Context) {
 	reader := &cipher.StreamReader{S: stream, R: f}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	io.Copy(c.Writer, reader)
+	if re.Once {
+		database.DB.Unscoped().Delete(&re)
+	}
 }
