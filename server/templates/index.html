@@ -91,10 +91,10 @@
             <h5 class="title">Introduction</h5>
             <p>
                 This is a page about the
-                <code>goploader</code> project. The philosophy of goploader is that it should be easy to share files from your terminal. If you want to share a file with a few of your friends for example.
+                <code>goploader</code> project. The philosophy of goploader is, it should be easy to share files from your terminal. If you want to share a file with a few of your friends, for example.
             </p>
             <p>
-                This project is composed of a client and a server. Both are free (as in speech and as in beer) and you can install, tweak or do whatever you want with the server. If you want people to use your service with the official client, they will have to modify
+                This project is composed of a client and a server. Both are free (as in speech, and as in beer) and you can install, tweak, or do whatever you want with the server. If you want people to use your service with the official client, they will have to modify
                 the <code>~/.config/goploader.conf.yml</code> file.
             </p>
             <p><b>Features</b></p>
@@ -103,9 +103,9 @@
                 <li>Upload directly from
                     <code>stdin</code>.
                 </li>
-                <li>Upload a file by giving it as an argument to the client.</li>
+                <li>Upload a file by passing it's path as an argument to the client.</li>
                 <li>All files are encrypted upon reception and decrypted when served.</li>
-                <li>The key to decrypt files is not saved on the server.</li>
+                <li>The decryption key is not saved on the server.</li>
             </ul>
             <p><b>Current Limitations</b></p>
             <ul>
@@ -117,14 +117,14 @@
             <h5 class="title">Client</h5>
             <ul>
                 <li><a href="#client-downloads">Downloads</a></li>
-                <li><a href="#client-archlinux">Archlinux</a></li>
+                <li><a href="#client-archlinux">Arch Linux</a></li>
                 <li><a href="#client-documentation">Documentation</a></li>
                 <li><a href="#client-examples">Examples</a></li>
             </ul>
             <p id="client-downloads">&nbsp;</p>
             <p><b>Binary Downloads</b></p>
             <p>Here are the download links for the client. For a more up to date version, consider installing
-                <code>Go</code> on your computer and compile the client from the Github source code.</p>
+                <code>Go</code> on your computer, and compiling the client from the Github source code.</p>
             <div class="row">
                 <div class="column">
                     <a class="button button-outline" href="releases/clients/client_linux_amd64">Linux 64-Bit</a>
@@ -160,8 +160,8 @@
             </div>
             <br />
             <p id="client-archlinux">&nbsp;</p>
-            <p><b>Archlinux</b></p>
-            <p>If you're running Archlinux, there is a <code>goploader-client-git</code> package in AUR.</p>
+            <p><b>Arch Linux</b></p>
+            <p>If you're running Arch Linux, there is a <code>goploader-client-git</code> package in AUR.</p>
             <div class="row">
                 <div class="column column-offset-25">
                     <p><code>yaourt -S goploader-client-git</code></p>
@@ -170,12 +170,12 @@
             <p><i>Thanks to krion for setting up the AUR package</i></p>
             <p id="client-documentation">&nbsp;</p>
             <p><b>Documentation</b></p>
-            <p>On the first run, goploader will try to read from <code>~/.config/goploader.conf.yml</code>. A default configuration will be written in this file if it can't be found. Also, if the <code>~/.config/</code> directory doesn't exist, it will be
-                created. This will be executed only once, you'll get a single line of log the first time you'll use the client.
+            <p>On the first run, goploader will try to read from <code>~/.config/goploader.conf.yml</code>. A default configuration will be written in this file, if it can't be found. Also, if the <code>~/.config/</code> directory doesn't exist, it will be
+                created. This will be executed only once, and you'll get a single line of log the first time you'll use the client.
                 <br />
                 <br />
-                <i>Note : If you want to use another server than mine (a friend of yours installed the server or your own server), you'll have to edit this file to point to your service.</i></p>
-            <p>Here is a list of the accepted arguments of the client :
+                <i>Note : If you want to use server other than mine (a friend of yours installed the server, or your own server), you'll have to edit this file to point to your service.</i></p>
+            <p>Here is a list of the accepted arguments in the client :
             </p>
             <table>
                 <thead>
@@ -221,7 +221,7 @@
                         <td>
                             <code>""</code>
                         </td>
-                        <td>Specify the filename you want. This will be the filename of the file when downloading it or viewing it. When uploading a file, defaults to the name of the file. When uploading from stdin, defaults to
+                        <td>Specify the filename. This will be the filename of the file when downloading it or viewing it. When uploading a file, this defaults to the name of the file. When uploading from stdin, defaults to
                             <code>stdin</code>.</td>
                     </tr>
                     <tr>
@@ -242,7 +242,7 @@
                             <code>--screenshot</code>
                         </td>
                         <td>false</td>
-                        <td>Takes a screenshot and directly uploads it. Works nicely with the
+                        <td>Takes a screenshot and uploads it, directly. Works nicely with the
                             <code>delay</code> option. <i>Note : The <code>import</code> command must be available.</i></td>
                     </tr>
                     <tr>
@@ -286,7 +286,7 @@
                             <code>--lifetime</code>
                         </td>
                         <td>1d</td>
-                        <td>Define the lifetime of your file on the server. Basically you need to choose between <code>30m, 1h, 6h, 1d, 1w</code> which are the equivalent for 30 minutes, 1 or 6 hours, 1 day, and 1 week.</td>
+                        <td>Define the lifetime(time-to-live) of your file, on the server. Basically, you need to choose between <code>30m, 1h, 6h, 1d, 1w</code> which are the equivalent for 30 minutes, 1 or 6 hours, 1 day, and 1 week.</td>
                     </tr>
                 </tbody>
             </table>
@@ -322,15 +322,15 @@
                 <code>$ cat myfile | goploader -p</code>
                 <span class="float-right">Stdin</span>
                 <br />
-                <i>Note : When the datasource is stdin, the total size of the file (or the total amount of text a command yields) can't be calculated
-            that's why the progress bar will only display the upload speed.</i>
+                <i>Note : When the datasource is stdin, the total size of the file (or the total amount of text a command yields) can't be calculated;
+                the progress bar will only display the upload speed.</i>
             </p>
         </section>
         <section id="curl" class="container" style="display: none;">
             <h5 class="title">Curl</h5>
-            <p>One of the main goals of goploader, is the ease of use. This is why the goploader server doesn't use a JSON API, to guarantee that any user can upload files painlessly.</p>
+            <p>One of the main goal of goploader is the ease of use. That's also why the goploader server doesn't use a JSON API, to guarantee that any user can upload files painlessly.</p>
             <p>
-                For this reason, you don't need a client at all, and can simply upload your files with curl.
+                For that reason, you can also don't use a client at all and simply upload your files with curl.
                 <br />
                 <br />
                 <code>$ curl -F file=@myfile.txt https://up.depado.eu/</code>
