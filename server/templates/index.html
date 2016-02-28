@@ -185,6 +185,7 @@
                 <li><a href="#client-archlinux">Archlinux</a></li>
                 <li><a href="#client-documentation">Documentation</a></li>
                 <li><a href="#client-examples">Examples</a></li>
+                <li><a href="#client-integration-fm">File Manager Integration</a></li>
             </ul>
             <p id="client-downloads">&nbsp;</p>
             <p><b>Binary Downloads</b></p>
@@ -400,6 +401,21 @@
                 <i>Note : When the datasource is stdin, the total size of the file (or the total amount of text a command yields) can't be calculated
             that's why the progress bar will only display the upload speed.</i>
             </p>
+            <p id="client-integration-fm">&nbsp;</p>
+            <p><b>File Manager Integration</b></p>
+            <p>
+                If you want, you can add an entry to the contextual menu of your file manager to upload a file. The trick is to use the <code>.desktop</code> files and to copy the returned URL to your clipboard once the file is uploaded. Here is an example <code>goploader.desktop</code> that you can put in your <code>~/.local/share/file-manager/actions/</code> directory :
+            </p>
+            <pre><code>[Desktop Entry]
+Type = Action
+Tooltip = Upload file on Goploader
+Name = Upload on Goploader...
+Profiles = goploader_onfile;
+
+[X-Action-Profile goploader_onfile]
+MimeTypes = all/allfiles;
+SelectionCount = =1
+Exec = goploader -c %d/%b</code></pre>
         </section>
         <section id="curl" class="container" style="display: none;">
             <h5 class="title">Curl</h5>
@@ -431,6 +447,8 @@
                 <code>$ curl -F file=@- -F duration=1w https://up.depado.eu/ &lt; myfile.txt</code>
                 <br />
                 <i>Specify the lifetime of your file (one week in that example, see the client's documentation for all the avaiable options)</i>
+                <br />
+                <br />
                 <code>$ curl -F file=@- -F once="true" https://up.depado.eu/ &lt; myfile.txt</code>
                 <br />
                 <i>Specify that the file should only be visible once and then deleted from the server.</i>

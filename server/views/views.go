@@ -140,3 +140,37 @@ func View(c *gin.Context) {
 		database.DB.Unscoped().Delete(&re)
 	}
 }
+
+// Head handles the head request for a file
+func Head(c *gin.Context) {
+	id := c.Param("uniuri")
+	key := c.Param("key")
+	re := models.ResourceEntry{}
+	remote := c.ClientIP()
+
+	database.DB.Where(&models.ResourceEntry{Key: id}).First(&re)
+	if re.Key == "" {
+		log.Printf("[INFO][%s]\tNot found : %s", remote, id)
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	log.Printf("[INFO][%s]\tHead %s file and entry\n", remote, id)
+	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
+	if err != nil {
+		log.Printf("[ERROR][%s]\tWhile opening %s file\n", remote, id)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	block, err := aes.NewCipher([]byte(key))
+	if err != nil {
+		log.Printf("[ERROR][%s]\tDuring Cipher creation : %s\n", remote, err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	var iv [aes.BlockSize]byte
+	stream := cipher.NewCFBDecrypter(block, iv[:])
+	reader := &cipher.StreamReader{S: stream, R: f}
+	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+	io.Copy(c.Writer, reader)
+}

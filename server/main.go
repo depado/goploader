@@ -57,5 +57,6 @@ func main() {
 	r.GET("/", views.Index)
 	r.POST("/", views.Create)
 	r.GET("/v/:uniuri/:key", views.View)
+	r.HEAD("/v/:uniuri/:key", views.Head)
 	r.Run(fmt.Sprintf(":%d", conf.C.Port))
 }
