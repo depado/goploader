@@ -4,16 +4,44 @@ var loader = $("#upload-loader");
 var form = $("#upload-form");
 var result = $("#upload-result");
 var upurl = $("#upload-url");
+var upclipboard = $("#upload-clipboard");
 var uperror = $("#upload-error");
 var oneviewlabel = $("label[for=one-view]");
 var uploadsum = $("#upload-summary");
 
 var currentfile = "";
+var active = $("#upload");
+var pages = ["introduction", "client", "curl", "server"];
+toastr.options = {
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "showDuration": "300",
+    "hideDuration": "300",
+    "timeOut": "2000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
+
+toastr.success('Copied to Clipboard');
+
+var clipboard = new Clipboard('#upload-clipboard');
+clipboard.on('success', function(e) {
+    toastr.success('Copied to Clipboard');
+    e.clearSelection();
+});
+
+clipboard.on('error', function(e) {
+    console.error('Action:', e.action);
+    console.error('Trigger:', e.trigger);
+});
 
 function buildsummary() {
     if (!currentfile == "") {
         uploadsum.fadeOut(200, function() {
-            var sum = "Your file will live for "+ $("#duration option:selected").text() +" and will be visible ";
+            var sum = "Your file will live for " + $("#duration option:selected").text() + " and will be visible ";
             if ($('#one-view').is(":checked")) {
                 sum += "only once.";
             } else {
@@ -40,8 +68,6 @@ $("#duration").change(function() {
     buildsummary();
 });
 
-
-
 $('#upload-btn').click(function($e) {
     $e.preventDefault();
     var data = new FormData();
@@ -63,6 +89,7 @@ $('#upload-btn').click(function($e) {
             });
             req.done(function(data) {
                 upurl.html("Here is your file :<br /><a href='" + data + "' target='_blank'>" + data + "</a>");
+                upclipboard.attr("data-clipboard-text", data);
                 loader.fadeOut(400, function() {
                     result.fadeIn();
                 });
@@ -76,14 +103,12 @@ $('#upload-btn').click(function($e) {
         });
     });
 });
+
 $("#upload-again").click(function($e) {
     result.fadeOut(400, function() {
         form.fadeIn();
     });
 });
-
-var active = $("#upload");
-var pages = ["introduction", "client", "curl", "server"];
 
 $("a[id^='toggle-']").click(function(evt) {
     var toggleid = $(this).attr('id').split('-')[1];
@@ -107,14 +132,16 @@ $("a[id^='toggle-']").click(function(evt) {
 $(document).ready(function() {
     for (var i = 0; i < pages.length; i++) {
         var page = pages[i];
-        if (window.location.href.indexOf("#"+page) > -1) {
-            var current = window.location.href.substring(window.location.href.indexOf("#"+page))
+        if (window.location.href.indexOf("#" + page) > -1) {
+            var current = window.location.href.substring(window.location.href.indexOf("#" + page))
             active.fadeOut(400, function() {
-                $("#"+page).fadeIn(400, function () {
-                    $("html, body").animate({scrollTop: $(current).offset().top }, 200);
+                $("#" + page).fadeIn(400, function() {
+                    $("html, body").animate({
+                        scrollTop: $(current).offset().top
+                    }, 200);
                 });
             });
-            active = $("#"+page);
+            active = $("#" + page);
             return;
         }
     }

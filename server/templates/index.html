@@ -13,6 +13,7 @@
     <link rel="stylesheet" target="blank" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
     <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
+    <link rel="stylesheet" type="text/css" href="static/toastr.css" />
     <link rel="stylesheet" type="text/css" href="static/style.css">
 </head>
 
@@ -80,6 +81,7 @@
             <div id="upload-result" style="display: none; text-align: center;">
                 <p id="upload-url"></p>
                 <br />
+                <button id="upload-clipboard" class="button button-outline" data-clipboard-text="">Copy to Clipboard</button>
                 <a class="button button-outline" href="#" id="upload-again">Upload Another File</a>
             </div>
             <div class="row" id="upload-loader" style="display: none;">
@@ -97,6 +99,7 @@
                 <li><a href="#introduction-features">Features</a></li>
                 <li><a href="#introduction-motivation">Motivation</a></li>
                 <li><a href="#introduction-how">How it works</a></li>
+                <li><a href="#introduction-technologies">Technologies</a></li>
                 <li><a href="#introduction-disclaimer">Disclaimer and License</a></li>
             </ul>
             <p id="introduction-presentation">&nbsp;</p>
@@ -149,6 +152,32 @@
                 <li>The file is never read fully in memory. It is buffered, and immediatly piped to the AES cipher. This ensures that the file is never fully stored in RAM unencrypted.</li>
                 <li>The length of encryption/decryption key can be customised in the configuration file of the server. It defaults to <code>10</code>.</li>
                 <li>The server <b>never</b> stores the encryption/decryption key. It is generated once to process the file and is immediatly forgotten once given back to the user.</li>
+            </ul>
+            <p id="introduction-technologies">&nbsp;</p>
+            <p><b>Technologies</b></p>
+            <p>The server and client try to keep things minimal.</p>
+            <ul>
+                <li>
+                    Client
+                    <ul>
+                        <li>Network part is pure Go</li>
+                        <li><a href="https://github.com/atotto/clipboard" target="_blank">github.com/atotto/clipboard</a> : Clipboard capabilities.</li>
+                        <li><a href="https://github.com/cheggaaa/pb" target="_blank">github.com/cheggaaa/pb</a> : Progress bar capabilities.</li>
+                        <li><a href="https://github.com/ogier/pflag" target="_blank">github.com/ogier/pflag</a> : Posix flags.</li>
+                        <li><a href="https://github.com/mitchellh/go-homedir" target="_blank">github.com/mitchellh/go-homedir</a> : Home directory detection.</li>
+                    </ul>
+                </li>
+                <li>
+                    Server
+                    <ul>
+                        <li><a href="https://github.com/GeertJohan/go.rice" target="_blank">github.com/GeertJohan/go.rice</a> : Resource embedding.</li>
+                        <li><a href="https://github.com/gin-gonic/gin" target="_blank">github.com/gin-gonic/gin</a> : HTTP framework.</li>
+                        <li><a href="http://github.com/jinzhu/gorm" target="_blank">github.com/jinzhu/gorm</a> : ORM</li>
+                        <li><a href="https://github.com/mattn/go-sqlite3" target="_blank">github.com/mattn/go-sqlite3</a> : Sqlite3 driver</li>
+                        <li><a href="https://github.com/ogier/pflag" target="_blank">github.com/ogier/pflag</a> : Posix flags.</li>
+                        <li><a href="https://github.com/dchest/uniuri" target="_blank">github.com/dchest/uniuri</a> : Unique URI generator</li>
+                    </ul>
+                </li>
             </ul>
             <p id="introduction-disclaimer">&nbsp;</p>
             <p><b>Disclaimer and License</b></p>
@@ -404,7 +433,8 @@
             <p id="client-integration-fm">&nbsp;</p>
             <p><b>File Manager Integration</b></p>
             <p>
-                If you want, you can add an entry to the contextual menu of your file manager to upload a file. The trick is to use the <code>.desktop</code> files and to copy the returned URL to your clipboard once the file is uploaded. Here is an example <code>goploader.desktop</code> that you can put in your <code>~/.local/share/file-manager/actions/</code> directory :
+                If you want, you can add an entry to the contextual menu of your file manager to upload a file. The trick is to use the <code>.desktop</code> files and to copy the returned URL to your clipboard once the file is uploaded. Here is an example
+                <code>goploader.desktop</code> that you can put in your <code>~/.local/share/file-manager/actions/</code> directory :
             </p>
             <pre><code>[Desktop Entry]
 Type = Action
@@ -636,6 +666,8 @@ Exec = goploader -c %d/%b</code></pre>
         </section>
     </footer>
     <script src="static/jquery.min.js"></script>
+    <script src="static/clipboard.min.js"></script>
+    <script src="static/toastr.min.js"></script>
     <script src="static/custom.js"></script>
 </body>
 

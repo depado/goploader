@@ -10,12 +10,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/Depado/goploader/client/screenshot"
 	"github.com/atotto/clipboard"
 	"github.com/cheggaaa/pb"
 	flag "github.com/ogier/pflag"
 
 	"github.com/Depado/goploader/client/conf"
+	"github.com/Depado/goploader/client/screenshot"
 )
 
 var (
