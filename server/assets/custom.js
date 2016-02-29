@@ -25,17 +25,10 @@ toastr.options = {
     "hideMethod": "fadeOut"
 };
 
-toastr.success('Copied to Clipboard');
-
 var clipboard = new Clipboard('#upload-clipboard');
 clipboard.on('success', function(e) {
     toastr.success('Copied to Clipboard');
     e.clearSelection();
-});
-
-clipboard.on('error', function(e) {
-    console.error('Action:', e.action);
-    console.error('Trigger:', e.trigger);
 });
 
 function buildsummary() {
