@@ -54,7 +54,9 @@ func main() {
 		log.Fatal(err)
 	}
 	r.Static("/releases", "releases")
-	r.GET("/", views.Index)
+	if conf.C.Web {
+		r.GET("/", views.Index)
+	}
 	r.POST("/", views.Create)
 	r.GET("/v/:uniuri/:key", views.View)
 	r.HEAD("/v/:uniuri/:key", views.Head)

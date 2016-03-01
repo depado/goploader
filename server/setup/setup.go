@@ -20,7 +20,7 @@ func index(c *gin.Context) {
 }
 
 func configure(c *gin.Context) {
-	var form conf.UnparsedConf
+	var form conf.Conf
 	var dat []byte
 	var err error
 
