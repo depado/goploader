@@ -47,6 +47,16 @@
                     <span class="float-right"><i>The number of chars generated for URIs</i></span>
                     <input placeholder="Default : 10" id="uniuri_length" name="uniuri_length" type="text">
 
+                    <label for="key_length" class="label-inline"><b>Key Length</b></label>
+                    <span class="float-right"><i>Number of chars generated for AES keys</i></span>
+                    <br />
+                    <select name="key_length" id="key_length">
+                        <option value="16">16 Chars</option>
+                        <option value="32">32 Chars</option>
+                        <option value="64">64 Chars</option>
+                    </select>
+                    <br />
+
                     <label for="size_limit" class="label-inline"><b>Size Limit</b></label>
                     <span class="float-right"><i>Maximum size of the uploaded files in MB</i></span>
                     <input placeholder="Default : 20" id="size_limit" name="size_limit" type="text">
@@ -55,13 +65,18 @@
                     <label class="label-inline" for="fulldoc"><b>Full Documentation</b></label>
                     <span class="float-right"><i>The homepage will display the full documentation</i></span>
                     <br />
-                    <br />
                     <input id="debug" type="checkbox" name="debug" value="true">
                     <label class="label-inline" for="debug"><b>Debug</b></label>
                     <span class="float-right"><i>Turn on the Gin debug mode.</i></span>
                     <br />
+                    <input id="no_web" type="checkbox" name="no_web" value="true">
+                    <label class="label-inline" for="no_web"><b>No Web Interface</b></label>
+                    <span class="float-right"><i>Don't provide a web interface</i></span>
                     <br />
-                    <a class="button button-outline" id="submit-form" href="#">Send</a>
+                    <br />
+                    <div style="text-align: center;">
+                        <a class="button button-outline" id="submit-form" href="#">Send</a>
+                    </div>
                 </fieldset>
             </form>
         </section>
@@ -92,22 +107,24 @@
         var errors = $("#setup-errors");
         var loader = $("#submit-loader");
         var submit = $("#submit-form");
-        submit.click(function (e) {
-            $("html, body").animate({ scrollTop: 0 }, "slow");
-            formsec.fadeOut(400, function () {
-                loader.fadeIn(400, function () {
+        submit.click(function(e) {
+            $("html, body").animate({
+                scrollTop: 0
+            }, "slow");
+            formsec.fadeOut(400, function() {
+                loader.fadeIn(400, function() {
                     var jqxhr = $.post("/", form.serialize());
-                    jqxhr.done(function () {
+                    jqxhr.done(function() {
                         loader.fadeOut(400, function() {
                             success.fadeIn();
                         });
                     });
-                    jqxhr.fail(function (req, status, error) {
+                    jqxhr.fail(function(req, status, error) {
                         var error = jQuery.parseJSON(req.responseText);
                         for (var key in error) {
-                            var label = $("label[for='"+key+"']");
-                            label.append("&nbsp;&nbsp;&nbsp;<span style='color: #FF4848'>"+error[key]+"</span>");
-                            $("#"+key).css("border", "0.1rem solid #FF4848");
+                            var label = $("label[for='" + key + "']");
+                            label.append("&nbsp;&nbsp;&nbsp;<span style='color: #FF4848'>" + error[key] + "</span>");
+                            $("#" + key).css("border", "0.1rem solid #FF4848");
                         }
                         loader.fadeOut(400, function() {
                             errors.show();

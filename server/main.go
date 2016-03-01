@@ -50,11 +50,11 @@ func main() {
 	}
 
 	r := gin.Default()
-	if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html"); err != nil {
-		log.Fatal(err)
-	}
-	r.Static("/releases", "releases")
-	if conf.C.Web {
+	if !conf.C.NoWeb {
+		if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html"); err != nil {
+			log.Fatal(err)
+		}
+		r.Static("/releases", "releases")
 		r.GET("/", views.Index)
 	}
 	r.POST("/", views.Create)

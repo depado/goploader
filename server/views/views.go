@@ -69,7 +69,7 @@ func Create(c *gin.Context) {
 
 	u := uniuri.NewLen(conf.C.UniURILength)
 
-	k := uniuri.NewLen(16)
+	k := uniuri.NewLen(conf.C.KeyLength)
 	kb := []byte(k)
 	block, err := aes.NewCipher(kb)
 	if err != nil {
