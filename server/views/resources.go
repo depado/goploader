@@ -11,33 +11,14 @@ import (
 	"path"
 	"time"
 
+	"github.com/dchest/uniuri"
+	"github.com/gin-gonic/gin"
+
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/models"
-
-	"github.com/dchest/uniuri"
-	"github.com/gin-gonic/gin"
+	"github.com/Depado/goploader/server/utils"
 )
-
-// Index handles the main page
-func Index(c *gin.Context) {
-	log.Printf("[INFO][%s]\tIssued a GET request\n", c.ClientIP())
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"fulldoc":    conf.C.FullDoc,
-		"size_limit": conf.C.SizeLimit,
-	})
-}
-
-func detectScheme(c *gin.Context) string {
-	scheme := c.Request.Header.Get("X-Forwarded-Proto")
-	if scheme == "http" || scheme == "https" {
-		return scheme
-	}
-	if c.Request.TLS != nil {
-		return "https"
-	}
-	return "http"
-}
 
 // Create handles the multipart form upload
 func Create(c *gin.Context) {
@@ -101,7 +82,7 @@ func Create(c *gin.Context) {
 	}
 	database.DB.Create(&models.ResourceEntry{Key: u, Name: h.Filename, Once: once, DeleteAt: time.Now().Add(duration)})
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written) (%s lifetime)\n", remote, u, wr, d)
-	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", detectScheme(c), conf.C.NameServer, u, k)
+	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), conf.C.NameServer, u, k)
 }
 
 // View handles the file views

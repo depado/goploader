@@ -21,5 +21,6 @@ type ResourceEntry struct {
 	Key      string
 	Name     string
 	Once     bool
+	Size     int64
 	DeleteAt time.Time
 }

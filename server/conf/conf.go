@@ -24,6 +24,7 @@ type Conf struct {
 	NoWeb        bool   `yaml:"no_web" form:"no_web"`
 	FullDoc      bool   `yaml:"fulldoc" form:"fulldoc"`
 	Debug        bool   `yaml:"debug" form:"debug"`
+	Stats        bool   `yaml:"stats" form:"stats"`
 }
 
 // NewDefault returns a Conf instance filled with default values
