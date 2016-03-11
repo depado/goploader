@@ -16,6 +16,7 @@ import (
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/models"
+	"github.com/Depado/goploader/server/statistics"
 	"github.com/Depado/goploader/server/utils"
 )
 
@@ -25,7 +26,7 @@ func Create(c *gin.Context) {
 	var duration time.Duration
 	var once bool
 
-	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.SizeLimit*1000000)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.SizeLimit*utils.MegaByte)
 
 	remote := c.ClientIP()
 	once = c.PostForm("once") != ""
@@ -90,6 +91,14 @@ func Create(c *gin.Context) {
 	}
 	if err = newres.Save(); err != nil {
 		log.Printf("[ERROR][%s]\tDuring saving : %s\n", remote, err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	statistics.S.TotalFiles++
+	statistics.S.TotalSize += uint64(wr)
+	if err = statistics.S.Save(); err != nil {
+		log.Printf("[ERROR][%s]\tDuring saving statistics : %s\n", remote, err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
