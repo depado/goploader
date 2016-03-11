@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/Depado/goploader/server/utils"
 	"github.com/imdario/mergo"
 
 	"gopkg.in/yaml.v2"
@@ -79,5 +80,5 @@ func Load(fp string, verbose bool) error {
 		log.Printf("[INFO][System]\tFull Documentation : %v\n", C.FullDoc)
 		log.Printf("[INFO][System]\tDebug : %v\n", C.Debug)
 	}
-	return err
+	return utils.EnsureDir(C.UploadDir)
 }

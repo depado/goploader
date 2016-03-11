@@ -6,13 +6,10 @@ import (
 
 	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3"
 	flag "github.com/ogier/pflag"
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
-	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/monitoring"
 	"github.com/Depado/goploader/server/setup"
 	"github.com/Depado/goploader/server/utils"
@@ -23,7 +20,7 @@ func main() {
 	var err error
 	var cp string
 	var initial bool
-	var conferr error
+
 	tbox, _ := rice.FindBox("templates")
 	abox, _ := rice.FindBox("assets")
 
@@ -31,25 +28,19 @@ func main() {
 	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
 	flag.Parse()
 
-	conferr = conf.Load(cp, !initial)
-	if conferr != nil || initial {
+	if err = conf.Load(cp, !initial); err != nil || initial {
 		setup.Run()
 	}
-	if err = utils.EnsureDir(conf.C.UploadDir); err != nil {
-		log.Fatal(err)
-	}
-	if database.DB, err = gorm.Open("sqlite3", conf.C.DB); err != nil {
-		log.Fatal(err)
-	}
-	database.DB.AutoMigrate(&models.ResourceEntry{})
-	go monitoring.Monit(&database.DB)
+	database.Initialize()
+	go monitoring.Monit()
 
 	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
 	if !conf.C.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
 	if !conf.C.NoWeb {
 		if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html"); err != nil {
 			log.Fatal(err)

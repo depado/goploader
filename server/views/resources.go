@@ -15,7 +15,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
-	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/utils"
 )
@@ -26,10 +25,12 @@ func Create(c *gin.Context) {
 	var duration time.Duration
 	var once bool
 
-	remote := c.ClientIP()
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.SizeLimit*1000000)
+
+	remote := c.ClientIP()
 	once = c.PostForm("once") != ""
 	d := c.DefaultPostForm("duration", "1d")
+
 	if val, ok := models.DurationMap[d]; ok {
 		duration = val
 	} else {
@@ -49,7 +50,6 @@ func Create(c *gin.Context) {
 	defer fd.Close()
 
 	u := uniuri.NewLen(conf.C.UniURILength)
-
 	k := uniuri.NewLen(conf.C.KeyLength)
 	kb := []byte(k)
 	block, err := aes.NewCipher(kb)
@@ -79,26 +79,38 @@ func Create(c *gin.Context) {
 		log.Printf("[ERROR][%s]\tDuring writing : %s\n", remote, err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
-	database.DB.Create(&models.ResourceEntry{
+	newres := &models.Resource{
 		Key:      u,
 		Name:     h.Filename,
 		Once:     once,
 		DeleteAt: time.Now().Add(duration),
 		Size:     wr,
-	})
+	}
+	if err = newres.Save(); err != nil {
+		log.Printf("[ERROR][%s]\tDuring saving : %s\n", remote, err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written) (%s lifetime)\n", remote, u, wr, d)
 	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), conf.C.NameServer, u, k)
 }
 
 // View handles the file views
 func View(c *gin.Context) {
+	var err error
+
 	id := c.Param("uniuri")
 	key := c.Param("key")
-	re := models.ResourceEntry{}
+	re := models.Resource{}
 	remote := c.ClientIP()
 
-	database.DB.Where(&models.ResourceEntry{Key: id}).First(&re)
+	if err = re.Get(id); err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
 	if re.Key == "" {
 		log.Printf("[INFO][%s]\tNot found : %s", remote, id)
 		c.AbortWithStatus(http.StatusNotFound)
@@ -124,18 +136,24 @@ func View(c *gin.Context) {
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	io.Copy(c.Writer, reader)
 	if re.Once {
-		database.DB.Unscoped().Delete(&re)
+		re.Delete()
 	}
 }
 
 // Head handles the head request for a file
 func Head(c *gin.Context) {
+	var err error
+
 	id := c.Param("uniuri")
 	key := c.Param("key")
-	re := models.ResourceEntry{}
+	re := models.Resource{}
 	remote := c.ClientIP()
 
-	database.DB.Where(&models.ResourceEntry{Key: id}).First(&re)
+	if err = re.Get(id); err != nil {
+		log.Printf("[ERROR][%s]\t%s", remote, err)
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
 	if re.Key == "" {
 		log.Printf("[INFO][%s]\tNot found : %s", remote, id)
 		c.AbortWithStatus(http.StatusNotFound)
