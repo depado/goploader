@@ -1,6 +1,8 @@
 package database
 
 import (
+	"time"
+
 	"github.com/boltdb/bolt"
 
 	"github.com/Depado/goploader/server/conf"
@@ -12,7 +14,7 @@ var DB *bolt.DB
 // Initialize initializes the database (creating it if necessary)
 func Initialize() error {
 	var err error
-	if DB, err = bolt.Open(conf.C.DB, 0600, nil); err != nil {
+	if DB, err = bolt.Open(conf.C.DB, 0600, &bolt.Options{Timeout: 1 * time.Second}); err != nil {
 		return err
 	}
 	err = DB.Update(func(tx *bolt.Tx) error {

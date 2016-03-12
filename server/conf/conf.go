@@ -2,12 +2,12 @@ package conf
 
 import (
 	"io/ioutil"
-	"log"
 
-	"github.com/Depado/goploader/server/utils"
 	"github.com/imdario/mergo"
-
 	"gopkg.in/yaml.v2"
+
+	"github.com/Depado/goploader/server/logger"
+	"github.com/Depado/goploader/server/utils"
 )
 
 // C is the exported global configuration variable
@@ -68,17 +68,17 @@ func Load(fp string, verbose bool) error {
 		return err
 	}
 	if verbose {
-		log.Printf("[INFO][System]\tLoaded configuration file %s :\n", fp)
-		log.Printf("[INFO][System]\tName Server : %s\n", C.NameServer)
-		log.Printf("[INFO][System]\tUpload Directory : %s\n", C.UploadDir)
-		log.Printf("[INFO][System]\tDatabase : %s\n", C.DB)
-		log.Printf("[INFO][System]\tPort : %v\n", C.Port)
-		log.Printf("[INFO][System]\tNo Web Interface : %v\n", C.NoWeb)
-		log.Printf("[INFO][System]\tUni URI Length : %v\n", C.UniURILength)
-		log.Printf("[INFO][System]\tKey Length : %v\n", C.KeyLength)
-		log.Printf("[INFO][System]\tSize Limit : %v Mo\n", C.SizeLimit)
-		log.Printf("[INFO][System]\tFull Documentation : %v\n", C.FullDoc)
-		log.Printf("[INFO][System]\tDebug : %v\n", C.Debug)
+		logger.Info("server", "Loaded configuration file", fp)
+		logger.Info("server", "Name Server", C.NameServer)
+		logger.Info("server", "Upload Directory", C.UploadDir)
+		logger.Info("server", "Database", C.DB)
+		logger.Info("server", "Port", C.Port)
+		logger.Info("server", "No Web Interface", C.NoWeb)
+		logger.Info("server", "Uni URI Length", C.UniURILength)
+		logger.Info("server", "Key Length", C.KeyLength)
+		logger.Info("server", "Size Limit", C.SizeLimit, "MB")
+		logger.Info("server", "Full Documentation", C.FullDoc)
+		logger.Info("server", "Debug", C.Debug)
 	}
 	return utils.EnsureDir(C.UploadDir)
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
+	"github.com/Depado/goploader/server/logger"
 	"github.com/Depado/goploader/server/monitoring"
 	"github.com/Depado/goploader/server/setup"
 	"github.com/Depado/goploader/server/statistics"
@@ -32,20 +33,20 @@ func main() {
 	if err = conf.Load(cp, !initial); err != nil || initial {
 		setup.Run()
 	}
-	database.Initialize()
+	if err = database.Initialize(); err != nil {
+		log.Fatal(err)
+	}
+	defer database.DB.Close()
 	go monitoring.Monit()
 	statistics.Initialize()
 
-	log.Printf("[INFO][System]\tStarted goploader server on port %d\n", conf.C.Port)
+	logger.Info("server", "Started goploader server on port", conf.C.Port)
 	if !conf.C.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	r := gin.New()
 	r.Use(gin.Recovery())
-	if conf.C.Debug {
-		r.Use(gin.Logger())
-	}
 	if !conf.C.NoWeb {
 		if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html"); err != nil {
 			log.Fatal(err)

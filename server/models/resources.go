@@ -2,7 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"os"
 	"path"
 	"time"
@@ -11,6 +11,8 @@ import (
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
+	"github.com/Depado/goploader/server/logger"
+	"github.com/Depado/goploader/server/utils"
 )
 
 // DurationMap is a map linking the received string and a time.Duration
@@ -56,13 +58,14 @@ func (r Resource) Delete() {
 	var err error
 	database.DB.Update(func(tx *bolt.Tx) error {
 		if err = tx.Bucket([]byte("resources")).Delete([]byte(r.Key)); err != nil {
-			log.Printf("[ERROR][System]\tWhile deleting : %v", err)
+			logger.Err("monitoring", fmt.Sprintf("Couldn't delete %s from database", r.Key), err)
 		}
 		return nil
 	})
 	if err = os.Remove(path.Join(conf.C.UploadDir, r.Key)); err != nil {
-		log.Printf("[ERROR][System]\tWhile deleting : %v", err)
+		logger.Err("monitoring", fmt.Sprintf("Couldn't delete %s from disk", r.Key), err)
 	}
+	logger.Info("monitoring", "Deleted", fmt.Sprintf("%s - %s", r.Key, utils.HumanBytes(uint64(r.Size))))
 }
 
 // Encode encodes a Resource to JSON

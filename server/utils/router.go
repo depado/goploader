@@ -2,11 +2,12 @@ package utils
 
 import (
 	"html/template"
-	"log"
 
 	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/contrib/renders/multitemplate"
 	"github.com/gin-gonic/gin"
+
+	"github.com/Depado/goploader/server/logger"
 )
 
 // InitAssetsTemplates initializes the router to use either a ricebox or the
@@ -26,27 +27,27 @@ func InitAssetsTemplates(r *gin.Engine, tbox, abox *rice.Box, verbose bool, name
 				return err
 			}
 			mt.Add(x, message)
-			if verbose {
-				log.Printf("[INFO][System]\tLoaded template \"%s\" from \"templates\" box.\n", x)
-			}
+		}
+		if verbose {
+			logger.Info("server", "Loaded templates from \"templates\" box")
 		}
 		r.HTMLRender = mt
 	} else {
 		r.LoadHTMLGlob("templates/*")
 		if verbose {
-			log.Printf("[INFO][System]\tLoaded templates from disk.\n")
+			logger.Info("server", "Loaded templates from disk")
 		}
 	}
 
 	if abox != nil {
 		r.StaticFS("/static", abox.HTTPBox())
 		if verbose {
-			log.Printf("[INFO][System]\tServing assets from \"assets\" box\n")
+			logger.Info("server", "Loaded assets from \"assets\" box")
 		}
 	} else {
 		r.Static("/static", "assets")
 		if verbose {
-			log.Printf("[INFO][System]\tServing assets from disk.\n")
+			logger.Info("server", "Loaded assets from disk")
 		}
 	}
 	return nil

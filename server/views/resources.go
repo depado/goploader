@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"crypto/aes"
 	"crypto/cipher"
+	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
+	"github.com/Depado/goploader/server/logger"
 	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/statistics"
 	"github.com/Depado/goploader/server/utils"
@@ -28,14 +29,13 @@ func Create(c *gin.Context) {
 
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, conf.C.SizeLimit*utils.MegaByte)
 
-	remote := c.ClientIP()
 	once = c.PostForm("once") != ""
 	d := c.DefaultPostForm("duration", "1d")
 
 	if val, ok := models.DurationMap[d]; ok {
 		duration = val
 	} else {
-		log.Printf("[ERROR][%s]\tInvalid duration : %s", remote, d)
+		logger.ErrC(c, "server", "Invalid duration", d)
 		c.String(http.StatusBadRequest, "Invalid duration\n")
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -43,7 +43,7 @@ func Create(c *gin.Context) {
 
 	fd, h, err := c.Request.FormFile("file")
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring reading file : %s", remote, err)
+		logger.ErrC(c, "server", "Couldn't read file", err)
 		c.String(http.StatusRequestEntityTooLarge, "Entity is too large (Max : %v MB)\n", conf.C.SizeLimit)
 		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
 		return
@@ -55,7 +55,7 @@ func Create(c *gin.Context) {
 	kb := []byte(k)
 	block, err := aes.NewCipher(kb)
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring Cipher creation : %s\n", remote, err)
+		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -66,7 +66,7 @@ func Create(c *gin.Context) {
 	path := path.Join(conf.C.UploadDir, u)
 	file, err := os.Create(path)
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring file creation : %s\n", remote, err)
+		logger.ErrC(c, "server", "Couldn't create file", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -77,7 +77,7 @@ func Create(c *gin.Context) {
 	// Copy the input file to the output file, encrypting on the fly.
 	wr, err := io.Copy(writer, bufio.NewReaderSize(fd, 512))
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring writing : %s\n", remote, err)
+		logger.ErrC(c, "server", "Couldn't write file", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -90,7 +90,7 @@ func Create(c *gin.Context) {
 		Size:     wr,
 	}
 	if err = newres.Save(); err != nil {
-		log.Printf("[ERROR][%s]\tDuring saving : %s\n", remote, err)
+		logger.ErrC(c, "server", "Couldn't save in database", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -98,12 +98,16 @@ func Create(c *gin.Context) {
 	statistics.S.TotalFiles++
 	statistics.S.TotalSize += uint64(wr)
 	if err = statistics.S.Save(); err != nil {
-		log.Printf("[ERROR][%s]\tDuring saving statistics : %s\n", remote, err)
+		logger.ErrC(c, "server", "Couldn't save statistics", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	log.Printf("[INFO][%s]\tCreated %s file and entry (%v bytes written) (%s lifetime)\n", remote, u, wr, d)
+	if once {
+		logger.InfoC(c, "server", "Created", fmt.Sprintf("%s - %s - %s - once", u, utils.HumanBytes(uint64(wr)), d))
+	} else {
+		logger.InfoC(c, "server", "Created", fmt.Sprintf("%s - %s - %s", u, utils.HumanBytes(uint64(wr)), d))
+	}
 	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), conf.C.NameServer, u, k)
 }
 
@@ -114,27 +118,27 @@ func View(c *gin.Context) {
 	id := c.Param("uniuri")
 	key := c.Param("key")
 	re := models.Resource{}
-	remote := c.ClientIP()
 
 	if err = re.Get(id); err != nil {
+		logger.InfoC(c, "server", "Not found", id)
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 	if re.Key == "" {
-		log.Printf("[INFO][%s]\tNot found : %s", remote, id)
+		logger.InfoC(c, "server", "Not found", id)
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-	log.Printf("[INFO][%s]\tFetched %s file and entry\n", remote, id)
+	logger.InfoC(c, "server", "Fetched", fmt.Sprintf("%s - %s", re.Key, utils.HumanBytes(uint64(re.Size))))
 	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {
-		log.Printf("[ERROR][%s]\tWhile opening %s file\n", remote, id)
+		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring Cipher creation : %s\n", remote, err)
+		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -156,28 +160,27 @@ func Head(c *gin.Context) {
 	id := c.Param("uniuri")
 	key := c.Param("key")
 	re := models.Resource{}
-	remote := c.ClientIP()
 
 	if err = re.Get(id); err != nil {
-		log.Printf("[ERROR][%s]\t%s", remote, err)
+		logger.InfoC(c, "server", "Not found", id)
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 	if re.Key == "" {
-		log.Printf("[INFO][%s]\tNot found : %s", remote, id)
+		logger.InfoC(c, "server", "Not found", id)
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-	log.Printf("[INFO][%s]\tHead %s file and entry\n", remote, id)
+	logger.InfoC(c, "server", "Head", fmt.Sprintf("%s - %s", re.Key, utils.HumanBytes(uint64(re.Size))))
 	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {
-		log.Printf("[ERROR][%s]\tWhile opening %s file\n", remote, id)
+		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		log.Printf("[ERROR][%s]\tDuring Cipher creation : %s\n", remote, err)
+		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
