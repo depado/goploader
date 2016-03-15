@@ -3,8 +3,11 @@ package statistics
 import (
 	"encoding/json"
 
-	"github.com/Depado/goploader/server/database"
 	"github.com/boltdb/bolt"
+
+	"github.com/Depado/goploader/server/conf"
+	"github.com/Depado/goploader/server/database"
+	"github.com/Depado/goploader/server/logger"
 )
 
 // Statistics is the struct representing the server statistics
@@ -18,19 +21,29 @@ var S Statistics
 
 // Save writes the Resource to the bucket
 func (s Statistics) Save() error {
+	if conf.C.Debug {
+		logger.Info("server", "Started Save on statistics object")
+	}
 	var err error
 	var data []byte
 
 	if data, err = s.Encode(); err != nil {
 		return err
 	}
-	return database.DB.Update(func(tx *bolt.Tx) error {
+	err = database.DB.Update(func(tx *bolt.Tx) error {
 		return tx.Bucket([]byte("statistics")).Put([]byte("main"), data)
 	})
+	if conf.C.Debug {
+		logger.Info("server", "Done Save on statistics object")
+	}
+	return err
 }
 
 // Initialize loads the previous state of the statistics
 func Initialize() {
+	if conf.C.Debug {
+		logger.Info("server", "Started Initialize on statistics object")
+	}
 	sp := &S
 	database.DB.View(func(tx *bolt.Tx) error {
 		return sp.Decode(tx.Bucket([]byte("statistics")).Get([]byte("main")))

@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
-	"github.com/Depado/goploader/server/utils"
 )
 
 // DurationMap is a map linking the received string and a time.Duration
@@ -35,37 +33,53 @@ type Resource struct {
 
 // Save writes the Resource to the bucket
 func (r Resource) Save() error {
+	if conf.C.Debug {
+		logger.Info("server", "Started Save on Resource", r.Key)
+	}
 	var err error
 	var data []byte
 
 	if data, err = r.Encode(); err != nil {
 		return err
 	}
-	return database.DB.Update(func(tx *bolt.Tx) error {
+	err = database.DB.Update(func(tx *bolt.Tx) error {
 		return tx.Bucket([]byte("resources")).Put([]byte(r.Key), data)
 	})
+	if conf.C.Debug {
+		logger.Info("server", "Done Save on Resource", r.Key)
+	}
+	return err
 }
 
 // Get retrives the Resource from the bucket
 func (r *Resource) Get(key string) error {
-	return database.DB.View(func(tx *bolt.Tx) error {
+	if conf.C.Debug {
+		logger.Info("server", "Started Get on Resource", key)
+	}
+	err := database.DB.View(func(tx *bolt.Tx) error {
 		return r.Decode(tx.Bucket([]byte("resources")).Get([]byte(key)))
 	})
+	if conf.C.Debug {
+		logger.Info("server", "Done Get on Resource", r.Key)
+	}
+	return err
 }
 
 // Delete deletes a resource in database and on disk
-func (r Resource) Delete() {
+func (r Resource) Delete() error {
 	var err error
-	database.DB.Update(func(tx *bolt.Tx) error {
-		if err = tx.Bucket([]byte("resources")).Delete([]byte(r.Key)); err != nil {
-			logger.Err("monitoring", fmt.Sprintf("Couldn't delete %s from database", r.Key), err)
-		}
-		return nil
-	})
-	if err = os.Remove(path.Join(conf.C.UploadDir, r.Key)); err != nil {
-		logger.Err("monitoring", fmt.Sprintf("Couldn't delete %s from disk", r.Key), err)
+	if conf.C.Debug {
+		logger.Info("server", "Started Delete on Resource", r.Key)
 	}
-	logger.Info("monitoring", "Deleted", fmt.Sprintf("%s - %s", r.Key, utils.HumanBytes(uint64(r.Size))))
+	if err = database.DB.Update(func(tx *bolt.Tx) error {
+		return tx.Bucket([]byte("resources")).Delete([]byte(r.Key))
+	}); err != nil {
+		return err
+	}
+	if err = os.Remove(path.Join(conf.C.UploadDir, r.Key)); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Encode encodes a Resource to JSON

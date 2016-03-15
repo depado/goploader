@@ -44,7 +44,7 @@ func main() {
 	if !conf.C.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
-
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
 	if !conf.C.NoWeb {

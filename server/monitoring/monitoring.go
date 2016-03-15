@@ -1,10 +1,14 @@
 package monitoring
 
 import (
+	"fmt"
+	"os"
+	"path"
 	"time"
 
 	"github.com/boltdb/bolt"
 
+	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
 	"github.com/Depado/goploader/server/models"
@@ -16,29 +20,40 @@ func Monit() {
 	var err error
 	tc := time.NewTicker(1 * time.Minute)
 	for {
-		err = database.DB.View(func(tx *bolt.Tx) error {
+		if conf.C.Debug {
+			logger.Info("monitoring", "Started Monit on Resources")
+		}
+		found := 0
+		err = database.DB.Update(func(tx *bolt.Tx) error {
 			now := time.Now()
-			found := 0
 			b := tx.Bucket([]byte("resources"))
-			b.ForEach(func(k, v []byte) error {
+			return b.ForEach(func(k, v []byte) error {
+				var err error
 				r := &models.Resource{}
-				err := r.Decode(v)
-				if err != nil {
+				if err = r.Decode(v); err != nil {
 					return err
 				}
 				if r.DeleteAt.Before(now) {
 					found++
-					r.Delete()
+					if err = b.Delete([]byte(r.Key)); err != nil {
+						return err
+					}
+					if err = os.Remove(path.Join(conf.C.UploadDir, r.Key)); err != nil {
+						return err
+					}
 				}
 				return nil
 			})
-			if found > 0 {
-				logger.Info("monitoring", "Cleaning DB", "Flushed", found, "DB entries and files")
-			}
-			return nil
 		})
 		if err != nil {
-			logger.Err("monitoring", "While checking", err)
+			logger.Err("monitoring", "While monitoring", err)
+		} else {
+			if found > 0 {
+				logger.Info("monitoring", fmt.Sprintf("Deleted %d entries and files", found))
+			}
+		}
+		if conf.C.Debug {
+			logger.Info("monitoring", "Done Monit on Resources")
 		}
 		<-tc.C
 	}
