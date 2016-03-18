@@ -19,8 +19,7 @@
 
 <body>
     <main class="wrapper">
-        {{ if .fulldoc }}
-        {{ if not .sensitive_mode }}
+        {{ if .fulldoc }} {{ if not .sensitive_mode }}
         <nav class="navigation">
             <section class="container">
                 <ul class="navigation-list float-right">
@@ -45,16 +44,13 @@
                 </ul>
             </section>
         </nav>
-        {{ end }}
-        {{ end }}
+        {{ end }} {{ end }}
         <section id="upload" class="container fullheader">
             {{ if not .sensitive_mode }}
             <h1 class="title">Goploader</h1>
-            <h2>Because file sharing is meant to be easy</h2>
-            {{ else }}
+            <h2>Because file sharing is meant to be easy</h2> {{ else }}
             <h1 class="title">&nbsp;</h1>
-            <h2>&nbsp;</h2>
-            {{ end }}
+            <h2>&nbsp;</h2> {{ end }}
             <form id="upload-form">
                 <fieldset>
                     <input type="file" name="file" id="upload-file" class="inputfile" />
@@ -95,8 +91,7 @@
                 </div>
             </div>
         </section>
-        {{ if .fulldoc }}
-        {{ if not .sensitive_mode }}
+        {{ if .fulldoc }} {{ if not .sensitive_mode }}
         <section id="introduction" class="container" style="display: none;">
             <h5 class="title">Introduction</h5>
             <ul>
@@ -177,10 +172,9 @@
                     <ul>
                         <li><a href="https://github.com/GeertJohan/go.rice" target="_blank">github.com/GeertJohan/go.rice</a> : Resource embedding.</li>
                         <li><a href="https://github.com/gin-gonic/gin" target="_blank">github.com/gin-gonic/gin</a> : HTTP framework.</li>
-                        <li><a href="http://github.com/jinzhu/gorm" target="_blank">github.com/jinzhu/gorm</a> : ORM</li>
-                        <li><a href="https://github.com/mattn/go-sqlite3" target="_blank">github.com/mattn/go-sqlite3</a> : Sqlite3 driver</li>
+                        <li><a href="https://github.com/boltdb/bolt" target="_blank">github.com/boltdb/bolt</a> : Embedded key/value datastore.</li>
                         <li><a href="https://github.com/ogier/pflag" target="_blank">github.com/ogier/pflag</a> : Posix flags.</li>
-                        <li><a href="https://github.com/dchest/uniuri" target="_blank">github.com/dchest/uniuri</a> : Unique URI generator</li>
+                        <li><a href="https://github.com/dchest/uniuri" target="_blank">github.com/dchest/uniuri</a> : Unique URI generator.</li>
                     </ul>
                 </li>
             </ul>
@@ -499,6 +493,8 @@ Exec = goploader -c %d/%b</code></pre>
                     <ul>
                         <li><a href="#server-setup-web">Web Setup</a></li>
                         <li><a href="#server-setup-conf">The <code>conf.yml</code> File</a></li>
+                        <li><a href="#server-setup-sensitive">Sensitive Mode</a></li>
+
                     </ul>
                 </li>
             </ul>
@@ -657,11 +653,34 @@ Exec = goploader -c %d/%b</code></pre>
                         </td>
                         <td>false</td>
                     </tr>
+                    <tr>
+                        <td>
+                            <code>stats</code>
+                        </td>
+                        <td>
+                            Display or not the statistics on the main page. Note that even when setting this to false, statistics will still be gathered.
+                        </td>
+                        <td>true</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>sensitive_mode</code>
+                        </td>
+                        <td>
+                            If web interface is activated, hide all information and only display the file upload form.
+                        </td>
+                        <td>false</td>
+                    </tr>
                 </tbody>
             </table>
+            <p id="server-setup-sensitive">&nbsp;</p>
+            <p><u>Sensitive Mode</u></p>
+            <p>
+                This is actually a really important setting. If you know the server will be used to host sensitive information, please set this to <code>true</code>. This will disable any information if the web interface is activated. For example, there
+                won't be any footer, the project's name won't be displayed, only the file upload form will. This is a simple way of not affiliating me to your project/company/organization. This setting will obviously override the <code>fulldoc</code>                and <code>stats</code> settings as there won't be anything displayed on the page.
+            </p>
         </section>
-        {{ end }}
-        {{ end }}
+        {{ end }} {{ end }}
     </main>
     {{ if not .sensitive_mode }}
     <footer class="footer site-footer">
