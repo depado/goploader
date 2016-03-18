@@ -20,12 +20,10 @@ func Monit() {
 	var err error
 	tc := time.NewTicker(1 * time.Minute)
 	for {
-		if conf.C.Debug {
-			logger.Info("monitoring", "Started Monit on Resources")
-		}
+		logger.Debug("monitoring", "Started Monit on Resources")
+		now := time.Now()
 		found := 0
 		err = database.DB.Update(func(tx *bolt.Tx) error {
-			now := time.Now()
 			b := tx.Bucket([]byte("resources"))
 			return b.ForEach(func(k, v []byte) error {
 				var err error
@@ -49,12 +47,10 @@ func Monit() {
 			logger.Err("monitoring", "While monitoring", err)
 		} else {
 			if found > 0 {
-				logger.Info("monitoring", fmt.Sprintf("Deleted %d entries and files", found))
+				logger.Info("monitoring", fmt.Sprintf("Deleted %d entries and files in %s", found, time.Since(now)))
 			}
 		}
-		if conf.C.Debug {
-			logger.Info("monitoring", "Done Monit on Resources")
-		}
+		logger.Debug("monitoring", fmt.Sprintf("Done Monit on Resources (%s)", time.Since(now)))
 		<-tc.C
 	}
 }

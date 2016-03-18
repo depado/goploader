@@ -41,9 +41,6 @@ func main() {
 	statistics.Initialize()
 
 	logger.Info("server", "Started goploader server on port", conf.C.Port)
-	if !conf.C.Debug {
-		gin.SetMode(gin.ReleaseMode)
-	}
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())

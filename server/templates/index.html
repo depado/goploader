@@ -20,6 +20,7 @@
 <body>
     <main class="wrapper">
         {{ if .fulldoc }}
+        {{ if not .sensitive_mode }}
         <nav class="navigation">
             <section class="container">
                 <ul class="navigation-list float-right">
@@ -45,9 +46,15 @@
             </section>
         </nav>
         {{ end }}
+        {{ end }}
         <section id="upload" class="container fullheader">
+            {{ if not .sensitive_mode }}
             <h1 class="title">Goploader</h1>
             <h2>Because file sharing is meant to be easy</h2>
+            {{ else }}
+            <h1 class="title">&nbsp;</h1>
+            <h2>&nbsp;</h2>
+            {{ end }}
             <form id="upload-form">
                 <fieldset>
                     <input type="file" name="file" id="upload-file" class="inputfile" />
@@ -89,6 +96,7 @@
             </div>
         </section>
         {{ if .fulldoc }}
+        {{ if not .sensitive_mode }}
         <section id="introduction" class="container" style="display: none;">
             <h5 class="title">Introduction</h5>
             <ul>
@@ -653,15 +661,18 @@ Exec = goploader -c %d/%b</code></pre>
             </table>
         </section>
         {{ end }}
+        {{ end }}
     </main>
+    {{ if not .sensitive_mode }}
     <footer class="footer site-footer">
         <section class="container">
             <p>
-                {{ .total_files }} files ({{ .total_size }}) were uploaded. <a href="https://up.depado.eu/#server" target="_blank">Install it on your machine.</a>
+                {{ if .total_files }}{{ .total_files }} files ({{ .total_size }}) were uploaded.{{ end }} <a href="https://up.depado.eu/#server" target="_blank">Install it on your machine.</a>
                 <br /> Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="_blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.
             </p>
         </section>
     </footer>
+    {{ end }}
     <script src="static/jquery.min.js"></script>
     <script src="static/clipboard.min.js"></script>
     <script src="static/toastr.min.js"></script>

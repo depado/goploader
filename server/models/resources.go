@@ -2,15 +2,18 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 	"time"
 
 	"github.com/boltdb/bolt"
+	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
+	"github.com/Depado/goploader/server/utils"
 )
 
 // DurationMap is a map linking the received string and a time.Duration
@@ -33,9 +36,7 @@ type Resource struct {
 
 // Save writes the Resource to the bucket
 func (r Resource) Save() error {
-	if conf.C.Debug {
-		logger.Info("server", "Started Save on Resource", r.Key)
-	}
+	logger.Debug("server", "Started Save on Resource", r.Key)
 	var err error
 	var data []byte
 
@@ -45,41 +46,57 @@ func (r Resource) Save() error {
 	err = database.DB.Update(func(tx *bolt.Tx) error {
 		return tx.Bucket([]byte("resources")).Put([]byte(r.Key), data)
 	})
-	if conf.C.Debug {
-		logger.Info("server", "Done Save on Resource", r.Key)
-	}
+	logger.Debug("server", "Done Save on Resource", r.Key)
 	return err
 }
 
 // Get retrives the Resource from the bucket
 func (r *Resource) Get(key string) error {
-	if conf.C.Debug {
-		logger.Info("server", "Started Get on Resource", key)
-	}
+	logger.Debug("server", "Started Get on Resource", key)
 	err := database.DB.View(func(tx *bolt.Tx) error {
 		return r.Decode(tx.Bucket([]byte("resources")).Get([]byte(key)))
 	})
-	if conf.C.Debug {
-		logger.Info("server", "Done Get on Resource", r.Key)
-	}
+	logger.Debug("server", "Done Get on Resource", r.Key)
 	return err
 }
 
 // Delete deletes a resource in database and on disk
 func (r Resource) Delete() error {
+	logger.Debug("server", "Started Delete on Resource", r.Key)
 	var err error
-	if conf.C.Debug {
-		logger.Info("server", "Started Delete on Resource", r.Key)
-	}
-	if err = database.DB.Update(func(tx *bolt.Tx) error {
+	err = database.DB.Update(func(tx *bolt.Tx) error {
 		return tx.Bucket([]byte("resources")).Delete([]byte(r.Key))
-	}); err != nil {
+	})
+	if err != nil {
 		return err
 	}
-	if err = os.Remove(path.Join(conf.C.UploadDir, r.Key)); err != nil {
-		return err
+	err = os.Remove(path.Join(conf.C.UploadDir, r.Key))
+	logger.Debug("server", "Done Delete on Resource", r.Key)
+	return err
+}
+
+func (r Resource) LogCreated(c *gin.Context) {
+	e := fmt.Sprintf("%sCreated%s %s - %s", logger.Green, logger.Reset, r.Key, utils.HumanBytes(uint64(r.Size)))
+	if r.Once {
+		e += " - once"
 	}
-	return nil
+	logger.InfoC(c, "server", e)
+}
+
+func (r Resource) LogFetched(c *gin.Context) {
+	e := fmt.Sprintf("%sFetched%s %s - %s", logger.Yellow, logger.Reset, r.Key, utils.HumanBytes(uint64(r.Size)))
+	if r.Once {
+		e += " - once"
+	}
+	logger.InfoC(c, "server", e)
+}
+
+func (r Resource) LogDeleted(c *gin.Context) {
+	e := fmt.Sprintf("%sDeleted%s %s - %s", logger.Red, logger.Reset, r.Key, utils.HumanBytes(uint64(r.Size)))
+	if r.Once {
+		e += " - once"
+	}
+	logger.InfoC(c, "server", e)
 }
 
 // Encode encodes a Resource to JSON

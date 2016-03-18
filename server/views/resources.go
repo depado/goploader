@@ -63,8 +63,7 @@ func Create(c *gin.Context) {
 	var iv [aes.BlockSize]byte
 	stream := cipher.NewCFBEncrypter(block, iv[:])
 
-	path := path.Join(conf.C.UploadDir, u)
-	file, err := os.Create(path)
+	file, err := os.Create(path.Join(conf.C.UploadDir, u))
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't create file", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
@@ -74,7 +73,6 @@ func Create(c *gin.Context) {
 	defer file.Close()
 
 	writer := &cipher.StreamWriter{S: stream, W: file}
-	// Copy the input file to the output file, encrypting on the fly.
 	wr, err := io.Copy(writer, bufio.NewReaderSize(fd, 512))
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't write file", err)
@@ -95,6 +93,7 @@ func Create(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+	newres.LogCreated(c)
 	statistics.S.TotalFiles++
 	statistics.S.TotalSize += uint64(wr)
 	if err = statistics.S.Save(); err != nil {
@@ -102,11 +101,6 @@ func Create(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
-	}
-	if once {
-		logger.InfoC(c, "server", "Created", fmt.Sprintf("%s - %s - %s - once", u, utils.HumanBytes(uint64(wr)), d))
-	} else {
-		logger.InfoC(c, "server", "Created", fmt.Sprintf("%s - %s - %s", u, utils.HumanBytes(uint64(wr)), d))
 	}
 	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), conf.C.NameServer, u, k)
 }
@@ -119,17 +113,12 @@ func View(c *gin.Context) {
 	key := c.Param("key")
 	re := models.Resource{}
 
-	if err = re.Get(id); err != nil {
+	if err = re.Get(id); err != nil || re.Key == "" {
 		logger.InfoC(c, "server", "Not found", id)
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-	if re.Key == "" {
-		logger.InfoC(c, "server", "Not found", id)
-		c.AbortWithStatus(http.StatusNotFound)
-		return
-	}
-	logger.InfoC(c, "server", "Fetched", fmt.Sprintf("%s - %s", re.Key, utils.HumanBytes(uint64(re.Size))))
+	re.LogFetched(c)
 	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
@@ -150,6 +139,7 @@ func View(c *gin.Context) {
 	io.Copy(c.Writer, reader)
 	if re.Once {
 		re.Delete()
+		re.LogDeleted(c)
 	}
 }
 

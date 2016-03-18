@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/Depado/goploader/server/conf"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,8 +18,9 @@ var (
 	Yellow   = "\x1b[33m"
 	Reset    = string([]byte{27, 91, 48, 109})
 	colorMap = map[string]string{
-		"ERR":        Red,
+		"ERROR":      Red,
 		"INFO":       Green,
+		"DEBUG":      Yellow,
 		"server":     Cyan,
 		"monitoring": Yellow,
 	}
@@ -38,7 +41,7 @@ func generic(status, from, ip, message string, extra ...interface{}) {
 		ip,
 		message,
 	}
-	strfmt := "%s%4s %s|%s %10v %s| %v | %15v | %s\n"
+	strfmt := "%s%5s %s|%s %10v %s| %v | %15v | %s\n"
 	if len(extra) > 0 {
 		var x string
 		for i, xv := range extra {
@@ -49,7 +52,7 @@ func generic(status, from, ip, message string, extra ...interface{}) {
 			}
 		}
 		args = append(args, x)
-		strfmt = "%s%4s %s|%s %10v %s| %v | %15v | %s : %s\n"
+		strfmt = "%s%5s %s|%s %10v %s| %v | %15v | %s : %s\n"
 	}
 	fmt.Fprintf(os.Stdout, strfmt, args...)
 }
@@ -72,4 +75,18 @@ func Info(from, message string, extra ...interface{}) {
 // InfoC logs a simple info message and fills the IP field with the gin.Context
 func InfoC(c *gin.Context, from, message string, extra ...interface{}) {
 	generic("INFO", from, c.ClientIP(), message, extra...)
+}
+
+// Debug logs a simple debug message without filling the IP field
+func Debug(from, message string, extra ...interface{}) {
+	if conf.C.Debug {
+		generic("DEBUG", from, "", message, extra...)
+	}
+}
+
+// DebugC logs a simple debug message and fills the IP field with the gin.Context
+func DebugC(c *gin.Context, from, message string, extra ...interface{}) {
+	if conf.C.Debug {
+		generic("DEBUG", from, c.ClientIP(), message, extra...)
+	}
 }

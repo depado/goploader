@@ -2,12 +2,10 @@ package conf
 
 import (
 	"io/ioutil"
+	"os"
 
 	"github.com/imdario/mergo"
 	"gopkg.in/yaml.v2"
-
-	"github.com/Depado/goploader/server/logger"
-	"github.com/Depado/goploader/server/utils"
 )
 
 // C is the exported global configuration variable
@@ -15,17 +13,18 @@ var C Conf
 
 // Conf is the struct containing the configuration of the server
 type Conf struct {
-	NameServer   string `yaml:"name_server" form:"name_server"`
-	UploadDir    string `yaml:"upload_dir" form:"upload_dir"`
-	DB           string `yaml:"db" form:"db"`
-	Port         int    `yaml:"port" form:"port"`
-	UniURILength int    `yaml:"uniuri_length" form:"uniuri_length"`
-	KeyLength    int    `yaml:"key_length" form:"key_length"`
-	SizeLimit    int64  `yaml:"size_limit" form:"size_limit"`
-	NoWeb        bool   `yaml:"no_web" form:"no_web"`
-	FullDoc      bool   `yaml:"fulldoc" form:"fulldoc"`
-	Debug        bool   `yaml:"debug" form:"debug"`
-	Stats        bool   `yaml:"stats" form:"stats"`
+	NameServer    string `yaml:"name_server" form:"name_server"`
+	UploadDir     string `yaml:"upload_dir" form:"upload_dir"`
+	DB            string `yaml:"db" form:"db"`
+	Port          int    `yaml:"port" form:"port"`
+	UniURILength  int    `yaml:"uniuri_length" form:"uniuri_length"`
+	KeyLength     int    `yaml:"key_length" form:"key_length"`
+	SizeLimit     int64  `yaml:"size_limit" form:"size_limit"`
+	NoWeb         bool   `yaml:"no_web" form:"no_web"`
+	FullDoc       bool   `yaml:"fulldoc" form:"fulldoc"`
+	Debug         bool   `yaml:"debug" form:"debug"`
+	Stats         bool   `yaml:"stats" form:"stats"`
+	SensitiveMode bool   `yaml:"sensitive_mode" form:"sensitive_mode"`
 }
 
 // NewDefault returns a Conf instance filled with default values
@@ -67,18 +66,12 @@ func Load(fp string, verbose bool) error {
 	if err = C.FillDefaults(); err != nil {
 		return err
 	}
-	if verbose {
-		logger.Info("server", "Loaded configuration file", fp)
-		logger.Info("server", "Name Server", C.NameServer)
-		logger.Info("server", "Upload Directory", C.UploadDir)
-		logger.Info("server", "Database", C.DB)
-		logger.Info("server", "Port", C.Port)
-		logger.Info("server", "No Web Interface", C.NoWeb)
-		logger.Info("server", "Uni URI Length", C.UniURILength)
-		logger.Info("server", "Key Length", C.KeyLength)
-		logger.Info("server", "Size Limit", C.SizeLimit, "MB")
-		logger.Info("server", "Full Documentation", C.FullDoc)
-		logger.Info("server", "Debug", C.Debug)
+	if _, err := os.Stat(fp); os.IsNotExist(err) {
+		if err = os.Mkdir(fp, 0777); err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
 	}
-	return utils.EnsureDir(C.UploadDir)
+	return nil
 }

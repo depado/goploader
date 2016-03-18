@@ -14,10 +14,14 @@ import (
 // Index handles the main page
 func Index(c *gin.Context) {
 	logger.InfoC(c, "server", "GET /")
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"fulldoc":     conf.C.FullDoc,
-		"size_limit":  conf.C.SizeLimit,
-		"total_size":  utils.HumanBytes(statistics.S.TotalSize),
-		"total_files": statistics.S.TotalFiles,
-	})
+	data := gin.H{
+		"fulldoc":        conf.C.FullDoc,
+		"size_limit":     conf.C.SizeLimit,
+		"sensitive_mode": conf.C.SensitiveMode,
+	}
+	if conf.C.Stats {
+		data["total_size"] = utils.HumanBytes(statistics.S.TotalSize)
+		data["total_files"] = statistics.S.TotalFiles
+	}
+	c.HTML(http.StatusOK, "index.html", data)
 }

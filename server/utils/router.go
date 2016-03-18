@@ -28,27 +28,19 @@ func InitAssetsTemplates(r *gin.Engine, tbox, abox *rice.Box, verbose bool, name
 			}
 			mt.Add(x, message)
 		}
-		if verbose {
-			logger.Info("server", "Loaded templates from \"templates\" box")
-		}
+		logger.Debug("server", "Loaded templates from \"templates\" box")
 		r.HTMLRender = mt
 	} else {
 		r.LoadHTMLGlob("templates/*")
-		if verbose {
-			logger.Info("server", "Loaded templates from disk")
-		}
+		logger.Debug("server", "Loaded templates from disk")
 	}
 
 	if abox != nil {
 		r.StaticFS("/static", abox.HTTPBox())
-		if verbose {
-			logger.Info("server", "Loaded assets from \"assets\" box")
-		}
+		logger.Debug("server", "Loaded assets from \"assets\" box")
 	} else {
 		r.Static("/static", "assets")
-		if verbose {
-			logger.Info("server", "Loaded assets from disk")
-		}
+		logger.Debug("server", "Loaded assets from disk")
 	}
 	return nil
 }
