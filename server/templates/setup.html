@@ -53,7 +53,6 @@
                     <select name="key_length" id="key_length">
                         <option value="16">16 Chars</option>
                         <option value="32">32 Chars</option>
-                        <option value="64">64 Chars</option>
                     </select>
                     <br />
 
@@ -67,11 +66,19 @@
                     <br />
                     <input id="debug" type="checkbox" name="debug" value="true">
                     <label class="label-inline" for="debug"><b>Debug</b></label>
-                    <span class="float-right"><i>Turn on the Gin debug mode.</i></span>
+                    <span class="float-right"><i>Turn on the Gin debug mode</i></span>
                     <br />
                     <input id="no_web" type="checkbox" name="no_web" value="true">
                     <label class="label-inline" for="no_web"><b>No Web Interface</b></label>
                     <span class="float-right"><i>Don't provide a web interface</i></span>
+                    <br />
+                    <input id="sensitive_mode" type="checkbox" name="sensitive_mode" value="true">
+                    <label class="label-inline" for="sensitive_mode"><b>Sensitive Mode</b></label>
+                    <span class="float-right"><i>Display only the file upload form</i></span>
+                    <br />
+                    <input id="stats" type="checkbox" name="stats" value="true">
+                    <label class="label-inline" for="stats"><b>Statistics</b></label>
+                    <span class="float-right"><i>Display statistics</i></span>
                     <br />
                     <br />
                     <div style="text-align: center;">
