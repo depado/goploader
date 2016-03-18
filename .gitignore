@@ -8,10 +8,5 @@ server/up/
 server/server
 server/conf.yml
 server/*.rice-box.go
-server/releases/*
-server_*
-server-*
-clients/
-clients.tar.gz
-goploader-server/
 server/rice-box.go
+releases

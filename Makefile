@@ -38,3 +38,5 @@ servers:
 	-rm -r goploader-server
 
 release: clients servers
+	tar czf servers.tar.gz releases/servers/
+	mv servers.tar.gz releases/servers/
