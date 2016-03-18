@@ -59,12 +59,12 @@ func generic(status, from, ip, message string, extra ...interface{}) {
 
 // Err logs a simple error without filling the IP field
 func Err(from, message string, extra ...interface{}) {
-	generic("ERR", from, "", message, extra...)
+	generic("ERROR", from, "", message, extra...)
 }
 
 // ErrC logs a simple error and fills the IP field with the gin.Context
 func ErrC(c *gin.Context, from, message string, extra ...interface{}) {
-	generic("ERR", from, c.ClientIP(), message, extra...)
+	generic("ERROR", from, c.ClientIP(), message, extra...)
 }
 
 // Info logs a simple info message without filling the IP field
