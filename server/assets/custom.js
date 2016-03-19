@@ -64,11 +64,16 @@ $("#duration").change(function() {
 $('#upload-btn').click(function($e) {
     $e.preventDefault();
     var data = new FormData();
+    if ($("#upload-file")[0].files.length != 1) {
+        toastr.success('Please select a file');
+        return
+    }
     data.append('file', $("#upload-file")[0].files[0]);
     data.append('duration', $("#duration").val());
     if ($('#one-view').is(":checked")) {
         data.append('once', 'true');
     }
+    toastr.success('File transfer in progress');
     form.fadeOut(400, function() {
         loader.fadeIn();
         loader.promise().done(function() {

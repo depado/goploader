@@ -1,6 +1,6 @@
 version = 1.0.2
 
-.PHONY: all clients servers release
+.PHONY: all clients servers release clean
 
 all:
 	go build -o client/client github.com/Depado/goploader/client
@@ -40,3 +40,8 @@ servers:
 release: clients servers
 	tar czf servers.tar.gz releases/servers/
 	mv servers.tar.gz releases/servers/
+
+clean:
+	-rm -r releases/
+	-rm server/rice-box.go
+	-rm -r goploader-server

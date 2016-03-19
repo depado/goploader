@@ -450,9 +450,15 @@ Exec = goploader -c %d/%b</code></pre>
         </section>
         <section id="curl" class="container" style="display: none;">
             <h5 class="title">Curl</h5>
+            <ul>
+                <li><a href="#curl-usage">Usage</a></li>
+                <li><a href="#curl-integration-fm">File Manager Integration</a></li>
+            </ul>
+            <p id="curl-usage">&nbsp;</p>
+            <p><b>Usage</b></p>
             <p>One of the main goal of goploader is the ease of use. That's also why the goploader server doesn't use a JSON API, to guarantee that any user can upload files painlessly.</p>
             <p>
-                For that reason, you can also don't use a client at all and simply upload your files with curl.
+                You can use this service without a client, simply by issuing curl commands.
                 <br />
                 <br />
                 <code>$ curl -F file=@myfile.txt https://up.depado.eu/</code>
@@ -484,6 +490,23 @@ Exec = goploader -c %d/%b</code></pre>
                 <br />
                 <i>Specify that the file should only be visible once and then deleted from the server.</i>
             </p>
+            <p id="curl-integration-fm">&nbsp;</p>
+            <p><b>File Manager Integration</b></p>
+            <p>
+                If you want, you can add an entry to the contextual menu of your file manager to upload a file. The trick is to use the <code>.desktop</code> files and to copy the returned URL to your clipboard once the file is uploaded. Here is an example
+                <code>goploader.desktop</code> that you can put in your <code>~/.local/share/file-manager/actions/</code> directory :
+            </p>
+            <pre><code>[Desktop Entry]
+Type = Action
+Tooltip = Upload file on Goploader
+Name = Upload on Goploader...
+Profiles = goploader_onfile;
+
+[X-Action-Profile goploader_onfile]
+MimeTypes = all/allfiles;
+SelectionCount = =1
+Exec = curl -F file=@%d/%b https://up.depado.eu/ | xclip</code></pre>
+        <p>You will need xclip to copy the returned URL to your clipboard.</p>
         </section>
         <section id="server" class="container" style="display: none;">
             <h5 class="title">Server</h5>

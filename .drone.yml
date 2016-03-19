@@ -1,14 +1,21 @@
 build:
   image: armhfbuild/golang:$$GO_VERSION
+  # image: golang:$$GO_VERSION
   commands:
     - go get ./...
+    - go get github.com/GeertJohan/go.rice
+    - go get github.com/GeertJohan/go.rice/rice
+    - rice embed-go -i=github.com/Depado/goploader/server
     - go build -o server/server ./server
     - go build -o client/client ./client
+    - rice clean -i=github.com/Depado/goploader/server
+  environment:
+    - CGO_ENABLED=0
+
 
 matrix:
   GO_VERSION:
     - 1.6
-    - 1.5
 
 notify:
   irc:
@@ -18,3 +25,15 @@ notify:
     server:
       host: irc.freenode.net
       port: 6667
+
+deploy:
+  rsync:
+    user: root
+    host: up.depado.eu
+    port: 22
+    source: server/server
+    target: /home/depado/goploader/server
+    delete: false
+    recursive: true
+    commands:
+      - sudo supervisorctl restart goploader
