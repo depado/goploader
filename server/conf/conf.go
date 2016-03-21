@@ -22,7 +22,7 @@ type Conf struct {
 	SizeLimit     int64  `yaml:"size_limit" form:"size_limit"`
 	NoWeb         bool   `yaml:"no_web" form:"no_web"`
 	FullDoc       bool   `yaml:"fulldoc" form:"fulldoc"`
-	Debug         bool   `yaml:"debug" form:"debug"`
+	LogLevel      string `yaml:"loglevel" form:"loglevel"`
 	Stats         bool   `yaml:"stats" form:"stats"`
 	SensitiveMode bool   `yaml:"sensitive_mode" form:"sensitive_mode"`
 }
@@ -36,6 +36,7 @@ func NewDefault() Conf {
 		UniURILength: 10,
 		SizeLimit:    20,
 		KeyLength:    16,
+		LogLevel:     "info",
 	}
 }
 

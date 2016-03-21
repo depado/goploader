@@ -75,6 +75,7 @@ func (r Resource) Delete() error {
 	return err
 }
 
+// LogCreated logs when a file is created
 func (r Resource) LogCreated(c *gin.Context) {
 	e := fmt.Sprintf("%sCreated%s %s - %s", logger.Green, logger.Reset, r.Key, utils.HumanBytes(uint64(r.Size)))
 	if r.Once {
@@ -83,6 +84,7 @@ func (r Resource) LogCreated(c *gin.Context) {
 	logger.InfoC(c, "server", e)
 }
 
+// LogFetched logs when a file is fetched
 func (r Resource) LogFetched(c *gin.Context) {
 	e := fmt.Sprintf("%sFetched%s %s - %s", logger.Yellow, logger.Reset, r.Key, utils.HumanBytes(uint64(r.Size)))
 	if r.Once {
@@ -91,6 +93,7 @@ func (r Resource) LogFetched(c *gin.Context) {
 	logger.InfoC(c, "server", e)
 }
 
+// LogDeleted logs when a file is deleted (due to a one-time view)
 func (r Resource) LogDeleted(c *gin.Context) {
 	e := fmt.Sprintf("%sDeleted%s %s - %s", logger.Red, logger.Reset, r.Key, utils.HumanBytes(uint64(r.Size)))
 	if r.Once {

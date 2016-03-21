@@ -1,8 +1,0 @@
-name_server: my.domain
-upload_dir: up/
-db: my.db
-port: 8080
-uniuri_length: 10
-limit_size: 20
-fulldoc: false
-debug: true

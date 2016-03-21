@@ -1,0 +1,12 @@
+name_server: yourdomain.tld
+upload_dir: up/
+db: goploader.db
+port: 8080
+uniuri_length: 10
+key_length: 16
+size_limit: 20
+no_web: false
+fulldoc: true
+loglevel: info
+stats: true
+sensitive_mode: false

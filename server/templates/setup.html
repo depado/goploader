@@ -56,6 +56,17 @@
                     </select>
                     <br />
 
+                    <label for="loglevel" class="label-inline"><b>Log Level</b></label>
+                    <span class="float-right"><i>Verbosity of the logs (disabled won't display logs)</i></span>
+                    <br />
+                    <select name="loglevel" id="loglevel">
+                        <option value="debug">Debug</option>
+                        <option value="info">Info</option>
+                        <option value="error">Error</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                    <br />
+
                     <label for="size_limit" class="label-inline"><b>Size Limit</b></label>
                     <span class="float-right"><i>Maximum size of the uploaded files in MB</i></span>
                     <input placeholder="Default : 20" id="size_limit" name="size_limit" type="text">
@@ -63,10 +74,6 @@
                     <input id="fulldoc" type="checkbox" name="fulldoc" value="true">
                     <label class="label-inline" for="fulldoc"><b>Full Documentation</b></label>
                     <span class="float-right"><i>The homepage will display the full documentation</i></span>
-                    <br />
-                    <input id="debug" type="checkbox" name="debug" value="true">
-                    <label class="label-inline" for="debug"><b>Debug</b></label>
-                    <span class="float-right"><i>Turn on the Gin debug mode</i></span>
                     <br />
                     <input id="no_web" type="checkbox" name="no_web" value="true">
                     <label class="label-inline" for="no_web"><b>No Web Interface</b></label>

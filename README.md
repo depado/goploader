@@ -1,7 +1,10 @@
 # goploader
 
-[![Build Status](https://drone.depado.eu/api/badges/Depado/goploader/status.svg)](https://drone.depado.eu/Depado/goploader)
+![Go Version](https://img.shields.io/badge/go-1.5-brightgreen.svg)
+![Go Version](https://img.shields.io/badge/go-1.6-brightgreen.svg)
+![Go Report](https:///badge/github.com/Depado/goploader)
 [![codebeat badge](https://codebeat.co/badges/0faefc03-91a4-41e7-a955-ccd8c1b096cd)](https://codebeat.co/projects/github-com-depado-goploader)
+[![Build Status](https://drone.depado.eu/api/badges/Depado/goploader/status.svg)](https://drone.depado.eu/Depado/goploader)
 
 Simple client-server application to upload files/text
 

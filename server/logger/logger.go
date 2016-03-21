@@ -59,34 +59,42 @@ func generic(status, from, ip, message string, extra ...interface{}) {
 
 // Err logs a simple error without filling the IP field
 func Err(from, message string, extra ...interface{}) {
-	generic("ERROR", from, "", message, extra...)
+	if conf.C.LogLevel == "debug" || conf.C.LogLevel == "info" || conf.C.LogLevel == "error" {
+		generic("ERROR", from, "", message, extra...)
+	}
 }
 
 // ErrC logs a simple error and fills the IP field with the gin.Context
 func ErrC(c *gin.Context, from, message string, extra ...interface{}) {
-	generic("ERROR", from, c.ClientIP(), message, extra...)
+	if conf.C.LogLevel == "debug" || conf.C.LogLevel == "info" || conf.C.LogLevel == "error" {
+		generic("ERROR", from, c.ClientIP(), message, extra...)
+	}
 }
 
 // Info logs a simple info message without filling the IP field
 func Info(from, message string, extra ...interface{}) {
-	generic("INFO", from, "", message, extra...)
+	if conf.C.LogLevel == "debug" || conf.C.LogLevel == "info" {
+		generic("INFO", from, "", message, extra...)
+	}
 }
 
 // InfoC logs a simple info message and fills the IP field with the gin.Context
 func InfoC(c *gin.Context, from, message string, extra ...interface{}) {
-	generic("INFO", from, c.ClientIP(), message, extra...)
+	if conf.C.LogLevel == "debug" || conf.C.LogLevel == "info" {
+		generic("INFO", from, c.ClientIP(), message, extra...)
+	}
 }
 
 // Debug logs a simple debug message without filling the IP field
 func Debug(from, message string, extra ...interface{}) {
-	if conf.C.Debug {
+	if conf.C.LogLevel == "debug" {
 		generic("DEBUG", from, "", message, extra...)
 	}
 }
 
 // DebugC logs a simple debug message and fills the IP field with the gin.Context
 func DebugC(c *gin.Context, from, message string, extra ...interface{}) {
-	if conf.C.Debug {
+	if conf.C.LogLevel == "debug" {
 		generic("DEBUG", from, c.ClientIP(), message, extra...)
 	}
 }
