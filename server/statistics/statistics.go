@@ -2,11 +2,14 @@ package statistics
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/boltdb/bolt"
 
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
+	"github.com/Depado/goploader/server/models"
+	"github.com/Depado/goploader/server/utils"
 )
 
 // Statistics is the struct representing the server statistics
@@ -37,10 +40,24 @@ func (s Statistics) Save() error {
 // Initialize loads the previous state of the statistics
 func Initialize() {
 	logger.Debug("server", "Started Initialize on statistics object")
-	sp := &S
+	var cfiles int
+	var csize uint64
+	var err error
+
 	database.DB.View(func(tx *bolt.Tx) error {
-		return sp.Decode(tx.Bucket([]byte("statistics")).Get([]byte("main")))
+		S.Decode(tx.Bucket([]byte("statistics")).Get([]byte("main")))
+		return tx.Bucket([]byte("resources")).ForEach(func(k, v []byte) error {
+			r := &models.Resource{}
+			if err = r.Decode(v); err != nil {
+				return err
+			}
+			csize += uint64(r.Size)
+			cfiles++
+			return nil
+		})
 	})
+	logger.Info("server", fmt.Sprintf("Total   %d (%s)", S.TotalFiles, utils.HumanBytes(S.TotalSize)))
+	logger.Info("server", fmt.Sprintf("Current %d (%s)", cfiles, utils.HumanBytes(csize)))
 	logger.Debug("server", "Done Initialize on statistics object")
 }
 

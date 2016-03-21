@@ -37,8 +37,8 @@ func main() {
 		log.Fatal(err)
 	}
 	defer database.DB.Close()
-	go monitoring.Monit()
 	statistics.Initialize()
+	go monitoring.Monit()
 
 	logger.Info("server", "Started goploader server on port", conf.C.Port)
 	gin.SetMode(gin.ReleaseMode)
