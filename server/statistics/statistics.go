@@ -14,8 +14,9 @@ import (
 
 // Statistics is the struct representing the server statistics
 type Statistics struct {
-	TotalSize  uint64
-	TotalFiles uint64
+	TotalSize   uint64
+	TotalFiles  uint64
+	CurrentSize uint64
 }
 
 // S is the exported main statistics structure
@@ -35,6 +36,16 @@ func (s Statistics) Save() error {
 	})
 	logger.Debug("server", "Done Save on statistics object")
 	return err
+}
+
+// UpdateCurrentSize updates total size of files uploaded
+func (s Statistics) UpdateCurrentSize(size uint64) error {
+	S.CurrentSize -= size
+	if err := S.Save(); err != nil {
+		return err
+	}
+	logger.Debug("server", fmt.Sprintf("Current size of uploaded files: %s", utils.HumanBytes(S.CurrentSize)))
+	return nil
 }
 
 // Initialize loads the previous state of the statistics

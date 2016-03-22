@@ -96,6 +96,7 @@ func Create(c *gin.Context) {
 	newres.LogCreated(c)
 	statistics.S.TotalFiles++
 	statistics.S.TotalSize += uint64(wr)
+	statistics.S.CurrentSize += uint64(wr)
 	if err = statistics.S.Save(); err != nil {
 		logger.ErrC(c, "server", "Couldn't save statistics", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
@@ -140,6 +141,7 @@ func View(c *gin.Context) {
 	if re.Once {
 		re.Delete()
 		re.LogDeleted(c)
+		statistics.S.UpdateCurrentSize(uint64(re.Size))
 	}
 }
 
