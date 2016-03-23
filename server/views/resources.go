@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/dchest/uniuri"
@@ -39,6 +40,18 @@ func Create(c *gin.Context) {
 		c.String(http.StatusBadRequest, "Invalid duration\n")
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
+	}
+
+	if conf.C.DiskQuota > 0 {
+		contentLength, _ := strconv.ParseUint(c.Request.Header.Get("Content-Length"), 10, 64)
+		quotaSize := uint64(conf.C.DiskQuota * utils.GigaByte)
+		currentSizeAfter := statistics.S.CurrentSize + contentLength
+		if currentSizeAfter > quotaSize {
+			logger.ErrC(c, "server", "Quota exceeded")
+			c.String(http.StatusBadRequest, "Not enough free space. Try again later.")
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
 	}
 
 	fd, h, err := c.Request.FormFile("file")
@@ -96,6 +109,7 @@ func Create(c *gin.Context) {
 	newres.LogCreated(c)
 	statistics.S.TotalFiles++
 	statistics.S.TotalSize += uint64(wr)
+	statistics.S.CurrentSize += uint64(wr)
 	if err = statistics.S.Save(); err != nil {
 		logger.ErrC(c, "server", "Couldn't save statistics", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
@@ -140,6 +154,7 @@ func View(c *gin.Context) {
 	if re.Once {
 		re.Delete()
 		re.LogDeleted(c)
+		statistics.S.UpdateCurrentSize(uint64(re.Size))
 	}
 }
 

@@ -12,6 +12,7 @@ import (
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
 	"github.com/Depado/goploader/server/models"
+	"github.com/Depado/goploader/server/statistics"
 )
 
 // Monit monitors the database and file system to remove old entries
@@ -23,6 +24,7 @@ func Monit() {
 		logger.Debug("monitoring", "Started Monit on Resources")
 		now := time.Now()
 		found := 0
+		var sizeRemoved uint64
 		err = database.DB.Update(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte("resources"))
 			return b.ForEach(func(k, v []byte) error {
@@ -39,6 +41,7 @@ func Monit() {
 					if err = os.Remove(path.Join(conf.C.UploadDir, r.Key)); err != nil {
 						return err
 					}
+					sizeRemoved += uint64(r.Size)
 				}
 				return nil
 			})
@@ -48,6 +51,7 @@ func Monit() {
 		} else {
 			if found > 0 {
 				logger.Info("monitoring", fmt.Sprintf("Deleted %d entries and files in %s", found, time.Since(now)))
+				statistics.S.UpdateCurrentSize(sizeRemoved)
 			}
 		}
 		logger.Debug("monitoring", fmt.Sprintf("Done Monit on Resources (%s)", time.Since(now)))

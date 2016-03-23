@@ -13,18 +13,19 @@ var C Conf
 
 // Conf is the struct containing the configuration of the server
 type Conf struct {
-	NameServer    string `yaml:"name_server" form:"name_server"`
-	UploadDir     string `yaml:"upload_dir" form:"upload_dir"`
-	DB            string `yaml:"db" form:"db"`
-	Port          int    `yaml:"port" form:"port"`
-	UniURILength  int    `yaml:"uniuri_length" form:"uniuri_length"`
-	KeyLength     int    `yaml:"key_length" form:"key_length"`
-	SizeLimit     int64  `yaml:"size_limit" form:"size_limit"`
-	NoWeb         bool   `yaml:"no_web" form:"no_web"`
-	FullDoc       bool   `yaml:"fulldoc" form:"fulldoc"`
-	LogLevel      string `yaml:"loglevel" form:"loglevel"`
-	Stats         bool   `yaml:"stats" form:"stats"`
-	SensitiveMode bool   `yaml:"sensitive_mode" form:"sensitive_mode"`
+	NameServer    string  `yaml:"name_server" form:"name_server"`
+	UploadDir     string  `yaml:"upload_dir" form:"upload_dir"`
+	DB            string  `yaml:"db" form:"db"`
+	Port          int     `yaml:"port" form:"port"`
+	UniURILength  int     `yaml:"uniuri_length" form:"uniuri_length"`
+	KeyLength     int     `yaml:"key_length" form:"key_length"`
+	SizeLimit     int64   `yaml:"size_limit" form:"size_limit"`
+	DiskQuota     float64 `yaml:"disk_quota" form:"disk_quota"`
+	NoWeb         bool    `yaml:"no_web" form:"no_web"`
+	FullDoc       bool    `yaml:"fulldoc" form:"fulldoc"`
+	LogLevel      string  `yaml:"loglevel" form:"loglevel"`
+	Stats         bool    `yaml:"stats" form:"stats"`
+	SensitiveMode bool    `yaml:"sensitive_mode" form:"sensitive_mode"`
 }
 
 // NewDefault returns a Conf instance filled with default values
@@ -35,6 +36,7 @@ func NewDefault() Conf {
 		Port:         8080,
 		UniURILength: 10,
 		SizeLimit:    20,
+		DiskQuota:    0,
 		KeyLength:    16,
 		LogLevel:     "info",
 	}
