@@ -44,7 +44,17 @@ func (r Resource) Save() error {
 		return err
 	}
 	err = database.DB.Update(func(tx *bolt.Tx) error {
-		return tx.Bucket([]byte("resources")).Put([]byte(r.Key), data)
+		if err = tx.Bucket([]byte("resources")).Put([]byte(r.Key), data); err != nil {
+			return err
+		}
+		S.TotalFiles++
+		S.TotalSize += uint64(r.Size)
+		S.CurrentFiles++
+		S.CurrentSize += uint64(r.Size)
+		if data, err = S.Encode(); err != nil {
+			return err
+		}
+		return tx.Bucket([]byte("statistics")).Put([]byte("main"), data)
 	})
 	logger.Debug("server", "Done Save on Resource", r.Key)
 	return err
@@ -56,7 +66,7 @@ func (r *Resource) Get(key string) error {
 	err := database.DB.View(func(tx *bolt.Tx) error {
 		return r.Decode(tx.Bucket([]byte("resources")).Get([]byte(key)))
 	})
-	logger.Debug("server", "Done Get on Resource", r.Key)
+	logger.Debug("server", "Done Get on Resource", key)
 	return err
 }
 
@@ -65,13 +75,23 @@ func (r Resource) Delete() error {
 	logger.Debug("server", "Started Delete on Resource", r.Key)
 	var err error
 	err = database.DB.Update(func(tx *bolt.Tx) error {
-		return tx.Bucket([]byte("resources")).Delete([]byte(r.Key))
+		if err = tx.Bucket([]byte("resources")).Delete([]byte(r.Key)); err != nil {
+			return err
+		}
+		S.CurrentFiles--
+		S.CurrentSize -= uint64(r.Size)
+		var data []byte
+		if data, err = S.Encode(); err != nil {
+			return err
+		}
+		return tx.Bucket([]byte("statistics")).Put([]byte("main"), data)
 	})
 	if err != nil {
 		return err
 	}
 	err = os.Remove(path.Join(conf.C.UploadDir, r.Key))
 	logger.Debug("server", "Done Delete on Resource", r.Key)
+	logger.Debug("server", fmt.Sprintf("Serving %d (%s) files", S.CurrentFiles, utils.HumanBytes(S.CurrentSize)))
 	return err
 }
 

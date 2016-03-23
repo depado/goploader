@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strconv"
 	"time"
 
 	"github.com/dchest/uniuri"
@@ -18,7 +17,6 @@ import (
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/logger"
 	"github.com/Depado/goploader/server/models"
-	"github.com/Depado/goploader/server/statistics"
 	"github.com/Depado/goploader/server/utils"
 )
 
@@ -40,18 +38,6 @@ func Create(c *gin.Context) {
 		c.String(http.StatusBadRequest, "Invalid duration\n")
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
-	}
-
-	if conf.C.DiskQuota > 0 {
-		contentLength, _ := strconv.ParseUint(c.Request.Header.Get("Content-Length"), 10, 64)
-		quotaSize := uint64(conf.C.DiskQuota * utils.GigaByte)
-		currentSizeAfter := statistics.S.CurrentSize + contentLength
-		if currentSizeAfter > quotaSize {
-			logger.ErrC(c, "server", "Quota exceeded")
-			c.String(http.StatusBadRequest, "Not enough free space. Try again later.")
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
 	}
 
 	fd, h, err := c.Request.FormFile("file")
@@ -93,6 +79,15 @@ func Create(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+	if conf.C.DiskQuota > 0 {
+		if models.S.CurrentSize+uint64(wr) > uint64(conf.C.DiskQuota*utils.GigaByte) {
+			logger.ErrC(c, "server", "Quota exceeded")
+			c.String(http.StatusBadRequest, "Not enough free space. Try again later.")
+			c.AbortWithStatus(http.StatusBadRequest)
+			os.Remove(path.Join(conf.C.UploadDir, u))
+			return
+		}
+	}
 	newres := &models.Resource{
 		Key:      u,
 		Name:     h.Filename,
@@ -107,15 +102,6 @@ func Create(c *gin.Context) {
 		return
 	}
 	newres.LogCreated(c)
-	statistics.S.TotalFiles++
-	statistics.S.TotalSize += uint64(wr)
-	statistics.S.CurrentSize += uint64(wr)
-	if err = statistics.S.Save(); err != nil {
-		logger.ErrC(c, "server", "Couldn't save statistics", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
 	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), conf.C.NameServer, u, k)
 }
 
@@ -154,7 +140,6 @@ func View(c *gin.Context) {
 	if re.Once {
 		re.Delete()
 		re.LogDeleted(c)
-		statistics.S.UpdateCurrentSize(uint64(re.Size))
 	}
 }
 

@@ -1,4 +1,4 @@
-package statistics
+package models
 
 import (
 	"encoding/json"
@@ -8,15 +8,15 @@ import (
 
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
-	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/utils"
 )
 
 // Statistics is the struct representing the server statistics
 type Statistics struct {
-	TotalSize   uint64
-	TotalFiles  uint64
-	CurrentSize uint64
+	TotalSize    uint64
+	TotalFiles   uint64
+	CurrentSize  uint64
+	CurrentFiles uint64
 }
 
 // S is the exported main statistics structure
@@ -38,27 +38,17 @@ func (s Statistics) Save() error {
 	return err
 }
 
-// UpdateCurrentSize updates total size of files uploaded
-func (s Statistics) UpdateCurrentSize(size uint64) error {
-	S.CurrentSize -= size
-	if err := S.Save(); err != nil {
-		return err
-	}
-	logger.Debug("server", fmt.Sprintf("Current size of uploaded files: %s", utils.HumanBytes(S.CurrentSize)))
-	return nil
-}
-
 // Initialize loads the previous state of the statistics
-func Initialize() {
+func Initialize() error {
 	logger.Debug("server", "Started Initialize on statistics object")
-	var cfiles int
+	var cfiles uint64
 	var csize uint64
 	var err error
 
-	database.DB.View(func(tx *bolt.Tx) error {
+	err = database.DB.View(func(tx *bolt.Tx) error {
 		S.Decode(tx.Bucket([]byte("statistics")).Get([]byte("main")))
 		return tx.Bucket([]byte("resources")).ForEach(func(k, v []byte) error {
-			r := &models.Resource{}
+			r := &Resource{}
 			if err = r.Decode(v); err != nil {
 				return err
 			}
@@ -67,9 +57,16 @@ func Initialize() {
 			return nil
 		})
 	})
+	if err != nil {
+		logger.Err("server", "Could not initialize statistics")
+		return err
+	}
+	S.CurrentFiles = cfiles
+	S.CurrentSize = csize
 	logger.Info("server", fmt.Sprintf("Total   %d (%s)", S.TotalFiles, utils.HumanBytes(S.TotalSize)))
 	logger.Info("server", fmt.Sprintf("Current %d (%s)", cfiles, utils.HumanBytes(csize)))
 	logger.Debug("server", "Done Initialize on statistics object")
+	return err
 }
 
 // Encode encodes a Resource to JSON

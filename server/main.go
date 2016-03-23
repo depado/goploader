@@ -11,9 +11,9 @@ import (
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
+	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/monitoring"
 	"github.com/Depado/goploader/server/setup"
-	"github.com/Depado/goploader/server/statistics"
 	"github.com/Depado/goploader/server/utils"
 	"github.com/Depado/goploader/server/views"
 )
@@ -37,7 +37,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer database.DB.Close()
-	statistics.Initialize()
+	if err = models.Initialize(); err != nil {
+		log.Fatal(err)
+	}
 	go monitoring.Monit()
 
 	logger.Info("server", "Started goploader server on port", conf.C.Port)

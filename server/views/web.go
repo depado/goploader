@@ -7,7 +7,7 @@ import (
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/logger"
-	"github.com/Depado/goploader/server/statistics"
+	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/utils"
 )
 
@@ -20,8 +20,8 @@ func Index(c *gin.Context) {
 		"sensitive_mode": conf.C.SensitiveMode,
 	}
 	if conf.C.Stats {
-		data["total_size"] = utils.HumanBytes(statistics.S.TotalSize)
-		data["total_files"] = statistics.S.TotalFiles
+		data["total_size"] = utils.HumanBytes(models.S.TotalSize)
+		data["total_files"] = models.S.TotalFiles
 	}
 	c.HTML(http.StatusOK, "index.html", data)
 }
