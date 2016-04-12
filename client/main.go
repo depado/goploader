@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/atotto/clipboard"
@@ -101,7 +102,7 @@ func main() {
 	}
 	if screen {
 		debugf("Executing screenshot")
-		file = "/tmp/tmp-goploader-screen.png"
+		file = "/tmp/goploader-screen.png"
 		if err = screenshot.Do(file, window); err != nil {
 			log.Fatal(err)
 		}
@@ -116,10 +117,11 @@ func main() {
 
 	if file != "" {
 		debugf("Main datasource is", file)
-		f, err := os.Open(file)
+		var f *os.File
+		f, err = os.Open(file)
 		check(err)
 		defer f.Close()
-		name = f.Name()
+		name = filepath.Base(f.Name())
 		datasource = f
 		if progress {
 			debugf("Initialization of known progress bar")
