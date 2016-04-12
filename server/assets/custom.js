@@ -7,6 +7,8 @@ var upurl = $("#upload-url");
 var upclipboard = $("#upload-clipboard");
 var uperror = $("#upload-error");
 var oneviewlabel = $("label[for=one-view]");
+var sourcelabel = $("label[for=source]");
+var filelabel = $("label[for=upload-file]");
 var uploadsum = $("#upload-summary");
 
 var currentfile = "";
@@ -31,21 +33,14 @@ clipboard.on('success', function(e) {
     e.clearSelection();
 });
 
-function buildsummary() {
-    if (!currentfile == "") {
-        uploadsum.fadeOut(200, function() {
-            var sum = "Your file will live for " + $("#duration option:selected").text() + " and will be visible ";
-            if ($('#one-view').is(":checked")) {
-                sum += "only once.";
-            } else {
-                sum += "without restrictions.";
-            }
-            uploadsum.text(sum)
-            uploadsum.fadeIn(200);
-        })
+function getsum() {
+    var sum = "Your file will live for " + $("#duration option:selected").text() + " and will be visible ";
+    if ($('#one-view').is(":checked")) {
+        sum += "only once.";
     } else {
-        uploadsum.fadeOut();
+        sum += "without restrictions.";
     }
+    return sum
 }
 
 $('#one-view').change(function() {
@@ -54,21 +49,51 @@ $('#one-view').change(function() {
     } else {
         oneviewlabel.text("No Restriction");
     }
-    buildsummary();
+    uploadsum.text(getsum());
+});
+
+$('#source').change(function() {
+    if ($('#source').is(":checked")) {
+        sourcelabel.text("Text");
+        filelabel.fadeOut(200, function() {
+            uploadsum.text(getsum());
+            $('#upload-text').fadeIn(200);
+        });
+    } else {
+        sourcelabel.text("File");
+        $('#upload-text').fadeOut(200, function() {
+            uploadsum.text(getsum());
+            filelabel.fadeIn(200);
+        });
+    }
 });
 
 $("#duration").change(function() {
-    buildsummary();
+    uploadsum.text(getsum());
+});
+
+$("#upload-again").click(function($e) {
+    result.fadeOut(400, function() {
+        form.fadeIn();
+    });
 });
 
 $('#upload-btn').click(function($e) {
     $e.preventDefault();
     var data = new FormData();
-    if ($("#upload-file")[0].files.length != 1) {
-        toastr.success('Please select a file');
-        return
+    if ($('#source').is(":checked")) {
+        if ($("#upload-text").val() == "") {
+            toastr.success('Please paste some text')
+            return
+        }
+        data.append('file', new File([new Blob([$("#upload-text").val()])], "stdin"));
+    } else {
+        if ($("#upload-file")[0].files.length != 1) {
+            toastr.success('Please select a file');
+            return
+        }
+        data.append('file', $("#upload-file")[0].files[0]);
     }
-    data.append('file', $("#upload-file")[0].files[0]);
     data.append('duration', $("#duration").val());
     if ($('#one-view').is(":checked")) {
         data.append('once', 'true');
@@ -99,12 +124,6 @@ $('#upload-btn').click(function($e) {
                 });
             });
         });
-    });
-});
-
-$("#upload-again").click(function($e) {
-    result.fadeOut(400, function() {
-        form.fadeIn();
     });
 });
 
@@ -148,6 +167,18 @@ $(document).ready(function() {
     } else {
         oneviewlabel.text("No Restriction");
     }
+    if ($('#source').is(":checked")) {
+        sourcelabel.text("Text");
+        filelabel.fadeOut(200, function() {
+            $('#upload-text').fadeIn(200);
+        });
+    } else {
+        sourcelabel.text("File");
+        $('#upload-text').fadeOut(200, function() {
+            filelabel.fadeIn(200);
+        });
+    }
+    uploadsum.text(getsum());
 });
 
 (function(document, window, index) {
