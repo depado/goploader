@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
@@ -56,5 +57,9 @@ func main() {
 	r.POST("/", views.Create)
 	r.GET("/v/:uniuri/:key", views.View)
 	r.HEAD("/v/:uniuri/:key", views.Head)
-	r.Run(fmt.Sprintf(":%d", conf.C.Port))
+	if conf.C.ServeHTTPS {
+		http.ListenAndServeTLS(fmt.Sprintf(":%d", conf.C.Port), conf.C.SSLCert, conf.C.SSLPrivKey, r)
+	} else {
+		r.Run(fmt.Sprintf(":%d", conf.C.Port))
+	}
 }

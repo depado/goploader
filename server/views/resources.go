@@ -102,7 +102,11 @@ func Create(c *gin.Context) {
 		return
 	}
 	newres.LogCreated(c)
-	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), conf.C.NameServer, u, k)
+	ns := conf.C.NameServer
+	if conf.C.AppendPort {
+		ns = fmt.Sprintf("%s:%d", conf.C.NameServer, conf.C.Port)
+	}
+	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), ns, u, k)
 }
 
 // View handles the file views

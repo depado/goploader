@@ -26,6 +26,10 @@ type Conf struct {
 	LogLevel      string  `yaml:"loglevel" form:"loglevel"`
 	Stats         bool    `yaml:"stats" form:"stats"`
 	SensitiveMode bool    `yaml:"sensitive_mode" form:"sensitive_mode"`
+	ServeHTTPS    bool    `yaml:"serve_https" form:"serve_https"`
+	SSLCert       string  `yaml:"ssl_cert" form:"ssl_cert"`
+	SSLPrivKey    string  `yaml:"ssl_private_key" form:"ssl_private_key"`
+	AppendPort    bool    `yaml:"append_port" form:"append_port"`
 }
 
 // NewDefault returns a Conf instance filled with default values
@@ -47,6 +51,14 @@ func (c *Conf) Validate() map[string]string {
 	errors := make(map[string]string)
 	if c.NameServer == "" {
 		errors["name_server"] = "This field is required."
+	}
+	if c.ServeHTTPS {
+		if c.SSLCert == "" {
+			errors["ssl_cert"] = "This field is required if you serve https."
+		}
+		if c.SSLPrivKey == "" {
+			errors["ssl_private_key"] = "This field is required if you serve https."
+		}
 	}
 	return errors
 }

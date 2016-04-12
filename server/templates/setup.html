@@ -27,13 +27,42 @@
             <p style="color: #FF4848; display: none;" id="setup-errors"><b>It looks like some of the fields were ommited or have wrong values.</b></p>
             <form action="/" method="post" id="setup-form">
                 <fieldset>
+                    <h4>Server</h4>
                     <label for="name_server" class="label-inline"><b>Server Name</b></label>
                     <span class="float-right"><i>Your domain name or ip</i></span>
                     <input placeholder="example.tld" id="name_server" name="name_server" type="text">
-
                     <label for="port" class="label-inline"><b>Port</b></label>
                     <span class="float-right"><i>Port on which the server should listen</i></span>
                     <input placeholder="Default : 8080" id="port" name="port" type="text">
+
+                    <input id="append_port" type="checkbox" name="append_port" value="true">
+                    <label class="label-inline" for="append_port"><b>Append Port</b></label>
+                    <span class="float-right"><i>Append the port to the server name</i></span>
+                    <br />
+                    <br />
+                    <span class="float-right"><i>Serve HTTPS directly, requires both SSL cert and private key</i></span>
+                    <input id="serve_https" type="checkbox" name="serve_https" value="true">
+                    <label class="label-inline" for="serve_https"><b>Serve HTTPS</b></label>
+                    <br />
+                    <label for="ssl_cert" class="label-inline">SSL Certificate</label>
+                    <input placeholder="Path to SSL Cert" id="ssl_cert" name="ssl_cert" type="text">
+                    <label for="ssl_private_key" class="label-inline">SSL Private Key</label>
+                    <input placeholder="Path to SSL Private Key" id="ssl_private_key" name="ssl_private_key" type="text">
+                    <br />
+
+                    <label for="loglevel" class="label-inline"><b>Log Level</b></label>
+                    <span class="float-right"><i>Verbosity of the logs (disabled won't display logs)</i></span>
+                    <br />
+                    <select name="loglevel" id="loglevel">
+                        <option value="debug">Debug</option>
+                        <option value="info">Info</option>
+                        <option value="error">Error</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                    <br />
+                    <hr />
+
+                    <h4>Uploads and Database</h4>
 
                     <label for="upload_dir" class="label-inline"><b>Upload Directory</b></label>
                     <span class="float-right"><i>Absolute or local directory in which files will be uploaded</i></span>
@@ -42,6 +71,17 @@
                     <label for="db" class="label-inline"><b>Database Path</b></label>
                     <span class="float-right"><i>Absolute or local path (and file name) to create</i></span>
                     <input placeholder="Default : goploader.db" id="db" name="db" type="text">
+
+                    <label for="size_limit" class="label-inline"><b>Size Limit</b></label>
+                    <span class="float-right"><i>Maximum size of the uploaded files in MB</i></span>
+                    <input placeholder="Default : 20" id="size_limit" name="size_limit" type="text">
+
+                    <label for="disk_quota" class="label-inline"><b>Disk Quota</b></label>
+                    <span class="float-right"><i>Disk quota in GB. Set to 0 to disable.</i></span>
+                    <input placeholder="Default : 0" id="disk_quota" name="disk_quota" type="text">
+                    <hr />
+
+                    <h4>URL Settings</h4>
 
                     <label for="uniuri_length" class="label-inline"><b>UniURI Length</b></label>
                     <span class="float-right"><i>The number of chars generated for URIs</i></span>
@@ -55,25 +95,9 @@
                         <option value="32">32 Chars</option>
                     </select>
                     <br />
+                    <hr />
 
-                    <label for="loglevel" class="label-inline"><b>Log Level</b></label>
-                    <span class="float-right"><i>Verbosity of the logs (disabled won't display logs)</i></span>
-                    <br />
-                    <select name="loglevel" id="loglevel">
-                        <option value="debug">Debug</option>
-                        <option value="info">Info</option>
-                        <option value="error">Error</option>
-                        <option value="disabled">Disabled</option>
-                    </select>
-                    <br />
-
-                    <label for="size_limit" class="label-inline"><b>Size Limit</b></label>
-                    <span class="float-right"><i>Maximum size of the uploaded files in MB</i></span>
-                    <input placeholder="Default : 20" id="size_limit" name="size_limit" type="text">
-
-                    <label for="disk_quota" class="label-inline"><b>Disk Quota</b></label>
-                    <span class="float-right"><i>Disk quota in GB. Set to 0 to disable.</i></span>
-                    <input placeholder="Default : 0" id="disk_quota" name="disk_quota" type="text">                    
+                    <h4>Other Settings</h4>
 
                     <input id="fulldoc" type="checkbox" name="fulldoc" value="true">
                     <label class="label-inline" for="fulldoc"><b>Full Documentation</b></label>
