@@ -7,6 +7,6 @@ server/goploader.db
 server/up/
 server/server
 server/conf.yml
-server/*.rice-box.go
 server/rice-box.go
+server/ssl
 releases

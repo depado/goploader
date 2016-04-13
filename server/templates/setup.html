@@ -7,9 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link rel="shortcut icon" type="image/png" href="static/favicon.ico" />
     <title>Goploader</title>
-    <!-- Google Fonts -->
     <link rel="stylesheet" target="blank" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
-    <!-- CSS Reset -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
     <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
@@ -82,7 +80,6 @@
                     <hr />
 
                     <h4>URL Settings</h4>
-
                     <label for="uniuri_length" class="label-inline"><b>UniURI Length</b></label>
                     <span class="float-right"><i>The number of chars generated for URIs</i></span>
                     <input placeholder="Default : 10" id="uniuri_length" name="uniuri_length" type="text">
@@ -98,7 +95,6 @@
                     <hr />
 
                     <h4>Other Settings</h4>
-
                     <input id="fulldoc" type="checkbox" name="fulldoc" value="true">
                     <label class="label-inline" for="fulldoc"><b>Full Documentation</b></label>
                     <span class="float-right"><i>The homepage will display the full documentation</i></span>
@@ -143,22 +139,17 @@
         </section>
     </main>
     <script>
-        var formsec = $("#setup-form-section");
-        var form = $("#setup-form");
-        var success = $("#setup-success");
-        var errors = $("#setup-errors");
         var loader = $("#submit-loader");
-        var submit = $("#submit-form");
-        submit.click(function(e) {
+        $("#submit-form").click(function(e) {
             $("html, body").animate({
                 scrollTop: 0
             }, "slow");
-            formsec.fadeOut(400, function() {
+            $("#setup-form-section").fadeOut(400, function() {
                 loader.fadeIn(400, function() {
-                    var jqxhr = $.post("/", form.serialize());
+                    var jqxhr = $.post("/", $("#setup-form").serialize());
                     jqxhr.done(function() {
                         loader.fadeOut(400, function() {
-                            success.fadeIn();
+                            $("#setup-success").fadeIn();
                         });
                     });
                     jqxhr.fail(function(req, status, error) {
@@ -169,8 +160,8 @@
                             $("#" + key).css("border", "0.1rem solid #FF4848");
                         }
                         loader.fadeOut(400, function() {
-                            errors.show();
-                            formsec.fadeIn();
+                            $("#setup-errors").show();
+                            $("#setup-form-section").fadeIn();
                         });
                     });
                 });
