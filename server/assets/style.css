@@ -40,11 +40,9 @@ input[type=checkbox]:checked + label {
     background-color: #9B4DCA;
     color: white;
 }
-
 #upload-text {
     height: 150px;
 }
-
 .wrapper {
     min-height: 88%;
 }

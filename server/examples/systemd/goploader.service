@@ -1,0 +1,12 @@
+[Unit]
+Description=goploader
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/data/goploader-server
+ExecStart=/data/goploader-server/server
+
+
+[Install]
+WantedBy=multi-user.target

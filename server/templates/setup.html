@@ -5,13 +5,12 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <link rel="shortcut icon" type="image/png" href="static/favicon.ico" />
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.ico" />
     <title>Goploader</title>
     <link rel="stylesheet" target="blank" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
-    <link rel="stylesheet" type="text/css" href="static/milligram.min.css">
-    <link rel="stylesheet" type="text/css" href="static/style.css">
-    <script src="static/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/milligram.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
 
 <body>
@@ -27,8 +26,10 @@
                 <fieldset>
                     <h4>Server</h4>
                     <label for="name_server" class="label-inline"><b>Server Name</b></label>
+                    <span class="error" id="name_server_err"></span>
                     <span class="float-right"><i>Your domain name or ip</i></span>
                     <input placeholder="example.tld" id="name_server" name="name_server" type="text">
+
                     <label for="port" class="label-inline"><b>Port</b></label>
                     <span class="float-right"><i>Port on which the server should listen</i></span>
                     <input placeholder="Default : 8080" id="port" name="port" type="text">
@@ -138,6 +139,7 @@
             </p>
         </section>
     </main>
+    <script src="/static/jquery.min.js"></script>
     <script>
         var loader = $("#submit-loader");
         $("#submit-form").click(function(e) {
