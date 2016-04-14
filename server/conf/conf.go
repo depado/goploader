@@ -81,8 +81,8 @@ func Load(fp string, verbose bool) error {
 	if err = C.FillDefaults(); err != nil {
 		return err
 	}
-	if _, err := os.Stat(fp); os.IsNotExist(err) {
-		if err = os.Mkdir(fp, 0777); err != nil {
+	if _, err := os.Stat(C.UploadDir); os.IsNotExist(err) {
+		if err = os.Mkdir(C.UploadDir, 0777); err != nil {
 			return err
 		}
 	} else if err != nil {
