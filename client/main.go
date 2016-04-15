@@ -73,6 +73,7 @@ func main() {
 	var window bool
 	var lifetime string
 	var once bool
+	var hostname string
 
 	flag.BoolVarP(&tee, "tee", "t", false, "Displays stdin to stdout")
 	flag.BoolVarP(&progress, "progress", "p", false, "Displays a progress bar")
@@ -84,6 +85,7 @@ func main() {
 	flag.DurationVarP(&delay, "delay", "d", 0, "Define a delay before the program executes (including taking the screenshot)")
 	flag.BoolVarP(&window, "window", "w", false, "Click on the window you want to screenshot (only works with -s/--screenshot option)")
 	flag.BoolVarP(&once, "once", "o", false, "Your upload will be visible only once and then deleted from the server")
+	flag.StringVarP(&hostname, "hostname", "", "", "Specify the server you want to send your file to")
 
 	flag.Parse()
 	args := flag.Args()
@@ -169,7 +171,10 @@ func main() {
 	}()
 
 	debugf("Executing multipart post")
-	resp, err := http.Post(conf.C.Service, multipartWriter.FormDataContentType(), r)
+	if hostname == "" {
+		hostname = conf.C.Service
+	}
+	resp, err := http.Post(hostname, multipartWriter.FormDataContentType(), r)
 	check(err)
 	defer resp.Body.Close()
 	debugf("Multipart post is done, reading data")
