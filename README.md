@@ -8,18 +8,58 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Depado/goploader/blob/master/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-up.depado.eu-blue.svg)](https://up.depado.eu/)
 
+## Introduction
 
-Goploader is a client-server application that is intended to ease the process of uploading files and sharing them.
+Goploader's ultimate goal is to make file sharing easy and painless. This project is composed of a server and a client, both written in Go. The main things to remember about the project are :
+ - Sharing stuff from your terminal should be easy
+ - Sharing stuff without a terminal should be easy
+ - Privacy matters
 
-All the documentation and information about this project are on [up.depado.eu](https://up.depado.eu).
+## Build from source
 
-- [Introduction](https://up.depado.eu/#introduction)
-- [Client](https://up.depado.eu/#client)
-- [Curl](https://up.depado.eu/#curl)
-- [Server](https://up.depado.eu/#server)
+Make sure you have Go installed on your machine.
 
-## Philosophy
+### Client
 
-Goploader is intended to be easy to use and install both on the client side, and on the server side. The server itself is painless to install, configure and run, so that anyone can host a goploader server and use it for its own needs. One of the main feature of goploader is that it encrypts files while receiving them, sending back the full url of the resource to the user (including the private key allowing to decryp the file) while saving only the file ID in the database.
+```shell
+$ go get github.com/Depado/goploader/client
+$ go build -o $GOPATH/bin/goploader github.com/Depado/goploader/client
+```
 
-To get more information, please go the official documentation on [up.depado.eu](https://up.depado.eu).
+### Server
+
+```shell
+$ # Move to a new directory that will be used to run the server
+$ go get github.com/Depado/goploader/server
+$ # The following steps are optional
+$ # Execute those if you wish to embed the assets and templates into the binary
+$ go get github.com/GeertJohan/go.rice/rice
+$ rice embed-go -i=github.com/Depado/goploader/server
+$ # End of the optional steps
+$ go build github.com/Depado/goploader/server
+$ # If you did not embed the resources, make sure to copy the assets and templates directories
+$ cp -r $GOPATH/src/github.com/Depado/goploader/server/{assets,templates} .
+$ # Execute the binary a first time to trigger the setup
+$ # Or write your own conf.yml file
+$ ./server
+```
+
+## Downloads
+
+All the downloads are available at [up.depado.eu](https://up.depado.eu) in the [clients](https://up.depado.eu/#client-downloads) and [server](https://up.depado.eu/#server-downloads) sections.
+
+### Client
+
+| Linux         | FreeBSD | Mac OS     | Windows  |
+| ------------- |---------|------------|----------|
+| [Linux 64bit](https://up.depado.eu/releases/clients/client_linux_amd64) | [FreeBSD 64bit](https://up.depado.eu/releases/clients/client_freebsd_amd64) | [Mac OS 64bit](https://up.depado.eu/releases/clients/client_darwin_amd64) | [Windows 64bit](https://up.depado.eu/releases/clients/client_windows_amd64.exe) |
+| [Linux 32bit](https://up.depado.eu/releases/clients/client_linux_386) | [FreeBSD 32bit](https://up.depado.eu/releases/clients/client_freebsd_386) | [Mac OS 32bit](https://up.depado.eu/releases/clients/client_darwin_386) | [Windows 32bit](https://up.depado.eu/releases/clients/client_windows_386.exe) |
+| [Linux ARMv7](https://up.depado.eu/releases/clients/client_linux_arm) | | | | |
+
+## Documentation
+
+All the documentation is available at [up.depado.eu](https://up.depado.eu). I intend to write a proper `README.md` file, but it takes a lot of work to transpose the existing documentation to the markdown format. So, work in progress.
+
+
+## License
+All the software in this repository is released under the MIT License. See [LICENSE](https://github.com/Depado/goploader/blob/master/LICENSE) for details.
