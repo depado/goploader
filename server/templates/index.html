@@ -526,7 +526,16 @@ Exec = curl -F file=@%d/%b https://up.depado.eu/ | xclip</code></pre>
                     <a href="#server-run">Running</a>
                     <ul>
                         <li><a href="#server-run-supervisor">Run with Supervisor</a></li>
+                        <li><a href="#server-run-systemd">Run with Systemd Unit</a></li>
                     </ul>
+                </li>
+                <li>
+                    <a href="#server-serve">Serve</a>
+                    <ul>
+                        <li><a href="#server-serve-caddy">Serve with Caddy</a></li>
+                        <li><a href="#server-serve-apache">Serve with Apache</a></li>
+                    </ul>
+                </li>
             </ul>
             <p id="server-downloads">&nbsp;</p>
             <p><b>Downloads</b></p>
@@ -710,6 +719,15 @@ Exec = curl -F file=@%d/%b https://up.depado.eu/ | xclip</code></pre>
                         </td>
                         <td>false</td>
                     </tr>
+                    <tr>
+                        <td>
+                            <code>always_download</code>
+                        </td>
+                        <td>
+                            When viewing a file, always force user to download said file and not display it in the browser.
+                        </td>
+                        <td>false</td>
+                    </tr>
                 </tbody>
             </table>
             <p id="server-setup-sensitive">&nbsp;</p>
@@ -735,6 +753,55 @@ autorestart=true
 stdout_logfile=/var/log/supervisor/goploader_stdout.log
 stderr_logfile=/var/log/supervisor/goploader_stderr.log</code></pre>
             <p>Of course you need to replace <code>youruser</code> with the user you installed goploader with.</p>
+            <p id="server-run-systemd">&nbsp;</p>
+            <p><u>Run with Systemd Unit</u></p>
+            <p>
+                You can also use a Systemd Unit to launch Goploader on boot.
+            </p>
+            <pre><code>[Unit]
+Description=goploader
+
+[Service]
+Type=simple
+User=youruser
+WorkingDirectory=/home/youruser/goploader
+ExecStart=/home/youruser/goploader/server
+
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+            <p>As for supervisor, you'll need to replace <code>youruser</code> with the user you installed goploader with.</p>
+
+            <p id="server-serve">&nbsp;</p>
+            <p><b>Serve</b></p>
+            <p id="server-serve-caddy">&nbsp;</p>
+            <p><u>Serve with Caddy</u></p>
+            <pre><code>up.example.com {
+	proxy / 127.0.0.1:8002 {
+		proxy_header Host {host}
+		proxy_header X-Real-IP {remote}
+		proxy_header X-Forwarded-Proto {scheme}
+	}
+	gzip
+}</code></pre>
+
+            <p id="server-serve-apache">&nbsp;</p>
+            <p><u>Serve with Apache</u></p>
+            <pre><code>&lt;VirtualHost *:80&gt;
+    ServerName up.example.com
+    DocumentRoot /data/goploader-server
+
+    &lt;Directory /data/goploader-server&gt;
+      Require all granted
+    &lt;/Directory&gt;
+
+    ProxyPass / "http://localhost:8080/"
+    ProxyPassReverse / "http://localhost:8080/"
+
+    LogLevel warn
+    ErrorLog /data/logs/apache2/goploader.log
+    CustomLog /var/log/apache2/goploader.log combined
+&lt;/VirtualHost&gt;</code></pre>
         </section>
         {{ end }} {{ end }}
     </main>
