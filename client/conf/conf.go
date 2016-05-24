@@ -22,6 +22,7 @@ var C Configuration
 func Load() error {
 	var err error
 	var hd string
+	var conf []byte
 
 	if hd, err = homedir.Dir(); err != nil {
 		return err
@@ -29,6 +30,7 @@ func Load() error {
 
 	cdir := hd + "/.config/"
 	cf := cdir + "goploader.conf.yml"
+
 	if _, err = os.Stat(cdir); os.IsNotExist(err) {
 		log.Printf("Creating %v directory.\n", cdir)
 		os.Mkdir(cdir, 0700)
@@ -37,18 +39,16 @@ func Load() error {
 	}
 	if _, err = os.Stat(cf); os.IsNotExist(err) {
 		log.Printf("Configuration file %v not found. Writing default configuration.\n", cf)
-		C.Service = "https://up.depado.eu/"
-		d, err := yaml.Marshal(C)
-		if err != nil {
+		C.Service = "https://gpldr.in/"
+		if conf, err = yaml.Marshal(C); err != nil {
 			return err
 		}
-		return ioutil.WriteFile(cf, d, 0644)
+		return ioutil.WriteFile(cf, conf, 0644)
 	} else if err != nil {
 		return err
 	}
 
-	conf, err := ioutil.ReadFile(cf)
-	if err != nil {
+	if conf, err = ioutil.ReadFile(cf); err != nil {
 		return err
 	}
 	return yaml.Unmarshal(conf, &C)

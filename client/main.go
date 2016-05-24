@@ -23,7 +23,7 @@ var (
 	bar     *pb.ProgressBar
 	name    string
 	verbose bool
-	service = "https://up.depado.eu/"
+	service = "https://gpldr.in/"
 )
 
 func debugf(a ...interface{}) {

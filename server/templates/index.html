@@ -117,7 +117,7 @@
             <p id="introduction-features">&nbsp;</p>
             <p><b>Features</b></p>
             <ul>
-                <li>HTTPS only using <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a> and <a href="https://caddyserver.com/" target="_blank">Caddy Server</a> <i>Note : This applies to https://up.depado.eu, you're free to serve the content using another webserver and without https if you decide to host it on your own machine.</i></li>
+                <li>HTTPS only using <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a> and <a href="https://caddyserver.com/" target="_blank">Caddy Server</a> <i>Note : This applies to https://gpldr.in, you're free to serve the content using another webserver and without https if you decide to host it on your own machine.</i></li>
                 <li>Upload directly from
                     <code>stdin</code>.
                 </li>
@@ -183,7 +183,7 @@
             <p id="introduction-disclaimer">&nbsp;</p>
             <p><b>Disclaimer and License</b></p>
             <p>As specified multiple times to people interested in the project, I don't provide any kind of warranty. People might tamper with the code on their own server, the only thing I can tell is that the version that runs on my machine is the exact
-                version that is hosted on the Github repository. As a side note, I do store the IP of people uploading files to https://up.depado.eu for debugging purposes, although I never store the decryption key.</p>
+                version that is hosted on the Github repository. As a side note, I do store the IP of people uploading files to https://gpldr.in for debugging purposes, although I never store the decryption key.</p>
             <pre>
  The MIT License (MIT)
 
@@ -461,32 +461,32 @@ Exec = goploader -c %d/%b</code></pre>
                 You can use this service without a client, simply by issuing curl commands.
                 <br />
                 <br />
-                <code>$ curl -F file=@myfile.txt https://up.depado.eu/</code>
+                <code>$ curl -F file=@myfile.txt https://gpldr.in/</code>
                 <br />
                 <i>Your file will be named <code>myfile.txt</code></i>
                 <br />
                 <br />
-                <code>$ curl -F name="myamazingfile!" -F file=@myfile.txt https://up.depado.eu/</code>
+                <code>$ curl -F name="myamazingfile!" -F file=@myfile.txt https://gpldr.in/</code>
                 <br />
                 <i>Your file will be named <code>myamazingfile!</code></i>
                 <br />
                 <br />
-                <code>$ cat myfile.txt | curl -F name="stdin" -F file=@- https://up.depado.eu/</code>
+                <code>$ cat myfile.txt | curl -F name="stdin" -F file=@- https://gpldr.in/</code>
                 <br />
                 <i>Reads data from <code>stdin</code></i>
                 <br />
                 <br />
-                <code>$ curl -F file=@- https://up.depado.eu/ &lt; myfile.txt</code>
+                <code>$ curl -F file=@- https://gpldr.in/ &lt; myfile.txt</code>
                 <br />
                 <i>Another way of uploading a file</i>
                 <br />
                 <br />
-                <code>$ curl -F file=@- -F duration=1w https://up.depado.eu/ &lt; myfile.txt</code>
+                <code>$ curl -F file=@- -F duration=1w https://gpldr.in/ &lt; myfile.txt</code>
                 <br />
                 <i>Specify the lifetime of your file (one week in that example, see the client's documentation for all the avaiable options)</i>
                 <br />
                 <br />
-                <code>$ curl -F file=@- -F once="true" https://up.depado.eu/ &lt; myfile.txt</code>
+                <code>$ curl -F file=@- -F once="true" https://gpldr.in/ &lt; myfile.txt</code>
                 <br />
                 <i>Specify that the file should only be visible once and then deleted from the server.</i>
             </p>
@@ -505,7 +505,7 @@ Profiles = goploader_onfile;
 [X-Action-Profile goploader_onfile]
 MimeTypes = all/allfiles;
 SelectionCount = =1
-Exec = curl -F file=@%d/%b https://up.depado.eu/ | xclip</code></pre>
+Exec = curl -F file=@%d/%b https://gpldr.in/ | xclip</code></pre>
             <p>You will need xclip to copy the returned URL to your clipboard.</p>
         </section>
         <section id="server" class="container" style="display: none;">
@@ -625,7 +625,7 @@ Exec = curl -F file=@%d/%b https://up.depado.eu/ | xclip</code></pre>
                         <td>
                             The server name to use. This is used to return correct URLs to the clients.
                         </td>
-                        <td>up.depado.eu</td>
+                        <td>gpldr.in</td>
                     </tr>
                     <tr>
                         <td>
@@ -809,7 +809,7 @@ WantedBy=multi-user.target</code></pre>
     <footer class="footer site-footer">
         <section class="container">
             <p>
-                {{ if .total_files }}{{ .total_files }} files ({{ .total_size }}) were uploaded.{{ end }} <a href="https://up.depado.eu/#server" target="_blank">Install it on your machine.</a>
+                {{ if .total_files }}{{ .total_files }} files ({{ .total_size }}) were uploaded.{{ end }} <a href="https://gpldr.in/#server" target="_blank">Install it on your machine.</a>
                 <br /> Made with ♥ by <a target="_blank" href="https://github.com/Depado" title="Depado">Depado</a>. Follow me on <a href="https://twitter.com/Depado_" target="_blank">Twitter</a>. Thanks to <a target="_blank" href="http://cjpatoilo.com" title="CJ Patoilo">CJ Patoilo</a>                for the <a href="http://milligram.github.io/" target="_blank">Milligram CSS Framework</a>.
             </p>
         </section>

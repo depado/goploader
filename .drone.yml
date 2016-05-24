@@ -29,7 +29,7 @@ notify:
 # deploy:
 #   rsync:
 #     user: root
-#     host: up.depado.eu
+#     host: gpldr.in
 #     port: 22
 #     source: server/server
 #     target: /home/depado/goploader/server
