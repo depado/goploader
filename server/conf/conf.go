@@ -30,7 +30,7 @@ type Conf struct {
 	SSLCert        string  `yaml:"ssl_cert" form:"ssl_cert"`
 	SSLPrivKey     string  `yaml:"ssl_private_key" form:"ssl_private_key"`
 	AppendPort     bool    `yaml:"append_port" form:"append_port"`
-	AlwaysDonwload bool    `yaml:"always_download" form:"always_download"`
+	AlwaysDownload bool    `yaml:"always_download" form:"always_download"`
 }
 
 // NewDefault returns a Conf instance filled with default values

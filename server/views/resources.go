@@ -139,7 +139,7 @@ func View(c *gin.Context) {
 	var iv [aes.BlockSize]byte
 	stream := cipher.NewCFBDecrypter(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
-	if conf.C.AlwaysDonwload {
+	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
 	}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")

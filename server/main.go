@@ -60,6 +60,8 @@ func main() {
 	if conf.C.ServeHTTPS {
 		http.ListenAndServeTLS(fmt.Sprintf(":%d", conf.C.Port), conf.C.SSLCert, conf.C.SSLPrivKey, r)
 	} else {
-		r.Run(fmt.Sprintf(":%d", conf.C.Port))
+		if err = r.Run(fmt.Sprintf(":%d", conf.C.Port)); err != nil {
+			logger.Err("server", "Fatal error", err)
+		}
 	}
 }
