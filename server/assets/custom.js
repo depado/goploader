@@ -112,10 +112,9 @@ $('#upload-btn').click(function($e) {
                             var percentComplete = evt.loaded / evt.total;
                             percentComplete = parseInt(percentComplete * 100);
                             $(".progress>div").css("width", percentComplete+"%");
-                            console.log(percentComplete);
                         }
                     }, false);
-
+                    
                     return xhr;
                 },
                 url: '/',
