@@ -10,11 +10,8 @@ import (
 )
 
 // Setup creates the gin Engine
-func Setup() (*gin.Engine, error) {
+func Setup(tbox, abox *rice.Box) (*gin.Engine, error) {
 	var err error
-
-	tbox, _ := rice.FindBox("templates")
-	abox, _ := rice.FindBox("assets")
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()

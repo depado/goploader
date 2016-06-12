@@ -103,6 +103,21 @@ $('#upload-btn').click(function($e) {
         loader.fadeIn();
         loader.promise().done(function() {
             var req = $.ajax({
+                xhr: function() {
+                    var percentComplete = 0;
+                    var xhr = new window.XMLHttpRequest();
+
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = parseInt(percentComplete * 100);
+                            $(".progress>div").css("width", percentComplete+"%");
+                            console.log(percentComplete);
+                        }
+                    }, false);
+
+                    return xhr;
+                },
                 url: '/',
                 data: data,
                 cache: false,
@@ -116,12 +131,14 @@ $('#upload-btn').click(function($e) {
                 loader.fadeOut(400, function() {
                     result.fadeIn();
                 });
+                $(".progress>div").css("width", "0%");
             });
             req.fail(function(jqxhr, statusmsg) {
                 loader.fadeOut(400, function() {
                     uperror.html("The file is too big or an error occured on the server.").show();
                     form.fadeIn();
                 });
+                $(".progress>div").css("width", "0%");
             });
         });
     });
@@ -197,7 +214,6 @@ $(document).ready(function() {
             if (fileName) {
                 currentfile = fileName;
                 label.querySelector('span').innerHTML = fileName;
-                buildsummary();
             } else {
                 label.innerHTML = labelVal;
             }

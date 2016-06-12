@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 	flag "github.com/ogier/pflag"
 
@@ -23,6 +24,9 @@ func main() {
 	var initial bool
 	var r *gin.Engine
 
+	tbox, _ := rice.FindBox("templates")
+	abox, _ := rice.FindBox("assets")
+
 	flag.StringVarP(&cp, "conf", "c", "conf.yml", "Local path to configuration file.")
 	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
 	flag.Parse()
@@ -38,12 +42,15 @@ func main() {
 		log.Fatal(err)
 	}
 	go monitoring.Monit()
-	if r, err = router.Setup(); err != nil {
+	if r, err = router.Setup(tbox, abox); err != nil {
 		log.Fatal(err)
 	}
+
 	logger.Info("server", "Started goploader server on port", conf.C.Port)
 	if conf.C.ServeHTTPS {
-		http.ListenAndServeTLS(fmt.Sprintf(":%d", conf.C.Port), conf.C.SSLCert, conf.C.SSLPrivKey, r)
+		if err = http.ListenAndServeTLS(fmt.Sprintf(":%d", conf.C.Port), conf.C.SSLCert, conf.C.SSLPrivKey, r); err != nil {
+			logger.Err("server", "Fatal error", err)
+		}
 	} else {
 		if err = r.Run(fmt.Sprintf(":%d", conf.C.Port)); err != nil {
 			logger.Err("server", "Fatal error", err)
