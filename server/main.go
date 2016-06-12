@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 	flag "github.com/ogier/pflag"
 
@@ -14,18 +13,15 @@ import (
 	"github.com/Depado/goploader/server/logger"
 	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/monitoring"
+	"github.com/Depado/goploader/server/router"
 	"github.com/Depado/goploader/server/setup"
-	"github.com/Depado/goploader/server/utils"
-	"github.com/Depado/goploader/server/views"
 )
 
 func main() {
 	var err error
 	var cp string
 	var initial bool
-
-	tbox, _ := rice.FindBox("templates")
-	abox, _ := rice.FindBox("assets")
+	var r *gin.Engine
 
 	flag.StringVarP(&cp, "conf", "c", "conf.yml", "Local path to configuration file.")
 	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
@@ -42,21 +38,10 @@ func main() {
 		log.Fatal(err)
 	}
 	go monitoring.Monit()
-
-	logger.Info("server", "Started goploader server on port", conf.C.Port)
-	gin.SetMode(gin.ReleaseMode)
-	r := gin.New()
-	r.Use(gin.Recovery())
-	if !conf.C.NoWeb {
-		if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html"); err != nil {
-			log.Fatal(err)
-		}
-		r.Static("/releases", "releases")
-		r.GET("/", views.Index)
+	if r, err = router.Setup(); err != nil {
+		log.Fatal(err)
 	}
-	r.POST("/", views.Create)
-	r.GET("/v/:uniuri/:key", views.View)
-	r.HEAD("/v/:uniuri/:key", views.Head)
+	logger.Info("server", "Started goploader server on port", conf.C.Port)
 	if conf.C.ServeHTTPS {
 		http.ListenAndServeTLS(fmt.Sprintf(":%d", conf.C.Port), conf.C.SSLCert, conf.C.SSLPrivKey, r)
 	} else {

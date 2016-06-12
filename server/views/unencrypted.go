@@ -2,8 +2,6 @@ package views
 
 import (
 	"bufio"
-	"crypto/aes"
-	"crypto/cipher"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,8 +18,8 @@ import (
 	"github.com/Depado/goploader/server/utils"
 )
 
-// CreateC handles the multipart form upload and creates an encrypted file
-func CreateC(c *gin.Context) {
+// Create handles the multipart form upload and creates a file
+func Create(c *gin.Context) {
 	var err error
 	var duration time.Duration
 	var once bool
@@ -50,18 +48,6 @@ func CreateC(c *gin.Context) {
 	defer fd.Close()
 
 	u := uniuri.NewLen(conf.C.UniURILength)
-	k := uniuri.NewLen(conf.C.KeyLength)
-	kb := []byte(k)
-	block, err := aes.NewCipher(kb)
-	if err != nil {
-		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBEncrypter(block, iv[:])
-
 	file, err := os.Create(path.Join(conf.C.UploadDir, u))
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't create file", err)
@@ -71,8 +57,7 @@ func CreateC(c *gin.Context) {
 	}
 	defer file.Close()
 
-	writer := &cipher.StreamWriter{S: stream, W: file}
-	wr, err := io.Copy(writer, bufio.NewReaderSize(fd, 512))
+	wr, err := io.Copy(file, bufio.NewReaderSize(fd, 512))
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't write file", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
@@ -106,15 +91,14 @@ func CreateC(c *gin.Context) {
 	if conf.C.AppendPort {
 		ns = fmt.Sprintf("%s:%d", conf.C.NameServer, conf.C.Port)
 	}
-	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), ns, u, k)
+	c.String(http.StatusCreated, "%v://%s/v/%s\n", utils.DetectScheme(c), ns, u)
 }
 
-// ViewC handles the file views for encrypted files
-func ViewC(c *gin.Context) {
+// View handles the file views
+func View(c *gin.Context) {
 	var err error
 
 	id := c.Param("uniuri")
-	key := c.Param("key")
 	re := models.Resource{}
 
 	if err = re.Get(id); err != nil || re.Key == "" {
@@ -129,62 +113,39 @@ func ViewC(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	block, err := aes.NewCipher([]byte(key))
-	if err != nil {
-		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBDecrypter(block, iv[:])
-	reader := &cipher.StreamReader{S: stream, R: f}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
 	}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
-	io.Copy(c.Writer, reader)
+	io.Copy(c.Writer, f)
 	if re.Once {
 		re.Delete()
 		re.LogDeleted(c)
 	}
 }
 
-// HeadC handles the head request for an encryptd file
-func HeadC(c *gin.Context) {
+// Head handles the head request for an encryptd file
+func Head(c *gin.Context) {
 	var err error
 
 	id := c.Param("uniuri")
-	key := c.Param("key")
 	re := models.Resource{}
 
-	if err = re.Get(id); err != nil {
+	if err = re.Get(id); err != nil || re.Key == "" {
 		logger.InfoC(c, "server", "Not found", id)
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-	if re.Key == "" {
-		logger.InfoC(c, "server", "Not found", id)
-		c.AbortWithStatus(http.StatusNotFound)
-		return
-	}
-	logger.InfoC(c, "server", "Head", fmt.Sprintf("%s - %s", re.Key, utils.HumanBytes(uint64(re.Size))))
+	re.LogFetched(c)
 	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	block, err := aes.NewCipher([]byte(key))
-	if err != nil {
-		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
+	if conf.C.AlwaysDownload {
+		c.Header("Content-Type", "application/octet-stream")
 	}
-	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBDecrypter(block, iv[:])
-	reader := &cipher.StreamReader{S: stream, R: f}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
-	io.Copy(c.Writer, reader)
+	io.Copy(c.Writer, f)
 }

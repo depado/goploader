@@ -13,24 +13,28 @@ var C Conf
 
 // Conf is the struct containing the configuration of the server
 type Conf struct {
-	NameServer     string  `yaml:"name_server" form:"name_server"`
-	UploadDir      string  `yaml:"upload_dir" form:"upload_dir"`
-	DB             string  `yaml:"db" form:"db"`
-	Port           int     `yaml:"port" form:"port"`
-	UniURILength   int     `yaml:"uniuri_length" form:"uniuri_length"`
-	KeyLength      int     `yaml:"key_length" form:"key_length"`
-	SizeLimit      int64   `yaml:"size_limit" form:"size_limit"`
-	DiskQuota      float64 `yaml:"disk_quota" form:"disk_quota"`
-	NoWeb          bool    `yaml:"no_web" form:"no_web"`
-	FullDoc        bool    `yaml:"fulldoc" form:"fulldoc"`
-	LogLevel       string  `yaml:"loglevel" form:"loglevel"`
-	Stats          bool    `yaml:"stats" form:"stats"`
-	SensitiveMode  bool    `yaml:"sensitive_mode" form:"sensitive_mode"`
-	ServeHTTPS     bool    `yaml:"serve_https" form:"serve_https"`
-	SSLCert        string  `yaml:"ssl_cert" form:"ssl_cert"`
-	SSLPrivKey     string  `yaml:"ssl_private_key" form:"ssl_private_key"`
-	AppendPort     bool    `yaml:"append_port" form:"append_port"`
-	AlwaysDownload bool    `yaml:"always_download" form:"always_download"`
+	NameServer string `yaml:"name_server" form:"name_server"`
+	Port       int    `yaml:"port" form:"port"`
+	AppendPort bool   `yaml:"append_port" form:"append_port"`
+
+	ServeHTTPS bool   `yaml:"serve_https" form:"serve_https"`
+	SSLCert    string `yaml:"ssl_cert" form:"ssl_cert"`
+	SSLPrivKey string `yaml:"ssl_private_key" form:"ssl_private_key"`
+
+	UploadDir    string  `yaml:"upload_dir" form:"upload_dir"`
+	DB           string  `yaml:"db" form:"db"`
+	UniURILength int     `yaml:"uniuri_length" form:"uniuri_length"`
+	KeyLength    int     `yaml:"key_length" form:"key_length"`
+	SizeLimit    int64   `yaml:"size_limit" form:"size_limit"`
+	DiskQuota    float64 `yaml:"disk_quota" form:"disk_quota"`
+	LogLevel     string  `yaml:"loglevel" form:"loglevel"`
+
+	Stats             bool `yaml:"stats" form:"stats"`
+	SensitiveMode     bool `yaml:"sensitive_mode" form:"sensitive_mode"`
+	NoWeb             bool `yaml:"no_web" form:"no_web"`
+	FullDoc           bool `yaml:"fulldoc" form:"fulldoc"`
+	AlwaysDownload    bool `yaml:"always_download" form:"always_download"`
+	DisableEncryption bool `yaml:"disable_encryption" form:"disable_encryption"`
 }
 
 // NewDefault returns a Conf instance filled with default values
