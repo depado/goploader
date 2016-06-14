@@ -1,13 +1,19 @@
 package models
 
 import (
+	"bufio"
+	"crypto/aes"
+	"crypto/cipher"
 	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"os"
 	"path"
 	"time"
 
 	"github.com/boltdb/bolt"
+	"github.com/dchest/uniuri"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
@@ -32,6 +38,59 @@ type Resource struct {
 	Once     bool
 	Size     int64
 	DeleteAt time.Time
+}
+
+// NewResourceFromForm returns a new Resource instance with some fields calculated
+func NewResourceFromForm(h *multipart.FileHeader, once bool, duration time.Duration) Resource {
+	return Resource{
+		Key:      uniuri.NewLen(conf.C.UniURILength),
+		Name:     h.Filename,
+		Once:     once,
+		DeleteAt: time.Now().Add(duration),
+	}
+}
+
+// NewStreamWriter creates a new encrypted AES stream writer with the given key
+// and the given file descriptor
+func (r Resource) NewStreamWriter(fd *os.File, key []byte) (*cipher.StreamWriter, error) {
+	var block cipher.Block
+	var err error
+
+	if block, err = aes.NewCipher(key); err != nil {
+		return nil, err
+	}
+	var iv [aes.BlockSize]byte
+	stream := cipher.NewCFBEncrypter(block, iv[:])
+	return &cipher.StreamWriter{S: stream, W: fd}, nil
+}
+
+// Write isn't implemented yet
+func (r Resource) Write() error {
+	return nil
+}
+
+// WriteEncrypted is a method to write the file and encrypt it on the fly
+// it returns the key that was used to encrypt the file so it can be sent back
+// to the client.
+func (r *Resource) WriteEncrypted(fd multipart.File) (string, error) {
+	file, err := os.Create(path.Join(conf.C.UploadDir, r.Key))
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+	k := uniuri.NewLen(conf.C.KeyLength)
+	kb := []byte(k)
+	sw, err := r.NewStreamWriter(file, kb)
+	if err != nil {
+		return "", err
+	}
+	wr, err := io.Copy(sw, bufio.NewReaderSize(fd, 512))
+	if err != nil {
+		os.Remove(path.Join(conf.C.UploadDir, r.Key))
+		return "", err
+	}
+	r.Size = wr
+	return k, nil
 }
 
 // Save writes the Resource to the bucket

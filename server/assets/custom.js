@@ -114,7 +114,7 @@ $('#upload-btn').click(function($e) {
                             $(".progress>div").css("width", percentComplete+"%");
                         }
                     }, false);
-                    
+
                     return xhr;
                 },
                 url: '/',
@@ -128,16 +128,18 @@ $('#upload-btn').click(function($e) {
                 upurl.html("Here is your file :<br /><a href='" + data + "' target='_blank'>" + data + "</a>");
                 upclipboard.attr("data-clipboard-text", data);
                 loader.fadeOut(400, function() {
-                    result.fadeIn();
+                    result.fadeIn(400, function() {
+                        $(".progress>div").css("width", "0%");
+                    });
                 });
-                $(".progress>div").css("width", "0%");
             });
             req.fail(function(jqxhr, statusmsg) {
                 loader.fadeOut(400, function() {
                     uperror.html("The file is too big or an error occured on the server.").show();
-                    form.fadeIn();
+                    form.fadeIn(400, function() {
+                        $(".progress>div").css("width", "0%");
+                    });
                 });
-                $(".progress>div").css("width", "0%");
             });
         });
     });

@@ -1,7 +1,6 @@
 package views
 
 import (
-	"bufio"
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
@@ -11,7 +10,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/dchest/uniuri"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
@@ -49,64 +47,37 @@ func CreateC(c *gin.Context) {
 	}
 	defer fd.Close()
 
-	u := uniuri.NewLen(conf.C.UniURILength)
-	k := uniuri.NewLen(conf.C.KeyLength)
-	kb := []byte(k)
-	block, err := aes.NewCipher(kb)
-	if err != nil {
-		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBEncrypter(block, iv[:])
-
-	file, err := os.Create(path.Join(conf.C.UploadDir, u))
-	if err != nil {
-		logger.ErrC(c, "server", "Couldn't create file", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	defer file.Close()
-
-	writer := &cipher.StreamWriter{S: stream, W: file}
-	wr, err := io.Copy(writer, bufio.NewReaderSize(fd, 512))
+	res := models.NewResourceFromForm(h, once, duration)
+	k, err := res.WriteEncrypted(fd)
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't write file", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
 	if conf.C.DiskQuota > 0 {
-		if models.S.CurrentSize+uint64(wr) > uint64(conf.C.DiskQuota*utils.GigaByte) {
+		if models.S.CurrentSize+uint64(res.Size) > uint64(conf.C.DiskQuota*utils.GigaByte) {
 			logger.ErrC(c, "server", "Quota exceeded")
 			c.String(http.StatusBadRequest, "Not enough free space. Try again later.")
 			c.AbortWithStatus(http.StatusBadRequest)
-			os.Remove(path.Join(conf.C.UploadDir, u))
+			os.Remove(path.Join(conf.C.UploadDir, res.Key))
 			return
 		}
 	}
-	newres := &models.Resource{
-		Key:      u,
-		Name:     h.Filename,
-		Once:     once,
-		DeleteAt: time.Now().Add(duration),
-		Size:     wr,
-	}
-	if err = newres.Save(); err != nil {
+
+	if err = res.Save(); err != nil {
 		logger.ErrC(c, "server", "Couldn't save in database", err)
 		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	newres.LogCreated(c)
+	res.LogCreated(c)
 	ns := conf.C.NameServer
 	if conf.C.AppendPort {
 		ns = fmt.Sprintf("%s:%d", conf.C.NameServer, conf.C.Port)
 	}
-	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), ns, u, k)
+	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), ns, res.Key, k)
 }
 
 // ViewC handles the file views for encrypted files
