@@ -16,7 +16,7 @@ func Index(c *gin.Context) {
 	logger.InfoC(c, "server", "GET /")
 	data := gin.H{
 		"fulldoc":        conf.C.FullDoc,
-		"size_limit":     conf.C.SizeLimit,
+		"size_limit":     utils.HumanBytes(uint64(conf.C.SizeLimit * utils.MegaByte)),
 		"sensitive_mode": conf.C.SensitiveMode,
 	}
 	if conf.C.Stats {
