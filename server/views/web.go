@@ -5,7 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"strings"
+
 	"github.com/Depado/goploader/server/conf"
+	"github.com/Depado/goploader/server/curl"
 	"github.com/Depado/goploader/server/logger"
 	"github.com/Depado/goploader/server/models"
 	"github.com/Depado/goploader/server/utils"
@@ -14,6 +17,10 @@ import (
 // Index handles the main page
 func Index(c *gin.Context) {
 	logger.InfoC(c, "server", "GET /")
+	if strings.HasPrefix(c.Request.Header.Get("User-Agent"), "curl") {
+		curl.WriteTutorial(c.Writer)
+		return
+	}
 	data := gin.H{
 		"fulldoc":        conf.C.FullDoc,
 		"size_limit":     utils.HumanBytes(uint64(conf.C.SizeLimit * utils.MegaByte)),
