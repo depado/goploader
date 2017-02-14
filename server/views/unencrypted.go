@@ -82,7 +82,7 @@ func Create(c *gin.Context) {
 	}
 	if err = newres.Save(); err != nil {
 		logger.ErrC(c, "server", "Couldn't save in database", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.String(http.StatusInternalServerError, "Something went wrong on the server. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

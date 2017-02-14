@@ -51,7 +51,7 @@ func CreateC(c *gin.Context) {
 	k, err := res.WriteEncrypted(fd)
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't write file", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.String(http.StatusInternalServerError, "Something went wrong on the server. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -59,7 +59,7 @@ func CreateC(c *gin.Context) {
 	if conf.C.DiskQuota > 0 {
 		if models.S.CurrentSize+uint64(res.Size) > uint64(conf.C.DiskQuota*utils.GigaByte) {
 			logger.ErrC(c, "server", "Quota exceeded")
-			c.String(http.StatusBadRequest, "Not enough free space. Try again later.")
+			c.String(http.StatusBadRequest, "Insufficient disk space. Try again later.")
 			c.AbortWithStatus(http.StatusBadRequest)
 			os.Remove(path.Join(conf.C.UploadDir, res.Key))
 			return
@@ -67,8 +67,8 @@ func CreateC(c *gin.Context) {
 	}
 
 	if err = res.Save(); err != nil {
-		logger.ErrC(c, "server", "Couldn't save in database", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		logger.ErrC(c, "server", "Couldn't save in the database", err)
+		c.String(http.StatusInternalServerError, "Something went wrong on the server. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -103,7 +103,7 @@ func ViewC(c *gin.Context) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.String(http.StatusInternalServerError, "Something went wrong on the server. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -149,7 +149,7 @@ func HeadC(c *gin.Context) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
-		c.String(http.StatusInternalServerError, "Something went wrong on the server side. Try again later.")
+		c.String(http.StatusInternalServerError, "Something went wrong on the server. Try again later.")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
