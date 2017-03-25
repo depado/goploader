@@ -132,6 +132,8 @@ $('#upload-btn').click(function($e) {
                         $(".progress>div").css("width", "0%");
                     });
                 });
+                $("label[for=upload-file] span").text("Choose a file…");
+                $("#upload-file").replaceWith($("#upload-file").val('').clone(true));
             });
             req.fail(function(jqxhr, statusmsg) {
                 loader.fadeOut(400, function() {
