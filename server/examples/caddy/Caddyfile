@@ -1,8 +1,6 @@
 up.example.com {
 	proxy / 127.0.0.1:8002 {
-		proxy_header Host {host}
-		proxy_header X-Real-IP {remote}
-		proxy_header X-Forwarded-Proto {scheme}
+		transparent
 	}
 	gzip
 }
