@@ -52,7 +52,7 @@ func main() {
 			logger.Err("server", "Fatal error", err)
 		}
 	} else {
-		if err = r.Run(fmt.Sprintf(":%d", conf.C.Port)); err != nil {
+		if err = r.Run(fmt.Sprintf("%s:%d", conf.C.Host, conf.C.Port)); err != nil {
 			logger.Err("server", "Fatal error", err)
 		}
 	}
