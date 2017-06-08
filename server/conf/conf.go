@@ -14,7 +14,7 @@ var C Conf
 // Conf is the struct containing the configuration of the server
 type Conf struct {
 	NameServer string `yaml:"name_server" form:"name_server"`
-	ListenUrl  string `yaml:"listen_url" form:"listen_url"`
+	Host       string `yaml:"host" form:"host"`
 	Port       int    `yaml:"port" form:"port"`
 	AppendPort bool   `yaml:"append_port" form:"append_port"`
 
@@ -40,7 +40,7 @@ type Conf struct {
 
 type UnparsedConf struct {
 	NameServer string `yaml:"name_server" form:"name_server"`
-	ListenUrl  string `yaml:"listen_url" form:"listen_url"`
+	Host       string `yaml:"host" form:"host"`
 	Port       int    `yaml:"port" form:"port"`
 	AppendPort bool   `yaml:"append_port" form:"append_port"`
 
@@ -69,7 +69,7 @@ func NewDefault() Conf {
 	return Conf{
 		UploadDir:    "up/",
 		DB:           "goploader.db",
-		ListenUrl:    "",
+		Host:         "",
 		Port:         8080,
 		UniURILength: 10,
 		SizeLimit:    20,
