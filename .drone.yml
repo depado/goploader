@@ -57,7 +57,7 @@ pipeline:
     commands:
       - mkdir clients
       - gox -output="releases/clients/client_{{.OS}}_{{.Arch}}" github.com/Depado/goploader/client
-	    - tar czf releases/servers/clients.tar.gz releases/clients
+      - tar czf releases/servers/clients.tar.gz releases/clients
     when:
       matrix:
         TAG: 1.8
