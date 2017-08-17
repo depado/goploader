@@ -10,9 +10,10 @@ matrix:
 pipeline:
   prerequisites:
     image: golang:${TAG}
-    - go get ./...
-    - go get github.com/GeertJohan/go.rice
-    - go get github.com/GeertJohan/go.rice/rice
+    commands:
+      - go get ./...
+      - go get github.com/GeertJohan/go.rice
+      - go get github.com/GeertJohan/go.rice/rice
   build-server:
     image: golang:${TAG}
     commands:
