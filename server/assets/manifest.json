@@ -1,0 +1,36 @@
+{
+  "name": "Goploader",
+  "lang": "en-US",
+  "scope": "/simple",
+  "orientation": "portrait-primary",
+  "short_name": "Goploader",
+  "start_url": "/simple",
+  "display": "standalone",
+  "background_color": "#FFF",
+  "description": "Goploader App",
+  "icons": [{
+    "src": "/static/webapp/gpldr48.png",
+    "sizes": "48x48",
+    "type": "image/png"
+  }, {
+    "src": "/static/webapp/gpldr72.png",
+    "sizes": "72x72",
+    "type": "image/png"
+  }, {
+    "src": "/static/webapp/gpldr96.png",
+    "sizes": "96x96",
+    "type": "image/png"
+  }, {
+    "src": "/static/webapp/gpldr144.png",
+    "sizes": "144x144",
+    "type": "image/png"
+  }, {
+    "src": "/static/webapp/gpldr168.png",
+    "sizes": "168x168",
+    "type": "image/png"
+  }, {
+    "src": "/static/webapp/gpldr192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }]
+}

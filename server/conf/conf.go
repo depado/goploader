@@ -36,8 +36,10 @@ type Conf struct {
 	FullDoc           bool `yaml:"fulldoc" form:"fulldoc"`
 	AlwaysDownload    bool `yaml:"always_download" form:"always_download"`
 	DisableEncryption bool `yaml:"disable_encryption" form:"disable_encryption"`
+	PrometheusEnabled bool `yaml:"prometheus_enabled" form:"prometheus_enabled"`
 }
 
+// UnparsedConf is the configuration when it's still unparsed properly
 type UnparsedConf struct {
 	NameServer string `yaml:"name_server" form:"name_server"`
 	Host       string `yaml:"host" form:"host"`
@@ -62,6 +64,7 @@ type UnparsedConf struct {
 	FullDoc           bool `yaml:"fulldoc" form:"fulldoc"`
 	AlwaysDownload    bool `yaml:"always_download" form:"always_download"`
 	DisableEncryption bool `yaml:"disable_encryption" form:"disable_encryption"`
+	PrometheusEnabled bool `yaml:"prometheus_enabled" form:"prometheus_enabled"`
 }
 
 // NewDefault returns a Conf instance filled with default values
@@ -96,7 +99,8 @@ func (c *Conf) Validate() map[string]string {
 	return errors
 }
 
-// FillDefaults fills the zero value fields in the UnparsedConf with default values
+// FillDefaults fills the zero value fields in the UnparsedConf with default
+// values
 func (c *Conf) FillDefaults() error {
 	return mergo.Merge(c, NewDefault())
 }

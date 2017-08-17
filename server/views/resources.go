@@ -72,7 +72,7 @@ func CreateC(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	res.LogCreated(c)
+	res.OnCreated(c)
 	ns := conf.C.NameServer
 	if conf.C.AppendPort {
 		ns = fmt.Sprintf("%s:%d", conf.C.NameServer, conf.C.Port)

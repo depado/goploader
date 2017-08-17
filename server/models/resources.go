@@ -19,6 +19,7 @@ import (
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"
+	"github.com/Depado/goploader/server/metrics"
 	"github.com/Depado/goploader/server/utils"
 )
 
@@ -179,6 +180,20 @@ func (r Resource) LogDeleted(c *gin.Context) {
 		e += " - once"
 	}
 	logger.InfoC(c, "server", e)
+}
+
+// OnCreated is the function called once the resource has been created and saved
+func (r Resource) OnCreated(c *gin.Context) {
+	r.LogCreated(c)
+	if conf.C.PrometheusEnabled {
+		r.logMetricsCreated(c)
+	}
+}
+
+// LogMetricsCreated updates the prometheus metrics
+func (r Resource) logMetricsCreated(c *gin.Context) {
+	metrics.UploadedFilesSizeTotal.Add(float64(r.Size))
+	metrics.UploadedFilesTotal.WithLabelValues(c.ClientIP()).Inc()
 }
 
 // Encode encodes a Resource to JSON

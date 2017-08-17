@@ -32,3 +32,13 @@ func Index(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "index.html", data)
 }
+
+// SimpleIndex is a simple rendering for webapp purpose
+func SimpleIndex(c *gin.Context) {
+	logger.InfoC(c, "server", "GET /simple")
+	data := gin.H{
+		"size_limit":     utils.HumanBytes(uint64(conf.C.SizeLimit * utils.MegaByte)),
+		"sensitive_mode": conf.C.SensitiveMode,
+	}
+	c.HTML(http.StatusOK, "mobile.html", data)
+}

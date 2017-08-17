@@ -10,3 +10,5 @@ server/conf.yml
 server/rice-box.go
 server/ssl
 releases
+server/data/
+prom.yml
