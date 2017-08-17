@@ -5,6 +5,7 @@ workspace:
 matrix:
   TAG:
     - 1.8
+    - latest
   ARCH:
     - arm
     - amd64
@@ -26,10 +27,12 @@ pipeline:
       - go build -o client/client ./client
       - rice clean -i=github.com/Depado/goploader/server
     environment:
+      - GOARCH=${ARCH}
       - CGO_ENABLED=0
   
+  # Realse only for the latest stable version of Go
   server-release:
-    image: golang:1.8
+    image: golang:${TAG}
     commands:
       - mkdir goploader-server
       - rice embed-go -i=github.com/Depado/goploader/server
@@ -41,7 +44,21 @@ pipeline:
       - cp -r server/templates/ goploader-server/
       - go build -o goploader-server/server github.com/Depado/goploader/server
       - tar czf server_${ARCH}.tar.gz goploader-server/
-      - ls
     environment:
       - GOARCH=${ARCH}
       - CGO_ENABLED=0
+    when:
+      matrix:
+        TAG: 1.8
+  
+  # Executed only once (only one matrix)
+  client-release:
+    image: golang:${TAG}
+    commands:
+      - mkdir clients
+      - gox -output="releases/clients/client_{{.OS}}_{{.Arch}}" github.com/Depado/goploader/client
+	    - tar czf releases/servers/clients.tar.gz releases/clients
+    when:
+      matrix:
+        TAG: 1.8
+        ARCH: amd64
