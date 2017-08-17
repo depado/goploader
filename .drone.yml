@@ -1,39 +1,24 @@
-build:
-  image: armhfbuild/golang:$$GO_VERSION
-  # image: golang:$$GO_VERSION
-  commands:
+workspace:
+  base: /go
+  path: src/github.com/Depado/goploader/
+
+matrix:
+  TAG:
+    - 1.8
+    - latest
+
+pipeline:
+  prerequisites:
+    image: golang:${TAG}
     - go get ./...
     - go get github.com/GeertJohan/go.rice
     - go get github.com/GeertJohan/go.rice/rice
-    - rice embed-go -i=github.com/Depado/goploader/server
-    - go build -o server/server ./server
-    - go build -o client/client ./client
-    - rice clean -i=github.com/Depado/goploader/server
-  environment:
-    - CGO_ENABLED=0
-
-
-matrix:
-  GO_VERSION:
-    - 1.6
-
-notify:
-  irc:
-    prefix: Goploader Build
-    nick: Depadrone
-    channel: n0sec-bot
-    server:
-      host: irc.freenode.net
-      port: 6667
-
-# deploy:
-#   rsync:
-#     user: root
-#     host: gpldr.in
-#     port: 22
-#     source: server/server
-#     target: /home/depado/goploader/server
-#     delete: false
-#     recursive: true
-#     commands:
-#       - sudo supervisorctl restart goploader
+  build-server:
+    image: golang:${TAG}
+    commands:
+      - rice embed-go -i=github.com/Depado/goploader/server
+      - go build -o server/server ./server
+      - go build -o client/client ./client
+      - rice clean -i=github.com/Depado/goploader/server
+    environment:
+      - CGO_ENABLED=0
