@@ -31,16 +31,16 @@ pipeline:
   server-release:
     image: golang:1.8
     commands:
-	    - mkdir goploader-server
-	    - rice embed-go -i=github.com/Depado/goploader/server
-	    - go build -o goploader-server/server-standalone github.com/Depado/goploader/server
+      - mkdir goploader-server
+      - rice embed-go -i=github.com/Depado/goploader/server
+      - go build -o goploader-server/server-standalone github.com/Depado/goploader/server
       - tar czf server-standalone_${ARCH}.tar.gz goploader-server
       - rm -r goploader-server/*
-	    - rice clean -i=github.com/Depado/goploader/server
-	    - cp -r server/assets/ goploader-server/
-	    - cp -r server/templates/ goploader-server/
-	    - go build -o goploader-server/server github.com/Depado/goploader/server
-	    - tar czf server_${ARCH}.tar.gz goploader-server/
+      - rice clean -i=github.com/Depado/goploader/server
+      - cp -r server/assets/ goploader-server/
+      - cp -r server/templates/ goploader-server/
+      - go build -o goploader-server/server github.com/Depado/goploader/server
+      - tar czf server_${ARCH}.tar.gz goploader-server/
       - ls
     environment:
       - GOARCH=${ARCH}
