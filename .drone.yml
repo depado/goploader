@@ -5,7 +5,9 @@ workspace:
 matrix:
   TAG:
     - 1.8
-    - latest
+  ARCH:
+    - arm
+    - amd64
 
 pipeline:
   prerequisites:
@@ -14,7 +16,9 @@ pipeline:
       - go get ./...
       - go get github.com/GeertJohan/go.rice
       - go get github.com/GeertJohan/go.rice/rice
-  build-server:
+      - go get github.com/mitchellh/gox
+
+  build:
     image: golang:${TAG}
     commands:
       - rice embed-go -i=github.com/Depado/goploader/server
@@ -22,4 +26,22 @@ pipeline:
       - go build -o client/client ./client
       - rice clean -i=github.com/Depado/goploader/server
     environment:
+      - CGO_ENABLED=0
+  
+  server-release:
+    image: golang:1.8
+    commands:
+	    - mkdir goploader-server
+	    - rice embed-go -i=github.com/Depado/goploader/server
+	    - go build -o goploader-server/server-standalone github.com/Depado/goploader/server
+      - tar czf server-standalone_${ARCH}.tar.gz goploader-server
+      - rm -r goploader-server/*
+	    - rice clean -i=github.com/Depado/goploader/server
+	    - cp -r server/assets/ goploader-server/
+	    - cp -r server/templates/ goploader-server/
+	    - go build -o goploader-server/server github.com/Depado/goploader/server
+	    - tar czf server_${ARCH}.tar.gz goploader-server/
+      - ls
+    environment:
+      - GOARCH=${ARCH}
       - CGO_ENABLED=0
