@@ -54,7 +54,7 @@ pipeline:
   server-scp:
     image: appleboy/drone-scp
     host: gpldr.in
-    user: depado
+    username: depado
     key: ${SERVER_KEY}
     target: /home/depado/goploader/releases/
     source:
