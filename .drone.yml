@@ -55,11 +55,13 @@ pipeline:
     image: appleboy/drone-scp
     host: gpldr.in
     username: depado
-    key: ${SERVER_KEY}
     target: /home/depado/goploader/releases/
     source:
       - server_${ARCH}.tar.gz
       - server-standalone_${ARCH}.tar.gz
+    secrets:
+      - source: deploy_key
+        target: key
     when:
       status: success
       matrix:
