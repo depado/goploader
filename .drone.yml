@@ -61,7 +61,7 @@ pipeline:
       - server-standalone_${ARCH}.tar.gz
     secrets:
       - source: deploy_key
-        target: key
+        target: scp_key
     when:
       status: success
       matrix:
