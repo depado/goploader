@@ -50,14 +50,28 @@ pipeline:
     when:
       matrix:
         TAG: 1.8
-  
+
+  server-scp:
+    image: appleboy/drone-scp
+    host: gpldr.in
+    user: depado
+    key: ${SERVER_KEY}
+    target: /home/depado/goploader/releases/
+    source:
+      - server_${ARCH}.tar.gz
+      - server-standalone_${ARCH}.tar.gz
+    when:
+      status: success
+      matrix:
+        TAG: 1.8
+
   # Executed only once (only one matrix)
   client-release:
     image: golang:${TAG}
     commands:
       - mkdir clients
-      - gox -output="releases/clients/client_{{.OS}}_{{.Arch}}" github.com/Depado/goploader/client
-      - tar czf releases/servers/clients.tar.gz releases/clients
+      - gox -output="clients/client_{{.OS}}_{{.Arch}}" github.com/Depado/goploader/client
+      - tar czf clients.tar.gz clients
     when:
       matrix:
         TAG: 1.8
