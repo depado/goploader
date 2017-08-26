@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/atotto/clipboard"
-	"github.com/cheggaaa/pb"
 	flag "github.com/ogier/pflag"
+	"gopkg.in/cheggaaa/pb.v1"
 
 	"github.com/Depado/goploader/client/conf"
 	"github.com/Depado/goploader/client/screenshot"

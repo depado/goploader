@@ -26,12 +26,6 @@
   version = "v1.3.1"
 
 [[projects]]
-  name = "github.com/cheggaaa/pb"
-  packages = ["."]
-  revision = "180c76fdb3025713f501cd481e47810a9c715bd7"
-  version = "v2.0.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/daaku/go.zipexe"
   packages = ["."]
@@ -98,6 +92,12 @@
   version = "v0.0.2"
 
 [[projects]]
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
+
+[[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
   revision = "3247c84500bff8d9fb6d579d800f20b3e091582c"
@@ -152,46 +152,16 @@
   revision = "2d6f6f883a06fc0d5f4b14a81e4c28705ea64c15"
 
 [[projects]]
-  name = "gopkg.in/VividCortex/ewma.v1"
+  name = "gopkg.in/cheggaaa/pb.v1"
   packages = ["."]
-  revision = "b24eb346a94c3ba12c1da1e564dbac1b498a77ce"
-  version = "v1.1.1"
-
-[[projects]]
-  name = "gopkg.in/cheggaaa/pb.v2"
-  packages = ["termutil"]
-  revision = "c03447dfdc0d4cb5fbbe32a24993feb71612ae93"
-  version = "v2.0.0"
-
-[[projects]]
-  name = "gopkg.in/fatih/color.v1"
-  packages = ["."]
-  revision = "9131ab34cf20d2f6d83fdc67168a5430d1c7dc23"
-  version = "v1.4.1"
+  revision = "657164d0228d6bebe316fdf725c69f131a50fb10"
+  version = "v1.0.18"
 
 [[projects]]
   name = "gopkg.in/go-playground/validator.v8"
   packages = ["."]
   revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
   version = "v8.18.2"
-
-[[projects]]
-  name = "gopkg.in/mattn/go-colorable.v0"
-  packages = ["."]
-  revision = "941b50ebc6efddf4c41c8e4537a5f68a4e686b24"
-  version = "v0.0.8"
-
-[[projects]]
-  name = "gopkg.in/mattn/go-isatty.v0"
-  packages = ["."]
-  revision = "3a115632dcd687f9c8cd01679c83a06a0e21c1f3"
-  version = "v0.0.1"
-
-[[projects]]
-  name = "gopkg.in/mattn/go-runewidth.v0"
-  packages = ["."]
-  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
-  version = "v0.0.2"
 
 [[projects]]
   branch = "v2"
@@ -202,6 +172,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d22ff4eb4a78c9e97a5dbcde89de144d47962677f1104fd3276e9e39f2ea98ce"
+  inputs-digest = "56bc55e411480c88baa9ab2848f05228cf0881f60b0166f23f0467f04ec2fc4b"
   solver-name = "gps-cdcl"
   solver-version = 1
