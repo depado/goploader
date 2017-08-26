@@ -11,14 +11,15 @@ matrix:
     - amd64
 
 pipeline:
+  # Ensure dep and rice commands are installed, and use dep for vendoring
   prerequisites:
     image: golang:${TAG}
     commands:
-      - go get ./...
-      - go get github.com/GeertJohan/go.rice
+      - go get -u github.com/golang/dep/cmd/dep
       - go get github.com/GeertJohan/go.rice/rice
-      - go get github.com/mitchellh/gox
+      - dep ensure
 
+  # Build the server
   server-build:
     image: golang:${TAG}
     group: build
@@ -28,6 +29,7 @@ pipeline:
       - GOARCH=${ARCH}
       - CGO_ENABLED=0
   
+  # Build client
   client-build:
     image: golang:${TAG}
     group: build
@@ -37,7 +39,7 @@ pipeline:
       - GOARCH=${ARCH}
       - CGO_ENABLED=0
   
-  # Realse only for the latest stable version of Go
+  # Release only for the latest stable version of Go
   server-release:
     image: golang:${TAG}
     commands:
@@ -47,8 +49,7 @@ pipeline:
       - tar czf server-standalone_${ARCH}.tar.gz goploader-server
       - rm -r goploader-server/*
       - rice clean -i=github.com/Depado/goploader/server
-      - cp -r server/assets/ goploader-server/
-      - cp -r server/templates/ goploader-server/
+      - cp -r server/assets/ server/templates/ goploader-server/
       - go build -o goploader-server/server github.com/Depado/goploader/server
       - tar czf server_${ARCH}.tar.gz goploader-server/
     environment:
@@ -58,7 +59,8 @@ pipeline:
       matrix:
         TAG: 1.9
 
-  server-scp:
+  # Copy the built releases
+  server-release-scp:
     image: appleboy/drone-scp
     host: gpldr.in
     username: depado
@@ -74,10 +76,43 @@ pipeline:
       matrix:
         TAG: 1.9
 
+  # Build the deployable version (embedded assets, 1.9 version and arm arch)
+  server-deploy-build:
+    image: golang:${TAG}
+    group: build
+    commands:
+      - rice embed-go -i=github.com/Depado/goploader/server
+      - go build -o server/server github.com/Depado/goploader/server
+      - rice clean -i=github.com/Depado/goploader/server
+    environment:
+      - GOARCH=${ARCH}
+      - CGO_ENABLED=0
+    when:
+      matrix:
+        TAG: 1.9
+        ARCH: arm
+
+  # Copy the deployable version
+  server-deploy-scp:
+    image: appleboy/drone-scp
+    host: gpldr.in
+    username: depado
+    target: /home/depado/goploader/
+    source: ./server/server
+    secrets:
+      - source: deploy_key
+        target: scp_key
+    when:
+      status: success
+      matrix:
+        TAG: 1.9
+        ARCH: arm
+
   # Executed only once (only one matrix)
   client-release:
     image: golang:${TAG}
     commands:
+      - go get github.com/mitchellh/gox
       - mkdir clients
       - gox -output="clients/client_{{.OS}}_{{.Arch}}" github.com/Depado/goploader/client
       - tar czf clients.tar.gz clients

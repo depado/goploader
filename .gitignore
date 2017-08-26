@@ -12,3 +12,4 @@ server/ssl
 releases
 server/data/
 prom.yml
+vendor/
