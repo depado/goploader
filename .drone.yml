@@ -97,7 +97,7 @@ pipeline:
     image: appleboy/drone-scp
     host: gpldr.in
     username: depado
-    target: /home/depado/goploader/
+    target: /home/depado/goploader/new/
     source: ./server/server-new
     secrets:
       - source: deploy_key
