@@ -32,7 +32,7 @@ pipeline:
     image: golang:${TAG}
     group: build
     commands:
-      - go build ./client
+      - go build -o client/client ./client
     environment:
       - GOARCH=${ARCH}
       - CGO_ENABLED=0
