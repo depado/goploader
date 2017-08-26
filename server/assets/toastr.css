@@ -102,16 +102,10 @@ button.toast-close-button {
   border-radius: 0.4rem;
   text-align: center;
   border: 0.1rem solid #9B4DCA;
-  background-color: transparent;
   color: #9b4dca;
-  opacity: 0.8;
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
-  filter: alpha(opacity=80);
+  background-color: white;
 }
 #toast-container > :hover {
-  opacity: 1;
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-  filter: alpha(opacity=100);
   cursor: pointer;
 }
 #toast-container.toast-top-center > div,

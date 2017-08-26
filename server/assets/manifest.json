@@ -7,6 +7,7 @@
   "start_url": "/simple",
   "display": "standalone",
   "background_color": "#FFF",
+  "theme_color": "#9b4dca",  
   "description": "Goploader App",
   "icons": [{
     "src": "/static/webapp/gpldr48.png",

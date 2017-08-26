@@ -4,11 +4,12 @@ html, body {
 select {
     border: 0.1rem solid #9b4dca;
     color: #9b4dca;
-    width: 25%;
     font-size: 1.3rem;
     font-weight: 700;
     text-transform: uppercase;
     text-align: center;
+    text-align-last: center;
+    margin-bottom: 0.5rem;
 }
 footer {
     text-align: center;
@@ -35,6 +36,7 @@ input[type=checkbox] + label {
     text-transform: uppercase;
     white-space: nowrap;
     margin-left: 0;
+    width: 100%;
 }
 input[type=checkbox]:checked + label {
     background-color: #9B4DCA;
@@ -50,6 +52,9 @@ input[type=checkbox]:checked + label {
    background-color: #9B4DCA;
    width: 10%;
    height: 5px;
+}
+#upload-btn {
+    width: 100%;
 }
 #upload-text {
     height: 150px;
@@ -90,6 +95,7 @@ input[type=checkbox]:checked + label {
     text-decoration: none;
     text-transform: uppercase;
     white-space: nowrap;
+    width: 100%;
 }
 .inputfile + label {
     cursor: pointer;
