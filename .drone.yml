@@ -4,8 +4,8 @@ workspace:
 
 matrix:
   TAG:
+    - 1.9
     - 1.8
-    - latest
   ARCH:
     - arm
     - amd64
@@ -19,13 +19,20 @@ pipeline:
       - go get github.com/GeertJohan/go.rice/rice
       - go get github.com/mitchellh/gox
 
-  build:
+  server-build:
     image: golang:${TAG}
+    group: build
     commands:
-      - rice embed-go -i=github.com/Depado/goploader/server
       - go build -o server/server ./server
-      - go build -o client/client ./client
-      - rice clean -i=github.com/Depado/goploader/server
+    environment:
+      - GOARCH=${ARCH}
+      - CGO_ENABLED=0
+  
+  client-build:
+    image: golang:${TAG}
+    group: build
+    commands:
+      - go build ./client
     environment:
       - GOARCH=${ARCH}
       - CGO_ENABLED=0
@@ -49,13 +56,13 @@ pipeline:
       - CGO_ENABLED=0
     when:
       matrix:
-        TAG: 1.8
+        TAG: 1.9
 
   server-scp:
     image: appleboy/drone-scp
     host: gpldr.in
     username: depado
-    target: /home/depado/goploader/releases/
+    target: /home/depado/goploader/releases/servers/
     source:
       - server_${ARCH}.tar.gz
       - server-standalone_${ARCH}.tar.gz
@@ -65,7 +72,7 @@ pipeline:
     when:
       status: success
       matrix:
-        TAG: 1.8
+        TAG: 1.9
 
   # Executed only once (only one matrix)
   client-release:
@@ -76,5 +83,5 @@ pipeline:
       - tar czf clients.tar.gz clients
     when:
       matrix:
-        TAG: 1.8
+        TAG: 1.9
         ARCH: amd64
