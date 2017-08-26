@@ -82,7 +82,7 @@ pipeline:
     group: build
     commands:
       - rice embed-go -i=github.com/Depado/goploader/server
-      - go build -o server/server github.com/Depado/goploader/server
+      - go build -o server/server-new github.com/Depado/goploader/server
       - rice clean -i=github.com/Depado/goploader/server
     environment:
       - GOARCH=${ARCH}
@@ -98,7 +98,7 @@ pipeline:
     host: gpldr.in
     username: depado
     target: /home/depado/goploader/
-    source: ./server/server
+    source: ./server/server-new
     secrets:
       - source: deploy_key
         target: scp_key
@@ -121,7 +121,6 @@ pipeline:
         TAG: 1.9
         ARCH: amd64
 
-  
   # Executed only once (only one matrix)
   client-release-scp:
     image: appleboy/drone-scp
