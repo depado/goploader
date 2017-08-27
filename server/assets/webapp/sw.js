@@ -1,4 +1,4 @@
-var CACHE_NAME = 'gpldr-v1';
+var CACHE_NAME = 'gpldr-v2';
 var urlsToCache = [
     "/simple",
     "/static/jquery.min.js",
@@ -17,3 +17,17 @@ self.addEventListener('install', function(event) {
     })
   );
 });
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
+    )
+  );
+});
+

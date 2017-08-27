@@ -23,7 +23,11 @@ func Setup(tbox, abox *rice.Box) (*gin.Engine, error) {
 		}
 		r.Static("/releases", "releases")
 		r.GET("/", views.Index)
+		r.GET("/sw.js", func(c *gin.Context) {
+			c.File("sw.js")
+		})
 		r.GET("/simple", views.SimpleIndex)
+
 	}
 	if conf.C.DisableEncryption {
 		r.POST("/", views.Create)
