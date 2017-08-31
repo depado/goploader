@@ -1,9 +1,11 @@
 package views
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -11,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sourcegraph/syntaxhighlight"
 
 	"github.com/Depado/goploader/server/conf"
 	"github.com/Depado/goploader/server/logger"
@@ -114,7 +117,20 @@ func ViewC(c *gin.Context) {
 		c.Header("Content-Type", "application/octet-stream")
 	}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
-	io.Copy(c.Writer, reader)
+	if _, ok := c.GetQuery("code"); ok && !conf.C.AlwaysDownload {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(reader)
+		bb := buf.Bytes()
+		if bb, err = syntaxhighlight.AsHTML(bb); err != nil {
+			logger.ErrC(c, "server", "Couldn't parse syntax of file", err)
+			c.String(http.StatusInternalServerError, "Something went wrong on the server. Try again later.")
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		c.HTML(http.StatusOK, "code.tmpl", gin.H{"code": template.HTML(bb)})
+	} else {
+		io.Copy(c.Writer, reader)
+	}
 	if re.Once {
 		re.Delete()
 		re.LogDeleted(c)

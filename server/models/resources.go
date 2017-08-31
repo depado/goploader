@@ -34,11 +34,12 @@ var DurationMap = map[string]time.Duration{
 
 // Resource represents the data stored in the database
 type Resource struct {
-	Key      string
-	Name     string
-	Once     bool
-	Size     int64
-	DeleteAt time.Time
+	Key      string    `json:"key"`
+	Name     string    `json:"name"`
+	Once     bool      `json:"once"`
+	Size     int64     `json:"size"`
+	DeleteAt time.Time `json:"delete_at"`
+	Duration string    `json:"-"`
 }
 
 // NewResourceFromForm returns a new Resource instance with some fields calculated

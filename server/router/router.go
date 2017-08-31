@@ -18,7 +18,7 @@ func Setup(tbox, abox *rice.Box) (*gin.Engine, error) {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	if !conf.C.NoWeb {
-		if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html", "mobile.html"); err != nil {
+		if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html", "mobile.html", "code.tmpl"); err != nil {
 			return nil, err
 		}
 		r.Static("/releases", "releases")
