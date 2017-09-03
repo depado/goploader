@@ -37,6 +37,8 @@ func Setup(tbox, abox *rice.Box) (*gin.Engine, error) {
 		r.POST("/", views.CreateC)
 		r.GET("/v/:uniuri/:key", views.ViewC)
 		r.HEAD("/v/:uniuri/:key", views.HeadC)
+		r.GET("/v/:uniuri/:key/:lang", views.ViewCCode)
+		//TODO: Add HEAD for ViewCCode
 	}
 	if conf.C.PrometheusEnabled {
 		r.Any("/metrics", gin.WrapH(promhttp.Handler()))

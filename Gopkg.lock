@@ -141,18 +141,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/sourcegraph/annotate"
-  packages = ["."]
-  revision = "f4cad6c6324d3f584e1743d8b3e0e017a5f3a636"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/sourcegraph/syntaxhighlight"
-  packages = ["."]
-  revision = "bd320f5d308e1a3c4314c678d8227a0d72574ae7"
-
-[[projects]]
-  branch = "master"
   name = "github.com/ugorji/go"
   packages = ["codec"]
   revision = "5efa3251c7f7d05e5d9704a69a984ec9f1386a40"
@@ -184,6 +172,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0b3d545409ddf77fab1dc10a4a8b0c1d5bb015066126c95e1da3843463008162"
+  inputs-digest = "56bc55e411480c88baa9ab2848f05228cf0881f60b0166f23f0467f04ec2fc4b"
   solver-name = "gps-cdcl"
   solver-version = 1

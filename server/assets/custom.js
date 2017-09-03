@@ -1,5 +1,7 @@
 'use strict';
 
+var finalurl;
+
 var loader = $("#upload-loader");
 var form = $("#upload-form");
 var result = $("#upload-result");
@@ -10,6 +12,9 @@ var oneviewlabel = $("label[for=one-view]");
 var sourcelabel = $("label[for=source]");
 var filelabel = $("label[for=upload-file]");
 var uploadsum = $("#upload-summary");
+
+var lineslabel = $("label[for=lines]");
+var themelabel = $("label[for=theme]");
 
 var currentfile = "";
 var active = $("#upload");
@@ -33,6 +38,34 @@ clipboard.on('success', function(e) {
     e.clearSelection();
 });
 
+function updateQueryStringParameter(uri, key, value) {
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+        return uri + separator + key + "=" + value;
+    }
+}
+
+function removeURLParameter(url, parameter) {
+    var urlparts= url.split('?');   
+    if (urlparts.length>=2) {
+        var prefix= encodeURIComponent(parameter)+'=';
+        var pars= urlparts[1].split(/[&;]/g);
+        for (var i= pars.length; i-- > 0;) {    
+            if (pars[i].lastIndexOf(prefix, 0) !== -1) {  
+                pars.splice(i, 1);
+            }
+        }
+        url= urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : "");
+        return url;
+    } else {
+        return url;
+    }
+}
+
 function getsum() {
     var sum = "Your file will live for " + $("#duration option:selected").text() + " and will be visible ";
     if ($('#one-view').is(":checked")) {
@@ -42,6 +75,52 @@ function getsum() {
     }
     return sum
 }
+
+$('#language').change(function() {
+    var lang = $('#language').val();
+    var segments = finalurl.pathname.split("/").length - 1;
+    if (segments > 3) {
+        if (lang=="none") {
+            var value = finalurl.pathname.substring(finalurl.pathname.lastIndexOf('/'));
+            finalurl.pathname = finalurl.pathname.replace(value, "");
+        } else {
+            var value = finalurl.pathname.substring(finalurl.pathname.lastIndexOf('/') + 1);
+            finalurl.pathname = finalurl.pathname.replace(value, lang);
+        }
+    } else {
+        if (lang!="none") {
+            finalurl.pathname = finalurl.pathname + "/" +lang;
+        }
+    }
+    $('#final-url').attr('href', finalurl.toString());
+    $('#final-url').text(finalurl.toString());
+});
+
+$('#lines').change(function() {
+    var url = finalurl.toString();
+    if ($('#lines').is(":checked")) {
+        lineslabel.text("With Lines");
+        finalurl = new URL(updateQueryStringParameter(url, "lines", "true"))
+    } else {
+        lineslabel.text("No Lines");
+        finalurl = new URL(removeURLParameter(url, "lines"))
+    }
+    $('#final-url').attr('href', finalurl.toString());
+    $('#final-url').text(finalurl.toString());
+});
+
+$('#theme').change(function() {
+    var url = finalurl.toString();
+    if ($('#theme').is(":checked")) {
+        themelabel.text("Light");
+        finalurl = new URL(updateQueryStringParameter(url, "theme", "light"))
+    } else {
+        themelabel.text("Dark");
+        finalurl = new URL(removeURLParameter(url, "theme"))
+    }
+    $('#final-url').attr('href', finalurl.toString());
+    $('#final-url').text(finalurl.toString());
+});
 
 $('#one-view').change(function() {
     if ($('#one-view').is(":checked")) {
@@ -125,7 +204,8 @@ $('#upload-btn').click(function($e) {
                 type: 'POST'
             });
             req.done(function(data) {
-                upurl.html("Here is your file :<br /><a href='" + data + "' target='_blank'>" + data + "</a>");
+                finalurl = new URL(data)
+                upurl.html("Here is your file :<br /><a id='final-url' href='" + data + "' target='_blank'>" + data + "</a>");
                 upclipboard.attr("data-clipboard-text", data);
                 loader.fadeOut(400, function() {
                     result.fadeIn(400, function() {
