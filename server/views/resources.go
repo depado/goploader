@@ -167,6 +167,7 @@ func ViewCCode(c *gin.Context) {
 		"lang":  lang,
 		"theme": theme,
 		"lines": lines,
+		"name":  re.Name,
 	})
 	if re.Once {
 		re.Delete()

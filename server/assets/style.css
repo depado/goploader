@@ -4,7 +4,8 @@ html, body {
 select {
     border: 0.1rem solid #9b4dca;
     color: #9b4dca;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.1rem;
     font-weight: 700;
     text-transform: uppercase;
     text-align: center;

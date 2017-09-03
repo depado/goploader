@@ -155,6 +155,7 @@ $("#upload-again").click(function($e) {
     result.fadeOut(400, function() {
         form.fadeIn();
     });
+    $('#language').prop('selectedIndex', 0);
 });
 
 $('#upload-btn').click(function($e) {
@@ -214,6 +215,7 @@ $('#upload-btn').click(function($e) {
                 });
                 $("label[for=upload-file] span").text("Choose a file…");
                 $("#upload-file").replaceWith($("#upload-file").val('').clone(true));
+                $("#upload-text").val('');
             });
             req.fail(function(jqxhr, statusmsg) {
                 loader.fadeOut(400, function() {
