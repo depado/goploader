@@ -18,7 +18,6 @@ var themelabel = $("label[for=theme]");
 
 var currentfile = "";
 var active = $("#upload");
-var pages = ["introduction", "client", "curl", "server"];
 toastr.options = {
     "progressBar": true,
     "positionClass": "toast-top-right",
@@ -249,21 +248,6 @@ $("a[id^='toggle-']").click(function(evt) {
 });
 
 $(document).ready(function() {
-    for (var i = 0; i < pages.length; i++) {
-        var page = pages[i];
-        if (window.location.href.indexOf("#" + page) > -1) {
-            var current = window.location.href.substring(window.location.href.indexOf("#" + page))
-            active.fadeOut(400, function() {
-                $("#" + page).fadeIn(400, function() {
-                    $("html, body").animate({
-                        scrollTop: $(current).offset().top
-                    }, 200);
-                });
-            });
-            active = $("#" + page);
-            return;
-        }
-    }
     if ($('#one-view').is(":checked")) {
         oneviewlabel.text("One Download");
     } else {
