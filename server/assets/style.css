@@ -357,7 +357,7 @@ img {
 }
 .navigation {
     background: white;
-    border-bottom: .1rem solid #d1d1d1;
+    border-bottom: 1px solid #d1d1d1;
     display: block;
     height: 5.2rem;
     width: 100%;
