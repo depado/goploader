@@ -1,0 +1,23 @@
+site_name: Goploader
+site_url: https://gpldr.in
+repo_url: https://github.com/Depado/goploader
+site_author: Depado
+theme: 'material'
+markdown_extensions:
+    - toc:
+        permalink: True
+    - admonition
+    - codehilite
+pages: 
+  - Home: index.md
+  - Server Guide:
+    - Downloads: server/downloads.md
+    - Setup: server/install.md
+    - Running: server/running.md
+    - Serve: server/serve.md
+  - Client: 
+    - Downloads and Install: client/install.md
+    - Documentation: client/documentation.md
+  - Curl: curl.md
+
+

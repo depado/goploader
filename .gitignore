@@ -13,3 +13,5 @@ releases
 server/data/
 prom.yml
 vendor/
+docs/env/
+docs/goploader/site/
