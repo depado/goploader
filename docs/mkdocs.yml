@@ -35,5 +35,11 @@ pages:
     - Downloads and Install: client/install.md
     - Documentation: client/documentation.md
   - Curl: curl.md
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/Depado'
+    - type: 'twitter'
+      link: 'https://twitter.com/Depado_'
 
 
