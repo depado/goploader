@@ -8,14 +8,30 @@ markdown_extensions:
         permalink: True
     - admonition
     - codehilite
+    - pymdownx.arithmatex
+    - pymdownx.betterem(smart_enable=all)
+    - pymdownx.caret
+    - pymdownx.critic
+    - pymdownx.details
+    - pymdownx.emoji:
+        emoji_generator: !!python/name:pymdownx.emoji.to_svg
+    - pymdownx.inlinehilite
+    - pymdownx.magiclink
+    - pymdownx.mark
+    - pymdownx.smartsymbols
+    - pymdownx.superfences
+    - pymdownx.tasklist(custom_checkbox=true)
+    - pymdownx.tilde
 pages: 
   - Home: index.md
   - Server Guide:
+    - Build From Source: server/build.md
     - Downloads: server/downloads.md
     - Setup: server/install.md
     - Running: server/running.md
     - Serve: server/serve.md
   - Client: 
+    - Build From Source: client/build.md
     - Downloads and Install: client/install.md
     - Documentation: client/documentation.md
   - Curl: curl.md

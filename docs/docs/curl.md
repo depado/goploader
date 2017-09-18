@@ -1,3 +1,8 @@
+## Quick Doc
+
+Simply `curl https://gplr.in` to see a small reminder/documentation on how to
+use the service. 
+
 ## Usage
 
 One of the main goal of goploader is the ease of use. That's also why the 
