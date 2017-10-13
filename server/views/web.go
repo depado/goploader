@@ -22,6 +22,7 @@ func Index(c *gin.Context) {
 		return
 	}
 	data := gin.H{
+		"token":          conf.C.Token,
 		"fulldoc":        conf.C.FullDoc,
 		"size_limit":     utils.HumanBytes(uint64(conf.C.SizeLimit * utils.MegaByte)),
 		"sensitive_mode": conf.C.SensitiveMode,

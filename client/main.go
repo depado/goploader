@@ -159,6 +159,9 @@ func main() {
 		if once {
 			multipartWriter.WriteField("once", "true")
 		}
+		if conf.C.Token != "" {
+			multipartWriter.WriteField("token", conf.C.Token)
+		}
 		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
 			log.Fatal(err)
 		}

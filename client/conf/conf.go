@@ -13,6 +13,7 @@ import (
 // Configuration is the struct representing a configuration.
 type Configuration struct {
 	Service string `yaml:"service"`
+	Token   string `yaml:"token"`
 }
 
 // C is the exported global configuration variable
