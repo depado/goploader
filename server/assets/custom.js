@@ -31,6 +31,8 @@ toastr.options = {
     "hideMethod": "fadeOut"
 };
 
+$('#token').keydown(function (e) { if(e.which == 13) e.preventDefault(); });
+
 var clipboard = new Clipboard('#upload-clipboard');
 clipboard.on('success', function(e) {
     toastr.success('Copied to Clipboard');
@@ -177,6 +179,9 @@ $('#upload-btn').click(function($e) {
     if ($('#one-view').is(":checked")) {
         data.append('once', 'true');
     }
+    if ($('#token').length) {
+        data.append('token', $('#token').val());
+    }
     toastr.success('File transfer in progress');
     form.fadeOut(400, function() {
         loader.fadeIn();
@@ -218,7 +223,7 @@ $('#upload-btn').click(function($e) {
             });
             req.fail(function(jqxhr, statusmsg) {
                 loader.fadeOut(400, function() {
-                    uperror.html("The file is too big or an error occured on the server.").show();
+                    uperror.html("The file is too big, the token is incorrect or an error occured on the server.").show();
                     form.fadeIn(400, function() {
                         $(".progress>div").css("width", "0%");
                     });

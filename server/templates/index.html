@@ -61,8 +61,16 @@
             <h1 class="title">&nbsp;</h1>
             <h2>&nbsp;</h2> 
             {{ end }}
-            <form id="upload-form">
+            <form id="upload-form" method="post">
                 <fieldset class="container">
+                    {{ if .token }}
+                    <div class="row">
+                        <div class="column">
+                            <label for="token">Upload Token</label>
+                            <input id="token" type="password" name="token" placeholder="This site requires a token to upload">
+                        </div>
+                    </div>
+                    {{ end }}
                     <div class="row">
                         <div class="column">
                             <input id="source" type="checkbox" name="source">

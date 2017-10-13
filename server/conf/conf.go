@@ -18,6 +18,8 @@ type Conf struct {
 	Port       int    `yaml:"port" form:"port"`
 	AppendPort bool   `yaml:"append_port" form:"append_port"`
 
+	Token      string `yaml:"token" form:"token"`
+
 	ServeHTTPS bool   `yaml:"serve_https" form:"serve_https"`
 	SSLCert    string `yaml:"ssl_cert" form:"ssl_cert"`
 	SSLPrivKey string `yaml:"ssl_private_key" form:"ssl_private_key"`
@@ -45,6 +47,8 @@ type UnparsedConf struct {
 	Host       string `yaml:"host" form:"host"`
 	Port       int    `yaml:"port" form:"port"`
 	AppendPort bool   `yaml:"append_port" form:"append_port"`
+
+	Token      string `yaml:"token" form:"token"`
 
 	ServeHTTPS bool   `yaml:"serve_https" form:"serve_https"`
 	SSLCert    string `yaml:"ssl_cert" form:"ssl_cert"`
