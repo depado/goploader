@@ -58,6 +58,8 @@ pipeline:
     when:
       matrix:
         TAG: 1.9
+      event: deployment
+
 
   # Copy the built releases
   server-release-scp:
@@ -75,6 +77,7 @@ pipeline:
       status: success
       matrix:
         TAG: 1.9
+      event: deployment
 
   # Build the deployable version (embedded assets, 1.9 version and arm arch)
   server-deploy-build:
@@ -91,6 +94,7 @@ pipeline:
       matrix:
         TAG: 1.9
         ARCH: arm
+      event: deployment
 
   # Copy the deployable version
   server-deploy-scp:
@@ -107,6 +111,7 @@ pipeline:
       matrix:
         TAG: 1.9
         ARCH: arm
+      event: deployment
 
   # Executed only once (only one matrix)
   client-release:
@@ -120,6 +125,7 @@ pipeline:
       matrix:
         TAG: 1.9
         ARCH: amd64
+      event: deployment
 
   # Executed only once (only one matrix)
   client-release-scp:
@@ -135,3 +141,4 @@ pipeline:
       matrix:
         TAG: 1.9
         ARCH: amd64
+      event: deployment

@@ -8,6 +8,12 @@
   revision = "c02ca9a983da5807ddf7d796784928f5be4afd09"
 
 [[projects]]
+  name = "github.com/asdine/storm"
+  packages = [".","codec","codec/json","index","internal","q"]
+  revision = "255212403bcca439778718edf5e2d3d50744eca3"
+  version = "v1.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/atotto/clipboard"
   packages = ["."]
@@ -172,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "56bc55e411480c88baa9ab2848f05228cf0881f60b0166f23f0467f04ec2fc4b"
+  inputs-digest = "d257a070d509f3f6e393c3767a83a5fb6bc618a7c761573e2696c039e47a865b"
   solver-name = "gps-cdcl"
   solver-version = 1
