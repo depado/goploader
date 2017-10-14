@@ -11,7 +11,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/boltdb/bolt"
 	"github.com/dchest/uniuri"
 	"github.com/gin-gonic/gin"
 
@@ -139,21 +138,9 @@ func (r Resource) Delete() error {
 	if err = database.DB.DeleteStruct(&r); err != nil {
 		return err
 	}
-	err = database.DB.Update(func(tx *bolt.Tx) error {
-		if err = tx.Bucket([]byte("resources")).Delete([]byte(r.Key)); err != nil {
-			return err
-		}
-		S.CurrentFiles--
-		S.CurrentSize -= uint64(r.Size)
-		var data []byte
-		if data, err = S.Encode(); err != nil {
-			return err
-		}
-		return tx.Bucket([]byte("statistics")).Put([]byte("main"), data)
-	})
-	if err != nil {
-		return err
-	}
+	S.CurrentFiles--
+	S.CurrentSize -= uint64(r.Size)
+	database.DB.Save(&S)
 	err = os.Remove(path.Join(conf.C.UploadDir, r.Key))
 	logger.Debug("server", "Done Delete on Resource", r.Key)
 	logger.Debug("server", fmt.Sprintf("Serving %d (%s) files", S.CurrentFiles, utils.HumanBytes(S.CurrentSize)))

@@ -35,7 +35,6 @@ func Monit() {
 func FindAndDelete() {
 	var err error
 	now := time.Now()
-	var sizeRemoved uint64
 
 	var rs []models.Resource
 	if err = database.DB.Select(q.Lt("DeleteAt", now)).Find(&rs); err != nil {
@@ -49,12 +48,14 @@ func FindAndDelete() {
 	for _, r := range rs {
 		if err = os.Remove(path.Join(conf.C.UploadDir, r.Key)); err != nil {
 			logger.Err("monitoring", "While deleting file (skipped)", err)
-		} else {
-			sizeRemoved += uint64(r.Size)
-			if err = database.DB.DeleteStruct(&r); err != nil {
-				logger.Err("monitoring", "While deleting entry", err)
-			}
 		}
+		if err = database.DB.DeleteStruct(&r); err != nil {
+			logger.Err("monitoring", "While deleting entry", err)
+		} else {
+			models.S.CurrentSize -= uint64(r.Size)
+			models.S.CurrentFiles--
+		}
+		database.DB.Save(&models.S)
 	}
 	// err = database.DB.Update(func(tx *bolt.Tx) error {
 	// 	b := tx.Bucket([]byte("resources"))
