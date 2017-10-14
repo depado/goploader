@@ -98,3 +98,15 @@ func DebugC(c *gin.Context, from, message string, extra ...interface{}) {
 		generic("DEBUG", from, c.ClientIP(), message, extra...)
 	}
 }
+
+// Fatal logs an error message and exits the program
+func Fatal(from, message string, extra ...interface{}) {
+	generic("FATAL", from, "", message, extra...)
+	os.Exit(1)
+}
+
+// FatalC logs an error message with the IP field and exits the program
+func FatalC(c *gin.Context, from, message string, extra ...interface{}) {
+	generic("FATAL", from, c.ClientIP(), message, extra...)
+	os.Exit(1)
+}

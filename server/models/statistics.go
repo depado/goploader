@@ -38,25 +38,28 @@ func (s Statistics) Save() error {
 	return err
 }
 
-// Initialize loads the previous state of the statistics
+// Initialize initializes the buckets if necessary
 func Initialize() error {
+	if err := database.DB.Init(&Resource{}); err != nil {
+		logger.Fatal("server", "Couldn't initialize bucket", err)
+	}
 	logger.Debug("server", "Started Initialize on statistics object")
 	var cfiles uint64
 	var csize uint64
 	var err error
 
-	err = database.DB.View(func(tx *bolt.Tx) error {
-		S.Decode(tx.Bucket([]byte("statistics")).Get([]byte("main")))
-		return tx.Bucket([]byte("resources")).ForEach(func(k, v []byte) error {
-			r := &Resource{}
-			if err = r.Decode(v); err != nil {
-				return err
-			}
-			csize += uint64(r.Size)
-			cfiles++
-			return nil
-		})
-	})
+	// err = database.DB.View(func(tx *bolt.Tx) error {
+	// 	S.Decode(tx.Bucket([]byte("statistics")).Get([]byte("main")))
+	// 	return tx.Bucket([]byte("resources")).ForEach(func(k, v []byte) error {
+	// 		r := &Resource{}
+	// 		if err = r.Decode(v); err != nil {
+	// 			return err
+	// 		}
+	// 		csize += uint64(r.Size)
+	// 		cfiles++
+	// 		return nil
+	// 	})
+	// })
 	if err != nil {
 		logger.Err("server", "Could not initialize statistics")
 		return err

@@ -38,6 +38,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer database.DB.Close()
+	if err = database.DB.Init(&models.Resource{}); err != nil {
+		logger.Fatal("server", "Couldn't initialize bucket", err)
+	}
 	if err = models.Initialize(); err != nil {
 		log.Fatal(err)
 	}
