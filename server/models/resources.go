@@ -37,7 +37,7 @@ type Resource struct {
 	Name     string    `json:"name"`
 	Once     bool      `json:"once"`
 	Size     int64     `json:"size"`
-	DeleteAt time.Time `json:"delete_at"`
+	DeleteAt time.Time `json:"delete_at" storm:"index"`
 	Duration string    `json:"-"`
 }
 
