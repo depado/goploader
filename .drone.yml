@@ -142,3 +142,11 @@ pipeline:
         TAG: 1.9
         ARCH: amd64
       event: deployment
+
+  github_release:
+    image: plugins/github-release
+    secrets: [ github_token ]
+    files: 
+      - clients/*
+    when:
+      event: tag
