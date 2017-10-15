@@ -68,9 +68,10 @@ func Migrate() {
 		}
 		c := b.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {
-			json.Unmarshal(v, &r)
-			r.UnixDeleteAt = r.DeleteAt.Unix()
-			rr = append(rr, r)
+			if err = json.Unmarshal(v, &r); err == nil {
+				r.UnixDeleteAt = r.DeleteAt.Unix()
+				rr = append(rr, r)
+			}
 		}
 		return nil
 	})
