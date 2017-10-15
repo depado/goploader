@@ -23,6 +23,7 @@ import (
 
 // DurationMap is a map linking the received string and a time.Duration
 var DurationMap = map[string]time.Duration{
+	"1m":  time.Minute,
 	"30m": 30 * time.Minute,
 	"1h":  1 * time.Hour,
 	"6h":  6 * time.Hour,
@@ -32,21 +33,24 @@ var DurationMap = map[string]time.Duration{
 
 // Resource represents the data stored in the database
 type Resource struct {
-	Key      string    `json:"key" storm:"id,index"`
-	Name     string    `json:"name"`
-	Once     bool      `json:"once"`
-	Size     int64     `json:"size"`
-	DeleteAt time.Time `json:"delete_at" storm:"index"`
-	Duration string    `json:"-"`
+	Key          string    `json:"key" storm:"id,index"`
+	Name         string    `json:"name"`
+	Once         bool      `json:"once"`
+	Size         int64     `json:"size"`
+	DeleteAt     time.Time `json:"delete_at" storm:"index"`
+	UnixDeleteAt int64     `json:"unix_delete_at" storm:"index"`
+	Duration     string    `json:"-"`
 }
 
 // NewResourceFromForm returns a new Resource instance with some fields calculated
 func NewResourceFromForm(h *multipart.FileHeader, once bool, duration time.Duration) Resource {
+	d := time.Now().Add(duration)
 	return Resource{
-		Key:      uniuri.NewLen(conf.C.UniURILength),
-		Name:     h.Filename,
-		Once:     once,
-		DeleteAt: time.Now().Add(duration),
+		Key:          uniuri.NewLen(conf.C.UniURILength),
+		Name:         h.Filename,
+		Once:         once,
+		DeleteAt:     d,
+		UnixDeleteAt: d.Unix(),
 	}
 }
 
@@ -96,53 +100,42 @@ func (r *Resource) WriteEncrypted(fd multipart.File) (string, error) {
 // Save writes the Resource to the bucket
 func (r Resource) Save() error {
 	logger.Debug("server", "Started Save on Resource", r.Key)
-	var err error
-	// var data []byte
+	defer logger.Debug("server", "Done Save on Resource", r.Key)
 
-	if err = database.DB.Save(&r); err != nil {
-		return err
+	if err := S.Add(r); err != nil {
+		logger.Err("server", "Couldn't save stats while saving resource", err)
 	}
-
-	// if data, err = r.Encode(); err != nil {
-	// 	return err
-	// }
-	// err = database.DB.Update(func(tx *bolt.Tx) error {
-	// 	if err = tx.Bucket([]byte("resources")).Put([]byte(r.Key), data); err != nil {
-	// 		return err
-	// 	}
-	// 	S.TotalFiles++
-	// 	S.TotalSize += uint64(r.Size)
-	// 	S.CurrentFiles++
-	// 	S.CurrentSize += uint64(r.Size)
-	// 	if data, err = S.Encode(); err != nil {
-	// 		return err
-	// 	}
-	// 	return tx.Bucket([]byte("statistics")).Put([]byte("main"), data)
-	// })
-	logger.Debug("server", "Done Save on Resource", r.Key)
-	return err
+	return database.DB.Save(&r)
 }
 
 // Get retrives the Resource from the bucket
 func (r *Resource) Get(key string) error {
+	// Debug logging
 	logger.Debug("server", "Started Get on Resource", key)
-	err := database.DB.One("Key", key, r)
-	logger.Debug("server", "Done Get on Resource", key)
-	return err
+	defer logger.Debug("server", "Done Get on Resource", key)
+
+	return database.DB.One("Key", key, r)
 }
 
 // Delete deletes a resource in database and on disk
 func (r Resource) Delete() error {
-	logger.Debug("server", "Started Delete on Resource", r.Key)
 	var err error
+
+	// Debug logging
+	logger.Debug("server", "Started Delete on Resource", r.Key)
+	defer logger.Debug("server", "Done Delete on Resource", r.Key)
+
 	if err = database.DB.DeleteStruct(&r); err != nil {
 		return err
 	}
-	S.CurrentFiles--
-	S.CurrentSize -= uint64(r.Size)
-	database.DB.Save(&S)
+
+	// Stats handling
+	if err = S.Remove(r); err != nil {
+		logger.Err("server", "Couldn't save stats while deleting resource", err)
+	}
+
+	// File removal
 	err = os.Remove(path.Join(conf.C.UploadDir, r.Key))
-	logger.Debug("server", "Done Delete on Resource", r.Key)
 	logger.Debug("server", fmt.Sprintf("Serving %d (%s) files", S.CurrentFiles, utils.HumanBytes(S.CurrentSize)))
 	return err
 }

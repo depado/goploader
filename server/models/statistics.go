@@ -10,50 +10,76 @@ import (
 	"github.com/Depado/goploader/server/utils"
 )
 
+const (
+	statsBucket = "stats"
+	statsKey    = "main"
+)
+
+// S is the exported main statistics structure
+var S Statistics
+
 // Statistics is the struct representing the server statistics
 type Statistics struct {
-	ID           int
 	TotalSize    uint64 `json:"total_size"`
 	TotalFiles   uint64 `json:"total_files"`
 	CurrentSize  uint64 `json:"current_size"`
 	CurrentFiles uint64 `json:"current_files"`
 }
 
-// S is the exported main statistics structure
-var S Statistics
+// Load loads the statistics from the database
+func (s *Statistics) Load() error {
+	return database.DB.Get(statsBucket, statsKey, s)
+}
 
-// Initialize initializes the buckets if necessary
-func Initialize() error {
+// Save saves the statistics to the database
+func (s *Statistics) Save() error {
+	return database.DB.Set(statsBucket, statsKey, s)
+}
+
+// Add adds the given resource to the statistics and saves it to the database
+func (s *Statistics) Add(r Resource) error {
+	s.TotalFiles++
+	s.CurrentFiles++
+	s.TotalSize += uint64(r.Size)
+	s.CurrentSize += uint64(r.Size)
+
+	return s.Save()
+}
+
+// Remove removes the given resource from the current statistics and saves it
+// to the database
+func (s *Statistics) Remove(r Resource) error {
+	s.CurrentFiles--
+	s.CurrentSize -= uint64(r.Size)
+
+	return s.Save()
+}
+
+// Evaluate recalculates the statistics from what's present in the database and
+// save the statistics to the database
+func (s *Statistics) Evaluate() error {
 	var err error
-	var cfiles uint64
-	var csize uint64
 	var rs []Resource
 
-	if err = database.DB.Init(&Resource{}); err != nil {
-		logger.Fatal("server", "Couldn't initialize bucket", err)
-	}
-	if err = database.DB.Init(&Statistics{}); err != nil {
-		logger.Fatal("server", "Couldn't initialize bucket", err)
-	}
-	logger.Debug("server", "Started Initialize on statistics object")
-	if err = database.DB.One("ID", 0, &S); err != nil {
+	// Find all the resources in the database and recalculate the stats
+	if err = database.DB.All(&rs); err != nil {
 		if err == storm.ErrNotFound {
-			if err = database.DB.All(&rs); err != nil {
-				if err == storm.ErrNotFound {
-					return nil
-				}
-				return err
-			}
-			for _, r := range rs {
-				S.CurrentFiles++
-				S.CurrentSize += uint64(r.Size)
-			}
-		} else {
-			return err
+			return nil
 		}
+		return err
 	}
-	logger.Info("server", fmt.Sprintf("Total   %d (%s)", S.TotalFiles, utils.HumanBytes(S.TotalSize)))
-	logger.Info("server", fmt.Sprintf("Current %d (%s)", cfiles, utils.HumanBytes(csize)))
-	logger.Debug("server", "Done Initialize on statistics object")
-	return err
+	// For all the present files update the statistics object
+	for _, r := range rs {
+		s.CurrentFiles++
+		s.CurrentSize += uint64(r.Size)
+		s.TotalFiles++
+		s.TotalSize += uint64(r.Size)
+	}
+	return s.Save()
+}
+
+// Info prints out the information about statistics in the logs
+func (s Statistics) Info() {
+	logger.Info("server", fmt.Sprintf("Total   %d (%s)", s.TotalFiles, utils.HumanBytes(s.TotalSize)))
+	logger.Info("server", fmt.Sprintf("Current %d (%s)", s.CurrentFiles, utils.HumanBytes(s.CurrentSize)))
 }
