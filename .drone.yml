@@ -42,7 +42,7 @@ pipeline:
     group: build
     commands:
       - cd docs
-      - pip install -r requirements
+      - pip install -r requirements.txt
       - mkdocs build
   
   # Release only for the latest stable version of Go
