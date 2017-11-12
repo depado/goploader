@@ -3,9 +3,6 @@ workspace:
   path: src/github.com/Depado/goploader/
 
 matrix:
-  TAG:
-    - 1.9
-    - 1.8
   ARCH:
     - arm
     - amd64
@@ -13,15 +10,15 @@ matrix:
 pipeline:
   # Ensure dep and rice commands are installed, and use dep for vendoring
   prerequisites:
-    image: golang:${TAG}
-    commands:
+    image: "golang:1.9"
+    commands: 
       - go get -u github.com/golang/dep/cmd/dep
       - go get github.com/GeertJohan/go.rice/rice
       - dep ensure
 
   # Build the server
-  server-build:
-    image: golang:${TAG}
+  server: 
+    image: "golang:1.9"
     group: build
     commands:
       - go build -o server/server ./server
@@ -30,18 +27,27 @@ pipeline:
       - CGO_ENABLED=0
   
   # Build client
-  client-build:
-    image: golang:${TAG}
+  client:
+    image: "golang:1.9"
     group: build
     commands:
       - go build -o client/client ./client
     environment:
       - GOARCH=${ARCH}
       - CGO_ENABLED=0
+
+  # Build docs
+  docs:
+    image: python:3
+    group: build
+    commands:
+      - cd docs
+      - pip install -r requirements
+      - mkdocs build
   
   # Release only for the latest stable version of Go
   server-release:
-    image: golang:${TAG}
+    image: "golang:1.9"
     commands:
       - mkdir goploader-server
       - rice embed-go -i=github.com/Depado/goploader/server
@@ -56,8 +62,6 @@ pipeline:
       - GOARCH=${ARCH}
       - CGO_ENABLED=0
     when:
-      matrix:
-        TAG: 1.9
       event: deployment
 
 
@@ -75,13 +79,11 @@ pipeline:
         target: scp_key
     when:
       status: success
-      matrix:
-        TAG: 1.9
       event: deployment
 
   # Build the deployable version (embedded assets, 1.9 version and arm arch)
   server-deploy-build:
-    image: golang:${TAG}
+    image: "golang:1.9"
     group: build
     commands:
       - rice embed-go -i=github.com/Depado/goploader/server
@@ -92,7 +94,6 @@ pipeline:
       - CGO_ENABLED=0
     when:
       matrix:
-        TAG: 1.9
         ARCH: arm
       event: deployment
 
@@ -109,13 +110,12 @@ pipeline:
     when:
       status: success
       matrix:
-        TAG: 1.9
         ARCH: arm
       event: deployment
 
-  # Executed only once (only one matrix)
+  # Executed only when deploying
   client-release:
-    image: golang:${TAG}
+    image: "golang:1.9"
     commands:
       - go get github.com/mitchellh/gox
       - mkdir clients
@@ -123,7 +123,6 @@ pipeline:
       - tar czf clients.tar.gz clients
     when:
       matrix:
-        TAG: 1.9
         ARCH: amd64
       event: deployment
 
@@ -139,11 +138,10 @@ pipeline:
         target: scp_key
     when:
       matrix:
-        TAG: 1.9
         ARCH: amd64
       event: deployment
 
-  github_release:
+  github-release:
     image: plugins/github-release
     secrets: [ github_token ]
     files: 
