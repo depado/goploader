@@ -2,7 +2,10 @@ site_name: Goploader
 site_url: https://gpldr.in
 repo_url: https://github.com/Depado/goploader
 site_author: Depado
-theme: 'material'
+theme:
+  name: 'material'
+  feature:
+    tabs: true
 markdown_extensions:
     - toc:
         permalink: True
