@@ -23,7 +23,6 @@ import (
 
 // DurationMap is a map linking the received string and a time.Duration
 var DurationMap = map[string]time.Duration{
-	"1m":  time.Minute,
 	"30m": 30 * time.Minute,
 	"1h":  1 * time.Hour,
 	"6h":  6 * time.Hour,
