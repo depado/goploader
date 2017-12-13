@@ -1,5 +1,6 @@
 # goploader
 
+
 ![Go Version](https://img.shields.io/badge/go-1.5-brightgreen.svg)
 ![Go Version](https://img.shields.io/badge/go-1.6-brightgreen.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Depado/goploader)](https://goreportcard.com/report/github.com/Depado/goploader)
@@ -7,6 +8,7 @@
 [![Build Status](https://drone.depado.eu/api/badges/Depado/goploader/status.svg)](https://drone.depado.eu/Depado/goploader)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Depado/goploader/blob/master/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-gpldr.in-blue.svg)](https://gpldr.in/)
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/Depado)
 
 ## Introduction
 
