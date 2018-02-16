@@ -174,9 +174,6 @@ func ViewCode(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	if conf.C.AlwaysDownload {
-		c.Header("Content-Type", "application/octet-stream")
-	}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(f)
