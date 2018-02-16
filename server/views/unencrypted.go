@@ -1,6 +1,7 @@
 package views
 
 import (
+	"bytes"
 	"bufio"
 	"fmt"
 	"io"
@@ -115,8 +116,10 @@ func View(c *gin.Context) {
 	}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
+		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+	} else {
+		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	}
-	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	io.Copy(c.Writer, f)
 	if re.Once {
 		re.Delete()
@@ -145,7 +148,49 @@ func Head(c *gin.Context) {
 	}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
+		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+	} else {
+		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+	}
+	io.Copy(c.Writer, f)
+}
+
+
+// ViewCode allows to see the file with syntax highliting and extra options
+func ViewCode(c *gin.Context) {
+	var err error
+
+	id := c.Param("uniuri")
+	lang := c.Param("lang")
+	theme := c.DefaultQuery("theme", "dark")
+	lines := c.Query("lines") == "true"
+	re := models.Resource{}
+
+	if err = re.Get(id); err != nil || re.Key == "" {
+		logger.InfoC(c, "server", "Not found", id)
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	re.LogFetched(c)
+	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
+	if err != nil {
+		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
-	io.Copy(c.Writer, f)
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(f)
+	bb := buf.Bytes()
+	c.HTML(http.StatusOK, "code.tmpl", gin.H{
+		"code":  string(bb),
+		"lang":  lang,
+		"theme": theme,
+		"lines": lines,
+		"name":  re.Name,
+	})
+	if re.Once {
+		re.Delete()
+		re.LogDeleted(c)
+	}
 }

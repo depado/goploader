@@ -121,8 +121,10 @@ func ViewC(c *gin.Context) {
 	reader := &cipher.StreamReader{S: stream, R: f}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
+		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+	} else {
+		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	}
-	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	io.Copy(c.Writer, reader)
 	if re.Once {
 		re.Delete()
@@ -163,9 +165,6 @@ func ViewCCode(c *gin.Context) {
 	var iv [aes.BlockSize]byte
 	stream := cipher.NewCFBDecrypter(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
-	if conf.C.AlwaysDownload {
-		c.Header("Content-Type", "application/octet-stream")
-	}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
@@ -218,6 +217,11 @@ func HeadC(c *gin.Context) {
 	var iv [aes.BlockSize]byte
 	stream := cipher.NewCFBDecrypter(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
-	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+	if conf.C.AlwaysDownload {
+		c.Header("Content-Type", "application/octet-stream")
+		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+	} else {
+		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+	}
 	io.Copy(c.Writer, reader)
 }
