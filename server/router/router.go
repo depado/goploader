@@ -33,6 +33,7 @@ func Setup(tbox, abox *rice.Box) (*gin.Engine, error) {
 		r.POST("/", views.Create)
 		r.GET("/v/:uniuri", views.View)
 		r.HEAD("/v/:uniuri", views.Head)
+		r.GET("/v/:uniuri/:lang", views.ViewCode)
 	} else {
 		r.POST("/", views.CreateC)
 		r.GET("/v/:uniuri/:key", views.ViewC)
