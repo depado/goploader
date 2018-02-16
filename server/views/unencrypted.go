@@ -116,8 +116,10 @@ func View(c *gin.Context) {
 	}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
+		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+	} else {
+		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	}
-	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	io.Copy(c.Writer, f)
 	if re.Once {
 		re.Delete()
@@ -146,8 +148,10 @@ func Head(c *gin.Context) {
 	}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
+		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+	} else {
+		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	}
-	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	io.Copy(c.Writer, f)
 }
 
