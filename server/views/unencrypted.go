@@ -74,11 +74,13 @@ func Create(c *gin.Context) {
 			return
 		}
 	}
+	del := time.Now().Add(duration)
 	newres := &models.Resource{
 		Key:      u,
 		Name:     h.Filename,
 		Once:     once,
-		DeleteAt: time.Now().Add(duration),
+		DeleteAt: del,
+		UnixDeleteAt: del.Unix(),
 		Size:     wr,
 	}
 	if err = newres.Save(); err != nil {
