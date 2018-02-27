@@ -97,8 +97,8 @@ func Create(c *gin.Context) {
 	c.String(http.StatusCreated, "%v://%s/v/%s\n", utils.DetectScheme(c), ns, u)
 }
 
-// View handles the file views
-func View(c *gin.Context) {
+// HandleRequest responds to a View or Head request for unencrypted files
+func HandleRequest(c *gin.Context, isView bool) {
 	var err error
 
 	id := c.Param("uniuri")
@@ -110,53 +110,36 @@ func View(c *gin.Context) {
 		return
 	}
 	re.LogFetched(c)
-	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
-	if err != nil {
-		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
 		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
 	} else {
 		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	}
-	io.Copy(c.Writer, f)
-	if re.Once {
+	file := path.Join(conf.C.UploadDir, re.Key)
+	if _, err := os.Stat(file); err != nil {
+		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.File(file)
+
+	if isView && re.Once {
 		re.Delete()
 		re.LogDeleted(c)
 	}
 }
 
-// Head handles the head request for an encryptd file
-func Head(c *gin.Context) {
-	var err error
-
-	id := c.Param("uniuri")
-	re := models.Resource{}
-
-	if err = re.Get(id); err != nil || re.Key == "" {
-		logger.InfoC(c, "server", "Not found", id)
-		c.AbortWithStatus(http.StatusNotFound)
-		return
-	}
-	re.LogFetched(c)
-	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
-	if err != nil {
-		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	if conf.C.AlwaysDownload {
-		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
-	} else {
-		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
-	}
-	io.Copy(c.Writer, f)
+// View handles the file views
+func View(c *gin.Context) {
+	HandleRequest(c, true)
 }
 
+// Head handles the head request
+func Head(c *gin.Context) {
+	HandleRequest(c, false)
+}
 
 // ViewCode allows to see the file with syntax highliting and extra options
 func ViewCode(c *gin.Context) {
