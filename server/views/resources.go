@@ -148,6 +148,11 @@ func ViewCCode(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
+	if re.Size > conf.C.ViewLimit*utils.MegaByte {
+		logger.InfoC(c, "server", fmt.Sprintf("Tried to view %s but it is too large (%s > %s)", re.Key, utils.HumanBytes(uint64(re.Size)), utils.HumanBytes(uint64(conf.C.ViewLimit*utils.MegaByte))))
+		c.AbortWithStatus(http.StatusForbidden)
+		return
+	}
 	re.LogFetched(c)
 	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {

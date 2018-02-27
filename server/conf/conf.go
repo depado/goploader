@@ -29,6 +29,7 @@ type Conf struct {
 	UniURILength int     `yaml:"uniuri_length" form:"uniuri_length"`
 	KeyLength    int     `yaml:"key_length" form:"key_length"`
 	SizeLimit    int64   `yaml:"size_limit" form:"size_limit"`
+	ViewLimit    int64   `yaml:"view_limit" form:"view_limit"`
 	DiskQuota    float64 `yaml:"disk_quota" form:"disk_quota"`
 	LogLevel     string  `yaml:"loglevel" form:"loglevel"`
 
@@ -59,6 +60,7 @@ type UnparsedConf struct {
 	UniURILength int     `yaml:"uniuri_length" form:"uniuri_length"`
 	KeyLength    int     `yaml:"key_length" form:"key_length"`
 	SizeLimit    int64   `yaml:"size_limit" form:"size_limit"`
+	ViewLimit    int64   `yaml:"view_limit" form:"view_limit"`
 	DiskQuota    float64 `yaml:"disk_quota" form:"disk_quota"`
 	LogLevel     string  `yaml:"loglevel" form:"loglevel"`
 
@@ -80,6 +82,7 @@ func NewDefault() Conf {
 		Port:         8080,
 		UniURILength: 10,
 		SizeLimit:    20,
+		ViewLimit:    5,
 		DiskQuota:    0,
 		KeyLength:    16,
 		LogLevel:     "info",

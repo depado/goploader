@@ -1,8 +1,8 @@
 package views
 
 import (
-	"bytes"
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -76,12 +76,12 @@ func Create(c *gin.Context) {
 	}
 	del := time.Now().Add(duration)
 	newres := &models.Resource{
-		Key:      u,
-		Name:     h.Filename,
-		Once:     once,
-		DeleteAt: del,
+		Key:          u,
+		Name:         h.Filename,
+		Once:         once,
+		DeleteAt:     del,
 		UnixDeleteAt: del.Unix(),
-		Size:     wr,
+		Size:         wr,
 	}
 	if err = newres.Save(); err != nil {
 		logger.ErrC(c, "server", "Couldn't save in database", err)
@@ -171,6 +171,11 @@ func ViewCode(c *gin.Context) {
 	if err = re.Get(id); err != nil || re.Key == "" {
 		logger.InfoC(c, "server", "Not found", id)
 		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	if re.Size > conf.C.ViewLimit*utils.MegaByte {
+		logger.InfoC(c, "server", fmt.Sprintf("Tried to view %s but it is too large (%s > %s)", re.Key, utils.HumanBytes(uint64(re.Size)), utils.HumanBytes(uint64(conf.C.ViewLimit*utils.MegaByte))))
+		c.AbortWithStatus(http.StatusForbidden)
 		return
 	}
 	re.LogFetched(c)
