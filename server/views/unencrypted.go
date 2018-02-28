@@ -90,11 +90,7 @@ func Create(c *gin.Context) {
 		return
 	}
 	newres.LogCreated(c)
-	ns := conf.C.NameServer
-	if conf.C.AppendPort {
-		ns = fmt.Sprintf("%s:%d", conf.C.NameServer, conf.C.Port)
-	}
-	c.String(http.StatusCreated, "%v://%s/v/%s\n", utils.DetectScheme(c), ns, u)
+	c.String(http.StatusCreated, "%s/v/%s\n", utils.ServerURI(c), u)
 }
 
 // HandleRequest responds to a View or Head request for unencrypted files

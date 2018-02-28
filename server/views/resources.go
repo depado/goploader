@@ -82,11 +82,7 @@ func CreateC(c *gin.Context) {
 		return
 	}
 	res.OnCreated(c)
-	ns := conf.C.NameServer
-	if conf.C.AppendPort {
-		ns = fmt.Sprintf("%s:%d", conf.C.NameServer, conf.C.Port)
-	}
-	c.String(http.StatusCreated, "%v://%s/v/%s/%s\n", utils.DetectScheme(c), ns, res.Key, k)
+	c.String(http.StatusCreated, "%s/v/%s/%s\n", utils.ServerURI(c), res.Key, k)
 }
 
 // ViewC handles the file views for encrypted files
