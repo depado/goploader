@@ -18,7 +18,7 @@ import (
 func Index(c *gin.Context) {
 	logger.InfoC(c, "server", "GET /")
 	if strings.HasPrefix(c.Request.Header.Get("User-Agent"), "curl") {
-		curl.WriteTutorial(c.Writer)
+		curl.WriteTutorial(c)
 		return
 	}
 	data := gin.H{
