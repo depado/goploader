@@ -1,6 +1,6 @@
 ## Quick Doc
 
-Simply `curl https://gplr.in` to see a small reminder/documentation on how to
+Simply `curl https://gpldr.in` to see a small reminder/documentation on how to
 use the service. 
 
 ## Usage
