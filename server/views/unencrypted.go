@@ -29,6 +29,14 @@ func Create(c *gin.Context) {
 
 	once = c.PostForm("once") != ""
 	d := c.DefaultPostForm("duration", "1d")
+	token := c.PostForm("token")
+
+	if conf.C.Token != "" && conf.C.Token != token {
+		logger.ErrC(c, "server", "Incorrect token")
+		c.String(http.StatusUnauthorized, "Incorrect token\n")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
 
 	if val, ok := models.DurationMap[d]; ok {
 		duration = val
