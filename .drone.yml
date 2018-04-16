@@ -10,7 +10,7 @@ matrix:
 pipeline:
   # Ensure dep and rice commands are installed, and use dep for vendoring
   prerequisites:
-    image: "golang:1.9"
+    image: "golang:1.10"
     commands: 
       - go get -u github.com/golang/dep/cmd/dep
       - go get github.com/GeertJohan/go.rice/rice
@@ -18,7 +18,7 @@ pipeline:
 
   # Build the server
   server: 
-    image: "golang:1.9"
+    image: "golang:1.10"
     group: build
     commands:
       - go build -o server/server ./server
@@ -28,7 +28,7 @@ pipeline:
   
   # Build client
   client:
-    image: "golang:1.9"
+    image: "golang:1.10"
     group: build
     commands:
       - go build -o client/client ./client
@@ -47,7 +47,7 @@ pipeline:
   
   # Release only for the latest stable version of Go
   server-release:
-    image: "golang:1.9"
+    image: "golang:1.10"
     commands:
       - mkdir goploader-server
       - rice embed-go -i=github.com/Depado/goploader/server
@@ -83,7 +83,7 @@ pipeline:
 
   # Build the deployable version (embedded assets, 1.9 version and arm arch)
   server-deploy-build:
-    image: "golang:1.9"
+    image: "golang:1.10"
     group: build
     commands:
       - rice embed-go -i=github.com/Depado/goploader/server
@@ -115,7 +115,7 @@ pipeline:
 
   # Executed only when deploying
   client-release:
-    image: "golang:1.9"
+    image: "golang:1.10"
     commands:
       - go get github.com/mitchellh/gox
       - mkdir clients
