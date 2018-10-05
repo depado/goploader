@@ -176,10 +176,14 @@ img {
 /* Sections
 // –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
+input[type="password"] {
+    text-align: center;
+}
+
 .container {
     /*border-top: .1rem solid #d1d1d1;*/
-    padding-top: 7.5rem;
-    padding-bottom: 7.5rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
     margin-bottom: 0;
     max-width: 80.0rem;
 }

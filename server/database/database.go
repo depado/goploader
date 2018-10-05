@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/asdine/storm"
-	"github.com/boltdb/bolt"
+	"go.etcd.io/bbolt"
 
 	"github.com/Depado/goploader/server/conf"
 )
