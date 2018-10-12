@@ -36,12 +36,6 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
-  name = "github.com/boltdb/bolt"
-  packages = ["."]
-  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
-  version = "v1.3.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/daaku/go.zipexe"
   packages = ["."]
@@ -193,7 +187,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "4497e2df6f9e69048a54498c7affbbec3294ad47"
+  revision = "fa43e7bc11baaae89f3f902b2b4d832b68234844"
 
 [[projects]]
   name = "gopkg.in/cheggaaa/pb.v1"
@@ -216,6 +210,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e7863cec953f143dff96089f4cb6900814aa9d4f2260a0f77f86fb3391b603d5"
+  inputs-digest = "5d43bd5af8758d4db499132ab0c76a99823466ed6bf1ce53a51dda9b99c56a14"
   solver-name = "gps-cdcl"
   solver-version = 1
