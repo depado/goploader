@@ -37,8 +37,8 @@ package.
 
 ### MacOS
 
-<a class="btn" href="https://gpldr.in/releases/clients/client_freebsd_amd64">FreeBSD 64-bit</a>
-<a class="btn" href="https://gpldr.in/releases/clients/client_freebsd_386">FreeBSD 32-bit</a>
+<a class="btn" href="https://gpldr.in/releases/clients/client_darwin_amd64">Darwin 64-bit</a>
+<a class="btn" href="https://gpldr.in/releases/clients/client_darwin_386">Darwin 32-bit</a>
 
 ### Windows
 
