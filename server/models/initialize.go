@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/asdine/storm"
-	"go.etcd.io/bbolt"
+	bolt "go.etcd.io/bbolt"
 
 	"github.com/Depado/goploader/server/database"
 	"github.com/Depado/goploader/server/logger"

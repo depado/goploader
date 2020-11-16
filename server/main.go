@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/GeertJohan/go.rice"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 	flag "github.com/ogier/pflag"
 
