@@ -12,8 +12,7 @@ require (
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
 	github.com/fatih/color v1.10.0
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
-	github.com/gin-gonic/gin v1.6.3
-	github.com/go-playground/validator/v10 v10.4.1 // indirect
+	github.com/gin-gonic/gin v1.7.0
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/go-cmp v0.5.3 // indirect
 	github.com/imdario/mergo v0.3.11
