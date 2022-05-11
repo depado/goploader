@@ -6,6 +6,16 @@ theme:
   name: 'material'
   feature:
     tabs: true
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
 markdown_extensions:
   - toc:
       permalink: True
@@ -26,7 +36,7 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
-pages: 
+nav:
   - Home: index.md
   - Server Guide:
     - Build From Source: server/build.md
@@ -34,16 +44,16 @@ pages:
     - Setup: server/install.md
     - Running: server/running.md
     - Serve: server/serve.md
-  - Client: 
+  - Client:
     - Build From Source: client/build.md
     - Downloads and Install: client/install.md
     - Documentation: client/documentation.md
   - Curl: curl.md
 extra:
   social:
-    - type: 'github'
-      link: 'https://github.com/Depado'
-    - type: 'twitter'
-      link: 'https://twitter.com/Depado_'
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/Depado
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/Depado_
 
 
