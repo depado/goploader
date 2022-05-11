@@ -1,4 +1,9 @@
 version = 1.0.2
+export GO111MODULE=on
+export CGO_ENABLED=0
+export VERSION=$(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
+export TAG=$VERSION
+export BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
 
 .PHONY: all clients servers release clean
 
@@ -40,6 +45,19 @@ servers:
 release: clients servers
 	tar czf servers.tar.gz releases/servers/
 	mv servers.tar.gz releases/servers/
+
+docker:
+	docker build -t gpldr:latest -t gpldr:$(BUILD) -f Dockerfile .
+
+ensure-rice:
+	if [ ! -f server/rice-box.go ]; then rice embed-go -i=github.com/Depado/goploader/server; fi
+
+ensure-norice:
+	if [ -f server/rice-box.go ]; then rm server/rice-box.go; fi
+
+.PHONY: snapshot
+snapshot: ## Create a new snapshot release
+	goreleaser --snapshot --skip-publish --rm-dist
 
 clean:
 	-rm -r releases/
