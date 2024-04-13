@@ -25,6 +25,6 @@ requests==2.31.0
 six==1.16.0
 terminaltables==3.1.10
 tornado==6.3.3
-urllib3==1.26.17
+urllib3==1.26.18
 watchdog==2.1.7
 zipp==3.8.0
