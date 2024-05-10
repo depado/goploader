@@ -61,7 +61,7 @@ All the downloads are available at [gpldr.in](https://gpldr.in) in the [clients]
 
 ## Documentation
 
-All the documentation is available at [gpldr.in](https://gpldr.in). I intend to write a proper `README.md` file, but it takes a lot of work to transpose the existing documentation to the markdown format. So, work in progress.
+All the documentation is available at [gpldr.in](https://docs.gpldr.in). I intend to write a proper `README.md` file, but it takes a lot of work to transpose the existing documentation to the markdown format. So, work in progress.
 
 
 ## License
