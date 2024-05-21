@@ -21,7 +21,7 @@ pyparsing==3.0.9
 python-dateutil==2.8.2
 PyYAML==6.0
 pyyaml_env_tag==0.1
-requests==2.31.0
+requests==2.32.0
 six==1.16.0
 terminaltables==3.1.10
 tornado==6.3.3
