@@ -27,4 +27,4 @@ terminaltables==3.1.10
 tornado==6.4.1
 urllib3==1.26.19
 watchdog==2.1.7
-zipp==3.8.0
+zipp==3.19.1
