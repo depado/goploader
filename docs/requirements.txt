@@ -24,7 +24,7 @@ pyyaml_env_tag==0.1
 requests==2.32.0
 six==1.16.0
 terminaltables==3.1.10
-tornado==6.4.1
+tornado==6.4.2
 urllib3==1.26.19
 watchdog==2.1.7
 zipp==3.19.1
