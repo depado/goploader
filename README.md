@@ -6,10 +6,12 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/Depado/goploader)](https://goreportcard.com/report/github.com/Depado/goploader)
 [![codebeat badge](https://codebeat.co/badges/0faefc03-91a4-41e7-a955-ccd8c1b096cd)](https://codebeat.co/projects/github-com-depado-goploader)
 [![Maintainability](https://api.codeclimate.com/v1/badges/af3e40751fb9d01d4627/maintainability)](https://codeclimate.com/github/Depado/goploader/maintainability)
-[![Build Status](https://drone.depado.eu/api/badges/Depado/goploader/status.svg)](https://drone.depado.eu/Depado/goploader)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Depado/goploader/blob/master/LICENSE)
-[![Docs](https://img.shields.io/badge/docs-gpldr.in-blue.svg)](https://docs.gpldr.in/)
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/Depado)
+
+> [!WARNING]  
+> This repository is maintained as is but most of the tech used for this project
+> is now outdated. Use at your own risk. 
 
 ## Introduction
 

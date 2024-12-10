@@ -1,6 +1,7 @@
+# Building from source
+
 If you don't want to download a pre-compiled version of goploader server you can
-build it from source. Otherwise you can directly download a pre-compiled binary
-[here](/server/downloads.md).
+build it from source.
 
 ## Prerequisites
 
@@ -26,7 +27,7 @@ Now all you have to do is build the project :
 $ go build -o server github.com/Depado/goploader/server
 ```
 
-That's it. Now head to the [setup](/server/install.md) part to see how to
+That's it. Now head to the [setup](install.md) part to see how to
 generate or create the `conf.yml` file that is necessary for goploader to run.
 
 !!! tip "Embedding resources in the binary"

@@ -1,6 +1,6 @@
 If you don't want to download a pre-compiled version of goploader client you can
 build it from source. Otherwise you can directly download a pre-compiled binary
-[here](/client/install.md).
+[here](install.md).
 
 ## Prerequisites
 
@@ -31,4 +31,4 @@ $ go build -i -o gpldr github.com/Depado/goploader/client
 
 Ensure you have `$GOPATH/bin` added to your standard `$PATH` so you can have
 access to the binary you just built. Then head over to 
-[the client's documentation](/client/documentation.md) to learn how to use it.
+[the client's documentation](documentation.md) to learn how to use it.
