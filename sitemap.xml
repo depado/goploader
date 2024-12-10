@@ -2,52 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://gpldr.in/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/curl/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/client/build/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/client/documentation/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/client/install/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/server/build/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/server/downloads/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/server/install/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/server/running/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
     <url>
          <loc>https://gpldr.in/server/serve/</loc>
-         <lastmod>2022-05-11</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-12-10</lastmod>
     </url>
 </urlset>
