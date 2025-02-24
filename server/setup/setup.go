@@ -8,7 +8,6 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/conf"
@@ -57,17 +56,15 @@ func configure(c *gin.Context) {
 // first run or when the -i/--initial option is used.
 func Run() {
 	var err error
-	tbox, _ := rice.FindBox("templates")
-	abox, _ := rice.FindBox("assets")
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
-	if err = utils.InitAssetsTemplates(r, tbox, abox, false, "setup.html"); err != nil {
+	if err = utils.InitAssetsTemplates(r, false, "setup.html"); err != nil {
 		log.Fatal(err)
 	}
 	r.GET("/", index)
 	r.POST("/", configure)
-	fmt.Println("Please go to http://127.0.0.1:8008 to setup goploader.")
-	r.Run(":8008")
+	fmt.Println("Please go to http://127.0.0.1:8080 to setup goploader.")
+	r.Run(":8080")
 }

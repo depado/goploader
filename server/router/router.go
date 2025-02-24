@@ -1,7 +1,6 @@
 package router
 
 import (
-	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -11,14 +10,14 @@ import (
 )
 
 // Setup creates the gin Engine
-func Setup(tbox, abox *rice.Box) (*gin.Engine, error) {
+func Setup() (*gin.Engine, error) {
 	var err error
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
 	if !conf.C.NoWeb {
-		if err = utils.InitAssetsTemplates(r, tbox, abox, true, "index.html", "mobile.html", "code.tmpl"); err != nil {
+		if err = utils.InitAssetsTemplates(r, true, "index.html", "mobile.html", "code.tmpl"); err != nil {
 			return nil, err
 		}
 		r.Static("/releases", "releases")
