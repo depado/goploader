@@ -1,7 +1,6 @@
 site_name: Goploader
-site_url: https://gpldr.in
-repo_url: https://github.com/Depado/goploader
-site_author: Depado
+repo_url: https://github.com/depado/goploader
+site_author: depado
 theme:
   name: 'material'
   feature:
@@ -53,7 +52,7 @@ extra:
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/Depado
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/Depado_
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/depa.do
 
 
