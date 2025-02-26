@@ -55,8 +55,8 @@ func Migrate() {
 			return
 		}
 		logger.Info("server", "Had to migrate old stats")
-		database.DB.Delete("statistics", "main")
-		database.DB.Drop("statistics")
+		database.DB.Delete("statistics", "main") //nolint:errcheck
+		database.DB.Drop("statistics")           //nolint:errcheck
 	}
 
 	var rr []Resource
@@ -77,9 +77,9 @@ func Migrate() {
 	})
 	if err == nil {
 		for _, r := range rr {
-			database.DB.Save(&r)
+			database.DB.Save(&r) //nolint:errcheck
 		}
 		logger.Info("server", "Had to migrate old resources")
-		database.DB.Drop("resources")
+		database.DB.Drop("resources") //nolint:errcheck
 	}
 }

@@ -130,7 +130,11 @@ func HandleRequest(c *gin.Context, isView bool) {
 	c.File(file)
 
 	if isView && re.Once {
-		re.Delete()
+		if err := re.Delete(); err != nil {
+			logger.ErrC(c, "server", fmt.Sprintf("Couldn't delete %s", re.Key), err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 		re.LogDeleted(c)
 	}
 }
@@ -166,15 +170,22 @@ func ViewCode(c *gin.Context) {
 		return
 	}
 	re.LogFetched(c)
+
 	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(f)
+	if _, err := buf.ReadFrom(f); err != nil {
+		logger.ErrC(c, "server", "Couldn't read from file", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
 	bb := buf.Bytes()
 	c.HTML(http.StatusOK, "code.tmpl", gin.H{
 		"code":  string(bb),
@@ -184,7 +195,11 @@ func ViewCode(c *gin.Context) {
 		"name":  re.Name,
 	})
 	if re.Once {
-		re.Delete()
+		if err := re.Delete(); err != nil {
+			logger.ErrC(c, "server", fmt.Sprintf("Couldn't delete %s", re.Key), err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 		re.LogDeleted(c)
 	}
 }

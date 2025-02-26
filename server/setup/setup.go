@@ -31,17 +31,17 @@ func configure(c *gin.Context) {
 		}
 		if err = form.FillDefaults(); err != nil {
 			fmt.Println("An error occured while filling default values :", err)
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithError(http.StatusInternalServerError, err) //nolint:errcheck
 			return
 		}
 		if dat, err = yaml.Marshal(&form); err != nil {
 			fmt.Println("An error occured while marshalling the yaml data :", err)
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithError(http.StatusInternalServerError, err) //nolint:errcheck
 			return
 		}
 		if err = os.WriteFile("conf.yml", dat, 0644); err != nil {
 			fmt.Println("An error occured while writing the conf.yml file :", err)
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithError(http.StatusInternalServerError, err) //nolint:errcheck
 			return
 		}
 	} else {
@@ -66,5 +66,7 @@ func Run() {
 	r.GET("/", index)
 	r.POST("/", configure)
 	fmt.Println("Please go to http://127.0.0.1:8080 to setup goploader.")
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }

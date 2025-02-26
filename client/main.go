@@ -153,12 +153,12 @@ func main() {
 		var part io.Writer
 		defer w.Close()
 		defer multipartWriter.Close()
-		multipartWriter.WriteField("duration", lifetime)
+		multipartWriter.WriteField("duration", lifetime) //nolint:errcheck
 		if once {
-			multipartWriter.WriteField("once", "true")
+			multipartWriter.WriteField("once", "true") //nolint:errcheck
 		}
 		if conf.C.Token != "" {
-			multipartWriter.WriteField("token", conf.C.Token)
+			multipartWriter.WriteField("token", conf.C.Token) //nolint:errcheck
 		}
 		if part, err = multipartWriter.CreateFormFile("file", name); err != nil {
 			log.Fatal(err)
@@ -183,7 +183,12 @@ func main() {
 	check(err)
 	if clip {
 		debugf("Copying to clipboard")
-		clipboard.WriteAll(string(ret))
+		if err := clipboard.WriteAll(string(ret)); err != nil {
+			debugf("Unable to copy to clipboard", err)
+			fmt.Printf("Unable to copy to clipboard: %s\n", err)
+			fmt.Print(string(ret))
+			os.Exit(1)
+		}
 		fmt.Print("Copied URL to clipboard\n")
 	} else {
 		fmt.Print(string(ret))

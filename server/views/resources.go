@@ -113,7 +113,7 @@ func ViewC(c *gin.Context) {
 		return
 	}
 	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBDecrypter(block, iv[:])
+	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
@@ -121,9 +121,19 @@ func ViewC(c *gin.Context) {
 	} else {
 		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	}
-	io.Copy(c.Writer, reader)
+
+	if _, err := io.Copy(c.Writer, reader); err != nil {
+		logger.ErrC(c, "server", fmt.Sprintf("Couldn't copy %s", re.Key), err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
 	if re.Once {
-		re.Delete()
+		if err := re.Delete(); err != nil {
+			logger.ErrC(c, "server", fmt.Sprintf("Couldn't delete %s", re.Key), err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 		re.LogDeleted(c)
 	}
 }
@@ -164,11 +174,15 @@ func ViewCCode(c *gin.Context) {
 		return
 	}
 	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBDecrypter(block, iv[:])
+	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
 	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(reader)
+	if _, err := buf.ReadFrom(reader); err != nil {
+		logger.ErrC(c, "server", "Couldn't read from file", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 	bb := buf.Bytes()
 	c.HTML(http.StatusOK, "code.tmpl", gin.H{
 		"code":  string(bb),
@@ -178,7 +192,11 @@ func ViewCCode(c *gin.Context) {
 		"name":  re.Name,
 	})
 	if re.Once {
-		re.Delete()
+		if err := re.Delete(); err != nil {
+			logger.ErrC(c, "server", fmt.Sprintf("Couldn't delete %s", re.Key), err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 		re.LogDeleted(c)
 	}
 }
@@ -202,12 +220,14 @@ func HeadC(c *gin.Context) {
 		return
 	}
 	logger.InfoC(c, "server", "Head", fmt.Sprintf("%s - %s", re.Key, utils.HumanBytes(uint64(re.Size))))
+
 	f, err := os.Open(path.Join(conf.C.UploadDir, re.Key))
 	if err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't open %s", re.Key), err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		logger.ErrC(c, "server", "Couldn't create AES cipher", err)
@@ -215,8 +235,9 @@ func HeadC(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
 	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBDecrypter(block, iv[:])
+	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
@@ -224,5 +245,9 @@ func HeadC(c *gin.Context) {
 	} else {
 		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
 	}
-	io.Copy(c.Writer, reader)
+	if _, err := io.Copy(c.Writer, reader); err != nil {
+		logger.ErrC(c, "server", fmt.Sprintf("Couldn't copy %s", re.Key), err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 }
