@@ -17,3 +17,5 @@ vendor/
 docs/env/
 docs/site/
 .vscode/
+
+dist/

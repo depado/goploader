@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -23,7 +22,6 @@ var (
 	bar     *pb.ProgressBar
 	name    string
 	verbose bool
-	service = "https://gpldr.in/"
 )
 
 func debugf(a ...interface{}) {
@@ -181,7 +179,7 @@ func main() {
 	check(err)
 	defer resp.Body.Close()
 	debugf("Multipart post is done, reading data")
-	ret, err := ioutil.ReadAll(resp.Body)
+	ret, err := io.ReadAll(resp.Body)
 	check(err)
 	if clip {
 		debugf("Copying to clipboard")

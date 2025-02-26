@@ -1,43 +1,29 @@
-version = 1.0.2
-export GO111MODULE=on
-export CGO_ENABLED=0
-export VERSION=$(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
-export TAG=$VERSION
-export BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
+.DEFAULT_GOAL := all
+CGO_ENABLED=0
+VERSION=$(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
+BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
+BUILDDATE=$(shell LANG=en_us_88591 date)
 
-.PHONY: all clients servers release clean
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-all:
-	go build -o client/client github.com/Depado/goploader/client
-	go build -o server/server github.com/Depado/goploader/server
+.PHONY: all
+all: ## Build both the client and the server in their respective directories
+	go build -o ./client/client ./client
+	go build -o ./server/server ./server
 
-clients:
-	-mkdir -p releases/clients
-	-mkdir -p releases/servers
-	-rm releases/clients/*
-	gox -output="releases/clients/client_{{.OS}}_{{.Arch}}" github.com/Depado/goploader/client
-	tar czf releases/servers/clients.tar.gz releases/clients
-
-servers:
-	-mkdir -p releases/servers
-	-mkdir goploader-server
-	go build -o goploader-server/server github.com/Depado/goploader/server
-	tar czf releases/servers/server_amd64.tar.gz goploader-server/
-	rm -r goploader-server/*
-	GOARCH=arm go build -o goploader-server/server github.com/Depado/goploader/server
-	tar czf releases/servers/server_arm.tar.gz goploader-server/
-	-rm -r goploader-server
-
-release: clients servers
-	tar czf servers.tar.gz releases/servers/
-	mv servers.tar.gz releases/servers/
-
-docker:
+.PHONY: docker
+docker: ## Build the docker image
 	docker build -t gpldr:latest -t gpldr:$(BUILD) -f Dockerfile .
+
+.PHONY: release
+release: ## Create a new release
+	goreleaser release --clean
 
 .PHONY: snapshot
 snapshot: ## Create a new snapshot release
-	goreleaser --snapshot --skip-publish --rm-dist
+	goreleaser release --snapshot --clean
 
 clean:
 	-rm -r releases/

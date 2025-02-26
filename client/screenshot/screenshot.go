@@ -61,5 +61,5 @@ func Do(fp string, window bool) error {
 		}
 	}
 
-	return fmt.Errorf("No screenshot program found")
+	return fmt.Errorf("no screenshot program found")
 }

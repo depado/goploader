@@ -2,9 +2,9 @@ package setup
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"gopkg.in/yaml.v2"
 
@@ -39,7 +39,7 @@ func configure(c *gin.Context) {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		if err = ioutil.WriteFile("conf.yml", dat, 0644); err != nil {
+		if err = os.WriteFile("conf.yml", dat, 0644); err != nil {
 			fmt.Println("An error occured while writing the conf.yml file :", err)
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return

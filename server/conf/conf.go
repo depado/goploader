@@ -1,10 +1,9 @@
 package conf
 
 import (
-	"io/ioutil"
 	"os"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 	"gopkg.in/yaml.v2"
 )
 
@@ -116,7 +115,7 @@ func (c *Conf) FillDefaults() error {
 func Load(fp string, verbose bool) error {
 	var err error
 	var conf []byte
-	if conf, err = ioutil.ReadFile(fp); err != nil {
+	if conf, err = os.ReadFile(fp); err != nil {
 		return err
 	}
 	if err = yaml.Unmarshal(conf, &C); err != nil {
