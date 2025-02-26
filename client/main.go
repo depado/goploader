@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/atotto/clipboard"
+	"github.com/cheggaaa/pb/v3"
 	flag "github.com/ogier/pflag"
-	"gopkg.in/cheggaaa/pb.v1"
 
 	"github.com/Depado/goploader/client/conf"
 	"github.com/Depado/goploader/client/screenshot"
@@ -42,18 +42,12 @@ func initBar(f *os.File) {
 		fmt.Println("Could not stat", f.Name())
 		os.Exit(1)
 	}
-	bar = pb.New64(fi.Size()).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
-	bar.ShowPercent = true
-	bar.ShowSpeed = true
-	bar.ShowTimeLeft = true
+	bar = pb.Full.Start64(fi.Size()).Set(pb.Bytes, true)
 	bar.Start()
 }
 
 func initUnknownBar() {
-	bar = pb.New64(0).SetUnits(pb.U_BYTES).SetRefreshRate(time.Millisecond * 10)
-	bar.ShowSpeed = true
-	bar.ShowCounters = true
-	bar.ShowBar = false
+	bar = pb.Full.Start64(0).Set(pb.Bytes, true)
 	bar.Start()
 }
 
@@ -164,7 +158,7 @@ func main() {
 			log.Fatal(err)
 		}
 		if progress {
-			part = io.MultiWriter(part, bar)
+			part = bar.NewProxyWriter(part)
 		}
 		if _, err = io.Copy(part, datasource); err != nil {
 			log.Fatal(err)
