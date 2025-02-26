@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 	flag "github.com/ogier/pflag"
 
@@ -24,9 +23,6 @@ func main() {
 	var initial bool
 	var r *gin.Engine
 
-	tbox, _ := rice.FindBox("templates")
-	abox, _ := rice.FindBox("assets")
-
 	flag.StringVarP(&cp, "conf", "c", "conf.yml", "Local path to configuration file.")
 	flag.BoolVarP(&initial, "initial", "i", false, "Run the initial setup of the server.")
 	flag.Parse()
@@ -43,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 	go monitoring.Monit()
-	if r, err = router.Setup(tbox, abox); err != nil {
+	if r, err = router.Setup(); err != nil {
 		log.Fatal(err)
 	}
 

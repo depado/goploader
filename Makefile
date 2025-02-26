@@ -21,23 +21,9 @@ clients:
 servers:
 	-mkdir -p releases/servers
 	-mkdir goploader-server
-	rice embed-go -i=github.com/Depado/goploader/server
-	go build -o goploader-server/server-standalone github.com/Depado/goploader/server
-	tar czf releases/servers/server-standalone_amd64.tar.gz goploader-server
-	rm -r goploader-server/*
-	rice clean -i=github.com/Depado/goploader/server
-	cp -r server/assets/ goploader-server/
-	cp -r server/templates/ goploader-server/
 	go build -o goploader-server/server github.com/Depado/goploader/server
 	tar czf releases/servers/server_amd64.tar.gz goploader-server/
 	rm -r goploader-server/*
-	rice embed-go -i=github.com/Depado/goploader/server
-	GOARCH=arm go build -o goploader-server/server-standalone github.com/Depado/goploader/server
-	tar czf releases/servers/server-standalone_arm.tar.gz goploader-server
-	rm -r goploader-server/*
-	rice clean -i=github.com/Depado/goploader/server
-	cp -r server/assets/ goploader-server/
-	cp -r server/templates/ goploader-server/
 	GOARCH=arm go build -o goploader-server/server github.com/Depado/goploader/server
 	tar czf releases/servers/server_arm.tar.gz goploader-server/
 	-rm -r goploader-server
@@ -49,17 +35,10 @@ release: clients servers
 docker:
 	docker build -t gpldr:latest -t gpldr:$(BUILD) -f Dockerfile .
 
-ensure-rice:
-	if [ ! -f server/rice-box.go ]; then rice embed-go -i=github.com/Depado/goploader/server; fi
-
-ensure-norice:
-	if [ -f server/rice-box.go ]; then rm server/rice-box.go; fi
-
 .PHONY: snapshot
 snapshot: ## Create a new snapshot release
 	goreleaser --snapshot --skip-publish --rm-dist
 
 clean:
 	-rm -r releases/
-	-rm server/rice-box.go
 	-rm -r goploader-server

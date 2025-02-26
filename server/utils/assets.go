@@ -1,46 +1,29 @@
 package utils
 
 import (
+	"embed"
 	"html/template"
+	"net/http"
+	"io/fs"
 
-	"github.com/GeertJohan/go.rice"
-	"github.com/gin-gonic/contrib/renders/multitemplate"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Depado/goploader/server/logger"
 )
 
-// InitAssetsTemplates initializes the router to use either a ricebox or the
-// filesystem in case the ricebox couldn't be found.
-func InitAssetsTemplates(r *gin.Engine, tbox, abox *rice.Box, verbose bool, names ...string) error {
-	var err error
+//go:embed all:assets
+var assets embed.FS
+//go:embed all:templates
+var templates embed.FS
 
-	if tbox != nil {
-		mt := multitemplate.New()
-		var tmpl string
-		var message *template.Template
-		for _, x := range names {
-			if tmpl, err = tbox.String(x); err != nil {
-				return err
-			}
-			if message, err = template.New(x).Parse(tmpl); err != nil {
-				return err
-			}
-			mt.Add(x, message)
-		}
-		logger.Debug("server", "Loaded templates from \"templates\" box")
-		r.HTMLRender = mt
-	} else {
-		r.LoadHTMLGlob("templates/*")
-		logger.Debug("server", "Loaded templates from disk")
-	}
+// InitAssetsTemplates initializes the router to use embedded assets
+func InitAssetsTemplates(r *gin.Engine, verbose bool, names ...string) error {
+	template := template.Must(template.ParseFS(templates, "templates/*"))
+	r.SetHTMLTemplate(template)
+	logger.Debug("server", "Loaded templates")
 
-	if abox != nil {
-		r.StaticFS("/static", abox.HTTPBox())
-		logger.Debug("server", "Loaded assets from \"assets\" box")
-	} else {
-		r.Static("/static", "assets")
-		logger.Debug("server", "Loaded assets from disk")
-	}
+	assetsFp, _ := fs.Sub(assets, "assets")
+	r.StaticFS("/static", http.FS(assetsFp))
+	logger.Debug("server", "Loaded assets")
 	return nil
 }

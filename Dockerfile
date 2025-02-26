@@ -1,9 +1,8 @@
 # Build Step
-FROM golang:1.18-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # Dependencies
-RUN apk update && apk add --no-cache upx git
-RUN go get github.com/GeertJohan/go.rice/rice
+RUN apk update && apk add --no-cache git
 
 # Source
 WORKDIR $GOPATH/src/github.com/Depado/goploader
@@ -12,13 +11,8 @@ RUN go mod download
 RUN go mod verify
 COPY . .
 
-# Embed
-RUN rice embed-go -i=github.com/Depado/goploader/server
-
 # Build
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /tmp/gpldr github.com/Depado/goploader/server
-RUN upx /tmp/gpldr
-
 
 # Final Step
 FROM gcr.io/distroless/static
