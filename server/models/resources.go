@@ -63,7 +63,7 @@ func (r Resource) NewStreamWriter(fd *os.File, key []byte) (*cipher.StreamWriter
 		return nil, err
 	}
 	var iv [aes.BlockSize]byte
-	stream := cipher.NewCFBEncrypter(block, iv[:])
+	stream := cipher.NewCTR(block, iv[:])
 	return &cipher.StreamWriter{S: stream, W: fd}, nil
 }
 
@@ -81,17 +81,20 @@ func (r *Resource) WriteEncrypted(fd multipart.File) (string, error) {
 		return "", err
 	}
 	defer file.Close()
+
 	k := uniuri.NewLen(conf.C.KeyLength)
 	kb := []byte(k)
 	sw, err := r.NewStreamWriter(file, kb)
 	if err != nil {
 		return "", err
 	}
+
 	wr, err := io.Copy(sw, bufio.NewReaderSize(fd, 512))
 	if err != nil {
 		os.Remove(path.Join(conf.C.UploadDir, r.Key))
 		return "", err
 	}
+
 	r.Size = wr
 	return k, nil
 }

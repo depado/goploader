@@ -2,13 +2,11 @@ client/client
 client/client*
 client/misc/
 client/testfiles/
-server/my.db
 server/*.back
 server/*.db
 server/up/
 server/server
 server/conf.yml
-server/rice-box.go
 server/ssl
 releases
 server/data/
@@ -17,5 +15,4 @@ vendor/
 docs/env/
 docs/site/
 .vscode/
-
 dist/
