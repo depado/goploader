@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 10
-      - uses: lazyguru/go-coverage-action
+      - uses: lazyguru/go-coverage-action@9b496d245c69f85ab8cef4ce57d857cc727506ee
         with:
           fail-coverage: never
           cover-pkg: ./...
