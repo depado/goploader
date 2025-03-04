@@ -8,6 +8,7 @@ require (
 	dario.cat/mergo v1.0.1
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/atotto/clipboard v0.1.4
+	github.com/cheggaaa/pb/v3 v3.1.6
 	github.com/dchest/uniuri v1.2.0
 	github.com/fatih/color v1.18.0
 	github.com/gin-gonic/gin v1.10.0
@@ -15,13 +16,13 @@ require (
 	github.com/ogier/pflag v0.0.1
 	github.com/prometheus/client_golang v1.21.0
 	go.etcd.io/bbolt v1.4.0
-	gopkg.in/cheggaaa/pb.v1 v1.0.28
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/Sereal/Sereal v0.0.0-20220220040404-e0d1e550e879 // indirect
+	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.12.9 // indirect
 	github.com/bytedance/sonic/loader v0.2.3 // indirect
