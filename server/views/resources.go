@@ -54,7 +54,7 @@ func CreateC(c *gin.Context) {
 		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
 		return
 	}
-	defer fd.Close()
+	defer fd.Close() //nolint:errcheck
 
 	res := models.NewResourceFromForm(h, once, duration)
 	k, err := res.WriteEncrypted(fd)
@@ -70,7 +70,7 @@ func CreateC(c *gin.Context) {
 			logger.ErrC(c, "server", "Quota exceeded")
 			c.String(http.StatusBadRequest, "Insufficient disk space. Try again later.")
 			c.AbortWithStatus(http.StatusBadRequest)
-			os.Remove(path.Join(conf.C.UploadDir, res.Key))
+			os.Remove(path.Join(conf.C.UploadDir, res.Key)) //nolint:errcheck
 			return
 		}
 	}

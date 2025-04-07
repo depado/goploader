@@ -54,7 +54,7 @@ func Create(c *gin.Context) {
 		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
 		return
 	}
-	defer fd.Close()
+	defer fd.Close() //nolint:errcheck
 
 	u := uniuri.NewLen(conf.C.UniURILength)
 	file, err := os.Create(path.Join(conf.C.UploadDir, u))
@@ -64,7 +64,7 @@ func Create(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	defer file.Close()
+	defer file.Close() //nolint:errcheck
 
 	wr, err := io.Copy(file, bufio.NewReaderSize(fd, 512))
 	if err != nil {
@@ -78,7 +78,7 @@ func Create(c *gin.Context) {
 			logger.ErrC(c, "server", "Quota exceeded")
 			c.String(http.StatusBadRequest, "Not enough free space. Try again later.")
 			c.AbortWithStatus(http.StatusBadRequest)
-			os.Remove(path.Join(conf.C.UploadDir, u))
+			os.Remove(path.Join(conf.C.UploadDir, u)) //nolint:errcheck
 			return
 		}
 	}

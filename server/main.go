@@ -33,7 +33,7 @@ func main() {
 	if err = database.Initialize(); err != nil {
 		log.Fatal(err)
 	}
-	defer database.DB.Close()
+	defer database.DB.Close() //nolint:errcheck
 
 	if err = models.Initialize(); err != nil {
 		log.Fatal(err)

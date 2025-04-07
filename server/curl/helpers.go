@@ -17,27 +17,27 @@ var (
 
 // Header writes a text using the HeaderFormat to the w io.Writer
 func Header(w io.Writer, text string) {
-	HeaderFormat.Fprintln(w, text)
+	HeaderFormat.Fprintln(w, text) //nolint:errcheck
 }
 
 // Title writes a text using the TitleFormat to the w io.Writer
 func Title(w io.Writer, text string) {
-	TitleFormat.Fprintln(w, text)
+	TitleFormat.Fprintln(w, text) //nolint:errcheck
 }
 
 // Standard writes a text using the StandardFormat to the w io.Writer
 func Standard(w io.Writer, text string) {
-	StandardFormat.Fprintln(w, text)
+	StandardFormat.Fprintln(w, text) //nolint:errcheck
 }
 
 // Command writes a text using the CommandFormat to the w io.Writer
 func Command(w io.Writer, text string) {
-	CommandFormat.Fprintln(w, text)
+	CommandFormat.Fprintln(w, text) //nolint:errcheck
 }
 
 // Explanation writes a text using the ExplanationFormat to the w io.Writer
 func Explanation(w io.Writer, text string) {
-	ExplanationFormat.Fprintln(w, text)
+	ExplanationFormat.Fprintln(w, text) //nolint:errcheck
 }
 
 func init() {

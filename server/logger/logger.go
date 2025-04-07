@@ -54,7 +54,7 @@ func generic(status, from, ip, message string, extra ...interface{}) {
 		args = append(args, x)
 		strfmt = "%s%5s %s|%s %10v %s| %v | %15v | %s : %s\n"
 	}
-	fmt.Fprintf(os.Stdout, strfmt, args...)
+	fmt.Fprintf(os.Stdout, strfmt, args...) //nolint:errcheck
 }
 
 // Err logs a simple error without filling the IP field

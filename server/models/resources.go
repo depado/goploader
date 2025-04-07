@@ -80,7 +80,7 @@ func (r *Resource) WriteEncrypted(fd multipart.File) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
+	defer file.Close() //nolint:errcheck
 
 	k := uniuri.NewLen(conf.C.KeyLength)
 	kb := []byte(k)
@@ -91,7 +91,7 @@ func (r *Resource) WriteEncrypted(fd multipart.File) (string, error) {
 
 	wr, err := io.Copy(sw, bufio.NewReaderSize(fd, 512))
 	if err != nil {
-		os.Remove(path.Join(conf.C.UploadDir, r.Key))
+		os.Remove(path.Join(conf.C.UploadDir, r.Key)) //nolint:errcheck
 		return "", err
 	}
 

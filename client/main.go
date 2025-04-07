@@ -120,7 +120,7 @@ func main() {
 		var f *os.File
 		f, err = os.Open(file)
 		check(err)
-		defer f.Close()
+		defer f.Close() //nolint:errcheck
 		name = filepath.Base(f.Name())
 		datasource = f
 		if progress {
@@ -151,8 +151,8 @@ func main() {
 	go func() {
 		debugf("Started the goroutine to pipe data")
 		var part io.Writer
-		defer w.Close()
-		defer multipartWriter.Close()
+		defer w.Close()                                  //nolint:errcheck
+		defer multipartWriter.Close()                    //nolint:errcheck
 		multipartWriter.WriteField("duration", lifetime) //nolint:errcheck
 		if once {
 			multipartWriter.WriteField("once", "true") //nolint:errcheck
@@ -177,7 +177,7 @@ func main() {
 	}
 	resp, err := http.Post(hostname, multipartWriter.FormDataContentType(), r)
 	check(err)
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 	debugf("Multipart post is done, reading data")
 	ret, err := io.ReadAll(resp.Body)
 	check(err)
