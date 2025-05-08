@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.3
 
 require (
-	dario.cat/mergo v1.0.1
+	dario.cat/mergo v1.0.2
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/atotto/clipboard v0.1.4
 	github.com/dchest/uniuri v1.2.0
