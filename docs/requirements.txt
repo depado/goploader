@@ -1,7 +1,7 @@
 babel==2.17.0
 certifi==2025.7.14
 charset-normalizer==3.4.2
-click==8.2.1
+click==8.2.2
 colorama==0.4.6
 ghp-import==2.1.0
 idna==3.10
