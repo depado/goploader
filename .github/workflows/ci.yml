@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  golang:
+    name: Golang
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    uses: depado/github-actions/.github/workflows/golang.yml@main
+    with:
+      build-command: "make"
+
+  docker:
+    name: Docker
+    needs: [golang]
+    permissions:
+      contents: read
+      packages: write
+      actions: read
+    uses: depado/github-actions/.github/workflows/docker.yml@main
+    secrets:
+      cleanup-token: ${{ secrets.PAT_DELETE_PACKAGES }}
