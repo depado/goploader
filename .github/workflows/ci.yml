@@ -14,7 +14,6 @@ jobs:
       contents: write
       pull-requests: write
       checks: write
-      issues: write
     uses: depado/github-actions/.github/workflows/golang.yml@main
     with:
       build-command: "make"
