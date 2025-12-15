@@ -16,6 +16,7 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 	go.etcd.io/bbolt v1.4.3
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
+	gopkg.in/cheggaaa/pb.v2 v2.0.7
 	gopkg.in/yaml.v2 v2.4.0
 )
 
