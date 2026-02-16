@@ -4,8 +4,6 @@
 
 ![Go Version](https://img.shields.io/badge/go-1.18-brightgreen.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/depado/goploader)](https://goreportcard.com/report/github.com/depado/goploader)
-[![codebeat badge](https://codebeat.co/badges/0faefc03-91a4-41e7-a955-ccd8c1b096cd)](https://codebeat.co/projects/github-com-depado-goploader)
-[![Maintainability](https://api.codeclimate.com/v1/badges/af3e40751fb9d01d4627/maintainability)](https://codeclimate.com/github/depado/goploader/maintainability)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/depado/goploader/blob/master/LICENSE)
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/depado)
 
