@@ -39,6 +39,16 @@ $ go build -trimpath -ldflags '-s -w' -o goploader-server ./server/
 $ ./goploader-server
 ```
 
+### Docker image
+
+Make sure you have Docker installed on your machine. The image will be called `gpldr`.
+
+```shell
+$ git clone https://github.com/depado/goploader.git
+$ cd goploader
+$ make docker
+```
+
 ## Downloads
 
 All the downloads are available in the [releases tab](https://github.com/depado/goploader/releases)
