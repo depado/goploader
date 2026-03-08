@@ -50,6 +50,8 @@ snapshot: ## Create a new snapshot release
 	goreleaser release --snapshot --clean
 
 clean:
+	-rm -r client/client
 	-rm -r goploader-server
 	-rm -r gpldr
 	-rm -r releases/
+	-rm -r server/server
