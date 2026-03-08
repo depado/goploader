@@ -27,7 +27,7 @@ Make sure you have go installed on your machine.
 ```shell
 $ git clone https://github.com/depado/goploader.git
 $ cd goploader
-$ go build -o gpldr ./client/
+$ go build -trimpath -ldflags '-s -w' -o gpldr ./client/
 ```
 
 ### Server
@@ -35,7 +35,7 @@ $ go build -o gpldr ./client/
 ```shell
 $ git clone https://github.com/depado/goploader.git
 $ cd goploader
-$ go build -o goploader-server ./server/
+$ go build -trimpath -ldflags '-s -w' -o goploader-server ./server/
 $ ./goploader-server
 ```
 
