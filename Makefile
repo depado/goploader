@@ -3,6 +3,12 @@ CGO_ENABLED=0
 VERSION=$(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
 BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
 BUILDDATE=$(shell LANG=en_us_88591 date)
+DEBUG := 0
+GO_LDFLAGS :=
+
+ifeq ($(DEBUG),0)
+	GO_LDFLAGS := -ldflags '-s -w -extldflags "-static"'
+endif
 
 .PHONY: help
 help:
@@ -10,8 +16,8 @@ help:
 
 .PHONY: all
 all: ## Build both the client and the server in their respective directories
-	go build -o ./client/client ./client
-	go build -o ./server/server ./server
+	go build -o ./client/client $(GO_LDFLAGS) ./client
+	go build -o ./server/server $(GO_LDFLAGS) ./server
 
 .PHONY: docker
 docker: ## Build the docker image
