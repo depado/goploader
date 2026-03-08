@@ -9,6 +9,8 @@ UNAME_m := $(shell uname -m)
 UNAME_s := $(shell uname -s)
 VERSION = $(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
 
+# Check if it's a development build by verifying the DEBUG flag;
+# should that be any value different from '0' strip and trim the binary
 ifeq ($(DEBUG),0)
 	GO_LDFLAGS := -ldflags '-s -w'
 endif
