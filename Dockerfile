@@ -12,7 +12,7 @@ RUN go mod verify
 COPY . .
 
 # Build
-RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /tmp/gpldr github.com/Depado/goploader/server
+RUN CGO_ENABLED=0 go build -trimpath -ldflags '-s -w -extldflags "-static"' -o /tmp/gpldr github.com/Depado/goploader/server
 
 # Final Step
 FROM gcr.io/distroless/static@sha256:28efbe90d0b2f2a3ee465cc5b44f3f2cf5533514cf4d51447a977a5dc8e526d0
