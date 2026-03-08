@@ -15,7 +15,11 @@ ifeq ($(DEBUG),0)
 	# If we are building on top of a macOS/arm64, avoid setting the -static flag;
 	# usually additional steps and softwares would be necessary for the setup to work (ld: crt0.o).
     ifeq ($(UNAME_s),Darwin)
-		GO_LDFLAGS_server := -ldflags '-s -w'
+	    ifeq ($(UNAME_m),arm64)
+		    GO_LDFLAGS_server := -ldflags '-s -w'
+		else
+		    GO_LDFLAGS_server := -ldflags '-s -w -extldflags "-static"'
+	    endif # if UNAME_m=arm64
     else
 		GO_LDFLAGS_server := -ldflags '-s -w -extldflags "-static"'
     endif # if UNAME_s=Darwin
