@@ -16,3 +16,5 @@ docs/env/
 docs/site/
 .vscode/
 dist/
+gpldr
+goploader-server
