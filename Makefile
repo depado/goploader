@@ -34,8 +34,8 @@ help:
 
 .PHONY: all
 all: ## Build both the client and the server in their respective directories
-	go build -o ./client/client $(GO_LDFLAGS_client) ./client
-	go build -o ./server/server $(GO_LDFLAGS_server) ./server
+	go build -o ./client/client -trimpath $(GO_LDFLAGS_client) ./client
+	go build -o ./server/server -trimpath $(GO_LDFLAGS_server) ./server
 
 .PHONY: docker
 docker: ## Build the docker image
