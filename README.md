@@ -27,7 +27,7 @@ Make sure you have go installed on your machine.
 ```shell
 $ git clone https://github.com/depado/goploader.git
 $ cd goploader
-$ go build -o gpldr ./client/
+$ go build -trimpath -ldflags '-s -w' -o gpldr ./client/
 ```
 
 ### Server
@@ -35,9 +35,20 @@ $ go build -o gpldr ./client/
 ```shell
 $ git clone https://github.com/depado/goploader.git
 $ cd goploader
-$ go build -o goploader-server ./server/
+$ go build -trimpath -ldflags '-s -w' -o goploader-server ./server/
 $ ./goploader-server
 ```
+
+### Docker image
+
+Make sure you have Docker installed on your machine. The image will be called `gpldr`.
+
+```shell
+$ git clone https://github.com/depado/goploader.git
+$ cd goploader
+$ make docker
+```
+> To start running the Docker image try `docker run --rm --name=goploader -v goploader:/data -p 8080:8080 gpldr:latest` and open the setup web interface at `http://127.0.0.1:8080` on your browser. Add an extra `-d` to the command so you run it as a background service (daemon).
 
 ## Downloads
 

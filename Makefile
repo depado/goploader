@@ -1,8 +1,11 @@
 .DEFAULT_GOAL := all
-CGO_ENABLED=0
-VERSION=$(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
-BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
-BUILDDATE=$(shell LANG=en_us_88591 date)
+
+export CGO_ENABLED = 0
+
+BUILD = $(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
+BUILDDATE = $(shell LANG=en_us_88591 date)
+LDFLAGS = -ldflags "-s -w"
+VERSION = $(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
 
 .PHONY: help
 help:
@@ -10,8 +13,13 @@ help:
 
 .PHONY: all
 all: ## Build both the client and the server in their respective directories
-	go build -o ./client/client ./client
-	go build -o ./server/server ./server
+	go build -trimpath $(LDFLAGS) -o ./client/client ./client
+	go build -trimpath $(LDFLAGS) -o ./server/server ./server
+
+.PHONY: dev
+dev: ## Build binaries without stripping symbols and DWARF table
+	go build -trimpath -o ./client/client ./client
+	go build -trimpath -o ./server/server ./server
 
 .PHONY: docker
 docker: ## Build the docker image
@@ -26,5 +34,8 @@ snapshot: ## Create a new snapshot release
 	goreleaser release --snapshot --clean
 
 clean:
-	-rm -r releases/
+	-rm -r client/client
 	-rm -r goploader-server
+	-rm -r gpldr
+	-rm -r releases/
+	-rm -r server/server
