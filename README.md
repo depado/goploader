@@ -48,6 +48,7 @@ $ git clone https://github.com/depado/goploader.git
 $ cd goploader
 $ make docker
 ```
+> To start running the Docker image try `docker run --rm --name=goploader -v goploader:/data -p 8080:8080 gpldr:latest` and open the setup web interface at `http://127.0.0.1:8080` on your browser. Add an extra `-d` to the command so you run it as a background service (daemon).
 
 ## Downloads
 
