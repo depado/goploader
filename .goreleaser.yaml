@@ -19,6 +19,8 @@ builds:
       - windows
     ldflags:
       - -s -w
+    flags:
+      - -trimpath
 
   - id: client
     main: ./client/
@@ -34,6 +36,8 @@ builds:
       - windows
     ldflags:
       - -s -w
+    flags:
+      - -trimpath
 
 archives:
   - id: server_archive
