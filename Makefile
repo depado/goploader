@@ -1,9 +1,10 @@
 .DEFAULT_GOAL := all
 
+export CGO_ENABLED = 0
+
 BUILD = $(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
 BUILDDATE = $(shell LANG=en_us_88591 date)
-CGO_ENABLED ?= 0
-GO_LDFLAGS ?= -s -w
+LDFLAGS = -ldflags "-s -w"
 VERSION = $(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
 
 .PHONY: help
@@ -12,13 +13,13 @@ help:
 
 .PHONY: all
 all: ## Build both the client and the server in their respective directories
-	CGO_ENABLED=$(CGO_ENABLED) go build -trimpath -ldflags="$(GO_LDFLAGS)" -o ./client/client ./client
-	CGO_ENABLED=$(CGO_ENABLED) go build -trimpath -ldflags="$(GO_LDFLAGS)" -o ./server/server ./server
+	go build -trimpath $(LDFLAGS) -o ./client/client ./client
+	go build -trimpath $(LDFLAGS) -o ./server/server ./server
 
 .PHONY: dev
 dev: ## Build binaries without stripping symbols and DWARF table
-	CGO_ENABLED=$(CGO_ENABLED) go build -trimpath -o ./client/client ./client
-	CGO_ENABLED=$(CGO_ENABLED) go build -trimpath -o ./server/server ./server
+	go build -trimpath -o ./client/client ./client
+	go build -trimpath -o ./server/server ./server
 
 .PHONY: docker
 docker: ## Build the docker image
