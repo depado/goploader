@@ -11,11 +11,16 @@ builds:
     env:
       - CGO_ENABLED=0
     goos:
-      - linux
-      - windows
       - darwin
+      - freebsd
+      - linux
+      - netbsd
+      - openbsd
+      - windows
     ldflags:
       - -s -w
+    flags:
+      - -trimpath
 
   - id: client
     main: ./client/
@@ -23,11 +28,16 @@ builds:
     env:
       - CGO_ENABLED=0
     goos:
-      - linux
-      - windows
       - darwin
+      - freebsd
+      - linux
+      - netbsd
+      - openbsd
+      - windows
     ldflags:
       - -s -w
+    flags:
+      - -trimpath
 
 archives:
   - id: server_archive
