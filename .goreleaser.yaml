@@ -11,12 +11,12 @@ builds:
     env:
       - CGO_ENABLED=0
     goos:
-      - linux
-      - windows
       - darwin
       - freebsd
+      - linux
       - netbsd
       - openbsd
+      - windows
     ldflags:
       - -s -w
 
@@ -26,12 +26,12 @@ builds:
     env:
       - CGO_ENABLED=0
     goos:
-      - linux
-      - windows
       - darwin
       - freebsd
+      - linux
       - netbsd
       - openbsd
+      - windows
     ldflags:
       - -s -w
 
