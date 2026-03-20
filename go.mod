@@ -9,7 +9,7 @@ require (
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/atotto/clipboard v0.1.4
 	github.com/dchest/uniuri v1.2.0
-	github.com/fatih/color v1.18.0
+	github.com/fatih/color v1.19.0
 	github.com/gin-gonic/gin v1.12.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/ogier/pflag v0.0.1
