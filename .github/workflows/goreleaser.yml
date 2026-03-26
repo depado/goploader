@@ -9,4 +9,4 @@ permissions:
 
 jobs:
   goreleaser:
-    uses: depado/github-actions/.github/workflows/goreleaser.yml@main
+    uses: depado/github-actions/.github/workflows/goreleaser.yml@b261fdb774efce96fe9d92ef9243a57e2d953d9a # main

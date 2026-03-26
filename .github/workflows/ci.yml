@@ -14,7 +14,7 @@ jobs:
       contents: write
       pull-requests: write
       checks: write
-    uses: depado/github-actions/.github/workflows/golang.yml@main
+    uses: depado/github-actions/.github/workflows/golang.yml@b261fdb774efce96fe9d92ef9243a57e2d953d9a # main
     with:
       build-command: "make"
 
@@ -25,6 +25,6 @@ jobs:
       contents: read
       packages: write
       actions: read
-    uses: depado/github-actions/.github/workflows/docker.yml@main
+    uses: depado/github-actions/.github/workflows/docker.yml@b261fdb774efce96fe9d92ef9243a57e2d953d9a # main
     secrets:
       cleanup-token: ${{ secrets.PAT_DELETE_PACKAGES }}
