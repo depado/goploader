@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices", ":automergeMinor", ":automergeDigest"]
+  "extends": ["config:best-practices", ":automergeMinor", ":automergeDigest"],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["depado/github-actions"],
+      "pinDigests": false
+    }
+  ]
 }
