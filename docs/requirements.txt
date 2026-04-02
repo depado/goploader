@@ -1,6 +1,6 @@
 babel==2.18.0
 certifi==2026.2.25
-charset-normalizer==3.4.6
+charset-normalizer==3.4.7
 click==8.3.1
 colorama==0.4.6
 ghp-import==2.1.0
