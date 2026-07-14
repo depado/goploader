@@ -15,7 +15,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -trimpath -ldflags '-s -w' -o /tmp/gpldr github.com/Depado/goploader/server
 
 # Final Step
-FROM gcr.io/distroless/static@sha256:d5f030ca7c5793784e9ea4178a116da360250411d13921a5af27c6cb5a5949bf
+FROM gcr.io/distroless/static@sha256:9197324ba51d9cd071af8505989365c006adf9d6d2067eada25aef00abbb5278
 COPY --from=builder /tmp/gpldr /go/bin/gpldr
 
 VOLUME [ "/data" ]
