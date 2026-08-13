@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -115,11 +116,12 @@ func ViewC(c *gin.Context) {
 	var iv [aes.BlockSize]byte
 	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
+	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+		c.Header("Content-Disposition", "attachment; filename=\""+safeName+"\"")
 	} else {
-		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+		c.Header("Content-Disposition", "filename=\""+safeName+"\"")
 	}
 
 	if _, err := io.Copy(c.Writer, reader); err != nil {
@@ -176,7 +178,8 @@ func ViewCCode(c *gin.Context) {
 	var iv [aes.BlockSize]byte
 	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
-	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
+	c.Header("Content-Disposition", "filename=\""+safeName+"\"")
 	buf := new(bytes.Buffer)
 	if _, err := buf.ReadFrom(reader); err != nil {
 		logger.ErrC(c, "server", "Couldn't read from file", err)
@@ -239,11 +242,12 @@ func HeadC(c *gin.Context) {
 	var iv [aes.BlockSize]byte
 	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
+	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+		c.Header("Content-Disposition", "attachment; filename=\""+safeName+"\"")
 	} else {
-		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+		c.Header("Content-Disposition", "filename=\""+safeName+"\"")
 	}
 	if _, err := io.Copy(c.Writer, reader); err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't copy %s", re.Key), err)
