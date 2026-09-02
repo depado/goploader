@@ -2,7 +2,7 @@ module github.com/Depado/goploader
 
 go 1.25.0
 
-toolchain go1.27.0
+toolchain go1.27.1
 
 require (
 	dario.cat/mergo v1.0.2
