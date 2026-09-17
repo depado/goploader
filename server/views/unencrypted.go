@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/dchest/uniuri"
@@ -114,11 +115,12 @@ func HandleRequest(c *gin.Context, isView bool) {
 		return
 	}
 	re.LogFetched(c)
+	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
 	if conf.C.AlwaysDownload {
 		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+re.Name+"\"")
+		c.Header("Content-Disposition", "attachment; filename=\""+safeName+"\"")
 	} else {
-		c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+		c.Header("Content-Disposition", "filename=\""+safeName+"\"")
 	}
 	file := path.Join(conf.C.UploadDir, re.Key)
 	if _, err := os.Stat(file); err != nil {
@@ -178,7 +180,8 @@ func ViewCode(c *gin.Context) {
 		return
 	}
 
-	c.Header("Content-Disposition", "filename=\""+re.Name+"\"")
+	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
+	c.Header("Content-Disposition", "filename=\""+safeName+"\"")
 	buf := new(bytes.Buffer)
 	if _, err := buf.ReadFrom(f); err != nil {
 		logger.ErrC(c, "server", "Couldn't read from file", err)
