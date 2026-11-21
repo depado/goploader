@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"io"
+	"mime"
 	"net/http"
 	"os"
 	"path"
@@ -117,12 +118,7 @@ func ViewC(c *gin.Context) {
 	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
 	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
-	if conf.C.AlwaysDownload {
-		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+safeName+"\"")
-	} else {
-		c.Header("Content-Disposition", "filename=\""+safeName+"\"")
-	}
+	setServedFileHeaders(c, safeName)
 
 	if _, err := io.Copy(c.Writer, reader); err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't copy %s", re.Key), err)
@@ -243,15 +239,67 @@ func HeadC(c *gin.Context) {
 	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
 	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
-	if conf.C.AlwaysDownload {
-		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+safeName+"\"")
-	} else {
-		c.Header("Content-Disposition", "filename=\""+safeName+"\"")
-	}
+	setServedFileHeaders(c, safeName)
 	if _, err := io.Copy(c.Writer, reader); err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't copy %s", re.Key), err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
+	}
+}
+
+// setServedFileHeaders picks a Content-Type that is safe to serve from this
+// origin. Uploaded HTML, SVG, XML and script must not be rendered inline:
+// with the default always_download=false the body was left untyped and
+// net/http sniffed it as text/html. nosniff stops the browser doing the same.
+func setServedFileHeaders(c *gin.Context, name string) {
+	c.Header("X-Content-Type-Options", "nosniff")
+	if ct, ok := inlineContentType(name); ok && !conf.C.AlwaysDownload {
+		c.Header("Content-Type", ct)
+		c.Header("Content-Disposition", "filename=\""+name+"\"")
+		return
+	}
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename=\""+name+"\"")
+}
+
+// inlineContentType reports the MIME type for name when it is safe to display
+// in the browser. The type comes from the filename extension. Anything else,
+// including HTML, SVG, XML and JavaScript, is not inline.
+func inlineContentType(name string) (string, bool) {
+	ct := mime.TypeByExtension(path.Ext(name))
+	if ct == "" {
+		return "", false
+	}
+	media, _, err := mime.ParseMediaType(ct)
+	if err != nil {
+		return "", false
+	}
+	switch media {
+	case "application/pdf",
+		"audio/flac",
+		"audio/mp4",
+		"audio/mpeg",
+		"audio/ogg",
+		"audio/wav",
+		"audio/webm",
+		"image/apng",
+		"image/avif",
+		"image/bmp",
+		"image/gif",
+		"image/jpeg",
+		"image/png",
+		"image/tiff",
+		"image/vnd.microsoft.icon",
+		"image/webp",
+		"image/x-icon",
+		"text/css",
+		"text/csv",
+		"text/plain",
+		"video/mp4",
+		"video/ogg",
+		"video/webm":
+		return ct, true
+	default:
+		return "", false
 	}
 }
