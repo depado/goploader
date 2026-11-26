@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"io"
+	"mime"
 	"net/http"
 	"os"
 	"path"
@@ -117,12 +118,7 @@ func ViewC(c *gin.Context) {
 	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
 	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
-	if conf.C.AlwaysDownload {
-		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+safeName+"\"")
-	} else {
-		c.Header("Content-Disposition", "filename=\""+safeName+"\"")
-	}
+	setFileHeaders(c, safeName)
 
 	if _, err := io.Copy(c.Writer, reader); err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't copy %s", re.Key), err)
@@ -243,15 +239,38 @@ func HeadC(c *gin.Context) {
 	stream := cipher.NewCTR(block, iv[:])
 	reader := &cipher.StreamReader{S: stream, R: f}
 	safeName := strings.NewReplacer("\r", "", "\n", "").Replace(re.Name)
-	if conf.C.AlwaysDownload {
-		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename=\""+safeName+"\"")
-	} else {
-		c.Header("Content-Disposition", "filename=\""+safeName+"\"")
-	}
+	setFileHeaders(c, safeName)
 	if _, err := io.Copy(c.Writer, reader); err != nil {
 		logger.ErrC(c, "server", fmt.Sprintf("Couldn't copy %s", re.Key), err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+}
+
+// setFileHeaders keeps uploads from being rendered as active content on this
+// origin: the type only comes from the extension, never from sniffing, and
+// anything not safe to display is forced to download.
+func setFileHeaders(c *gin.Context, name string) {
+	ct := mime.TypeByExtension(path.Ext(name))
+	disp := "attachment; filename=\"" + name + "\""
+	if !conf.C.AlwaysDownload && viewableType(ct) {
+		disp = "filename=\"" + name + "\""
+	} else {
+		ct = "application/octet-stream"
+	}
+	c.Header("Content-Type", ct)
+	c.Header("Content-Disposition", disp)
+	c.Header("X-Content-Type-Options", "nosniff")
+}
+
+// viewableType reports whether ct can be displayed in the browser without
+// running script in this origin. SVG can carry script, so it is excluded.
+func viewableType(ct string) bool {
+	media, _, err := mime.ParseMediaType(ct)
+	if err != nil || media == "image/svg+xml" {
+		return false
+	}
+	return strings.HasPrefix(media, "image/") || strings.HasPrefix(media, "audio/") ||
+		strings.HasPrefix(media, "video/") || media == "application/pdf" ||
+		media == "text/plain" || media == "text/csv"
 }
